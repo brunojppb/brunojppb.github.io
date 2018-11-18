@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="keywords" content="programming,development,web,javascript,backend,scala,frontend,iOS,API,REST">
+    <meta name="author" content="Bruno Paulino">
+    <meta name="description" content="I am a software engineer. Here I blog about programming and life experiences.">
+    <meta name="theme-color" content="#21364B">
+    <title>{{ page.title }}</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+  </head>
+  <body>
+
+    <div role="main" class="main-container">
+
+        {% include header.html %}
+
+        <div class="flex-wrapper">
+            <div class="max-width-wrapper">
+                {{ content }}
+            </div>
+        </div>
+
+        {% include footer.html %}
+    </div>
+
+    <!-- Night/Light mode switch -->
+    <div id="theme-switcher" data-moon="/assets/images/moon.svg" data-sun="/assets/images/sun.svg"></div>
+    <script src="/assets/js/theme-switcher.js"></script>
+  </body>
+</html>

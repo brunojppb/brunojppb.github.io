@@ -1,0 +1,83 @@
+@import "constants";
+
+.main-footer {
+  text-align: center;
+  background-color: $dark-secondary-color;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+
+  .subscribe-container {
+    padding-top: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .subscribe-btn {
+      background-color: rgba(0,0,0,0);
+      border: none;
+      text-decoration: underline;
+      &:hover {
+        cursor: pointer;
+      }
+      &:disabled {
+        color: #999;
+      }
+    }
+
+    input {
+      width: 100%;
+      margin: auto;
+    }
+
+    input[type=email] {
+      margin-top: 8px;
+    }
+    input[type=submit] {
+      margin-top: 4px;
+    }
+  }
+
+  .follow-container {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding-bottom: 8px;
+    p {
+      font-size: 12px;
+      margin-bottom: 4px;
+      a {
+        font-size: 12px;
+      }
+    }
+  }
+
+  span {
+    font-size: 13px;
+  }
+
+  .subscribe-confirmation-container {
+    position: fixed;
+    left: 16px;
+    bottom: 16px;
+    width: 200px;
+    height: 200px;
+    padding: 8px;
+    background-color: #fff;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    a {
+      color: #333;
+    }
+  }
+
+  .hidden {
+    display: none;
+  }
+
+}

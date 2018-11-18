@@ -1,0 +1,29 @@
+.entries-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.entries-center-wrapper {
+  max-width: 600px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 8px 32px 8px;
+  .entry-item {
+    margin-top: 32px;
+    width: 100%;
+    h2 {
+      font-weight: bold;
+      margin-top: 4px;
+      margin-bottom: 4px;
+    }
+    .publish-date {
+      display: block;
+      font-size: 14px;
+    }
+  }
+}

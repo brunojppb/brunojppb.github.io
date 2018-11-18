@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="keywords" content="programming,development,web,javascript,backend,scala,frontend,iOS,API,REST">
+    <meta name="keywords" content="programming,development,web,javascript,backend,scala,frontend,ios,api,rest">
     <meta name="author" content="Bruno Paulino">
     <meta name="description" content="I am a software engineer. Here I blog about programming and life experiences.">
     <meta name="theme-color" content="#21364B">
@@ -32,7 +32,8 @@
     <!-- Night/Light mode switch -->
     <div id="theme-switcher" data-moon="/assets/images/moon.svg" data-sun="/assets/images/sun.svg"></div>
     <script src="/assets/js/theme-switcher.js"></script>
-    {% if jekyll.environment != "development" %}
+    
+    {% if jekyll.environment == "production" %}
         <!-- Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=UA-66025495-5"></script>
         <script>

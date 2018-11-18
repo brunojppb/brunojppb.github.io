@@ -2,4 +2,15 @@
 layout: default
 title: Home
 ---
-<h1>{{ "Hello World!" | downcase }}</h1>
+<div class="entries-container">
+    <div class="entries-center-wrapper">
+    	{% for post in site.posts %}
+    
+        <div class="entry-item">
+            <a href="{{ post.url }}"><h2>{{ post.title }}</h2></a>
+            <span class="publish-date">{{ post.date | date: "%B %-d, %Y" }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+

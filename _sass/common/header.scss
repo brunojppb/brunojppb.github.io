@@ -2,8 +2,10 @@
 
 .main-header {
   background-color: $dark-secondary-color;
+  -webkit-clip-path: polygon(0 0,100% 0,100% calc(100% - 3rem),0 100%);
+  clip-path: polygon(0 0,100% 0,100% calc(100% - 3rem),0 100%);
   text-align: center;
-  padding-bottom: 16px;
+  padding-bottom: 64px;
 
   h1 {
     margin: 0;

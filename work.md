@@ -11,7 +11,7 @@ title: Work
                     Currently working as the main Software Engineer on the online shop and back-office applications like mobile apps and Odoo ERP.
                 </p>
             </div>
-            <img src="/assets/images/woombikes.jpg"/>
+            <img src="/assets/images/woombikes.jpg" alt="Bruno placing a helmet on a little lady to go for a bike ride"/>
         </div>
 
         <div class="job-item">
@@ -24,7 +24,7 @@ title: Work
                     You can download it on the <a href="https://itunes.apple.com/us/app/card-vault-your-card-wallet/id1378561346?ls=1&mt=8">App Store</a>
                 </p>
             </div>
-            <img src="/assets/images/card_vault.jpg"/>
+            <img src="/assets/images/card_vault.jpg" alt="Screenshots of the iOS app Card Vault"/>
         </div>
 
         <div class="job-item">
@@ -38,7 +38,7 @@ title: Work
                     Also worked with DevOps using SaltStack and TeamCity to automate our entire deployment process and servers management.
                 </p>
             </div>
-            <img src="/assets/images/journi.jpg"/>
+            <img src="/assets/images/journi.jpg" alt="Bruno with Journi team posing for a team picture in a hourse riding school during a team retreat in Croatia"/>
         </div>
 
         <div class="job-item">
@@ -48,7 +48,7 @@ title: Work
                     Design and development of an internal Web app for Project Management and Internal Excellence Program (Embraer P3E) using Ruby on Rails.
                 </p>
             </div>
-            <img src="/assets/images/embraer.jpg"/>
+            <img src="/assets/images/embraer.jpg" alt="Bruno inside a luxury aircraft with the Embraer team"/>
         </div>
 
         <div class="job-item">
@@ -60,7 +60,7 @@ title: Work
                     The backend services are developed with Ruby and Scala.
                 </p>
             </div>
-            <img src="/assets/images/pmpb.jpg"/>
+            <img src="/assets/images/pmpb.jpg" alt="Bruno and hist colegue using the Police uniform in a celebration in Brazil"/>
         </div>
 
         

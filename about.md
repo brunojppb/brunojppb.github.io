@@ -18,6 +18,6 @@ title: About
         <h2>My profiles on the web</h2>
         <a href="https://github.com/brunojppb" style="margin-right: 10px">github</a>
         <a href="https://stackoverflow.com/users/2301092/bruno-paulino" style="margin-right: 10px">stack overflow</a>
-        <a href="https://www.linkedin.com/in/brunojppb/">LinkeIn</a>
+        <a href="https://www.linkedin.com/in/brunojppb/">LinkedIn</a>
     </div>
 </div>

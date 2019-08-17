@@ -3,6 +3,8 @@ layout: post
 author: Bruno Paulino
 title: Takeaways on The Mythical Man-Month book
 permalink: entries/9-mythical-man-month
+keywords: mythical man month,book,reading,takeways,learning
+meta_description: Important points I would like to point out from Brooks' still up2date famous book.
 ---
 
 After finishing up reading the classic book **[The Mythical Man-Month](https://en.wikipedia.org/wiki/The_Mythical_Man-Month)** from Frederick Brooks, it was astonishing to realise that most of his ideas are still sharp and relevant today in the field of software engineering. Apart from very few topics that are somehow changed nowadays, I would like to point out my three favorites topics from his essays that are still relevant today and I personally have experienced in my career.
@@ -27,6 +29,6 @@ I personally have experienced that. Once working on an iOS app, I had by my side
 
 ## It all comes down to communication
 
-There are many other great arguments in the book where Brooks talks extensively, but at the end of the reading what is clear is that communication is the key for a project success. You might have the 10x rockstar developer, but if he cannot communicate well with your team, the project is likely to fail.
+There are many other great arguments in the book where Brooks talks extensively, but at the end of the reading what is clear is that communication is the key for a project success. You might have the 10x rockstar developer, but if they cannot communicate well with your team, the project is likely to fail.
 
 This book has suvived the toughest of all challenges: **Time**. It was originally published in 1975 and at the time of this writing it is still rock solid. This is a must-read for anyone interested in software engineering and project success.

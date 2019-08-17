@@ -3,6 +3,8 @@ layout: post
 author: Bruno Paulino
 title: Arquitetura de branching para desenvolvimento com Git
 permalink: entries/2-arquitetura-de-branching-para-desenvolvimento-com-git
+keywords: git,gitflow,branch,workflow,desenvolvimento,programação
+meta_description: While creating mobile applications, one of the the main features that we can explore is the Notification.
 ---
 
 Visando implementar um padrão mais sólido e fácil de gerenciar nossos repositórios na [Policia Militar da Paraíba](http://www.pm.pb.gov.br), resolvemos adotar uma arquitetura de branching baseada no artigo de [Vincent Driessen](http://nvie.com/posts/a-successful-git-branching-model/) o qual já foi testado e aprovado em diversas empresas mundo a fora. Esse artigo será, praticamente, uma tradução da nossa fonte, com o objetivo de facilitar o aprendizado e a intergração de novos membros em nossa equipe. Esse artigo exige que o leitor possua conhecimentos sobre Git. Se ainda não conhece Git, recomento a leitura do livro de [Learn Enough Git to Be Dangerous](https://www.learnenough.com/git-tutorial) escrito por [Michael Hartl](http://www.michaelhartl.com/) o qual possui uma didática incrível para iniciantes. O livro é gratuito o pode ser lido no próprio navegador. Se preferir um livro em Português, o leitor pode adquirir o livro [Controlando versões com Git e Github](https://www.casadocodigo.com.br/pages/sumario-git-github) disponível na Casa do Código. Não li esse livro, porém recebi boas recomendações.

@@ -3,9 +3,11 @@ layout: post
 author: Bruno Paulino
 title: Why Austrian visa applications have to suck?
 permalink: entries/8-why-work-visa-applications-have-to-suck
+keywords: visa,work,austria,red-white-red card,IT,expat
+meta_description: Visa aplications are usually messy, but in Austria... It's complicated.
 ---
 
-In Austria, there are many kinds of visas, but the most common for work in the IT field is called **rot-weiß-rot-karte** (red-white-red card) and there are a few categories within that one can fall under. Mine was [**Other key workers**](https://www.migration.gv.at/en/types-of-immigration/permanent-immigration/other-key-workers/). This category can be used when a company cannot find a capable person in the local labor market. That is fairly common in the IT market around the world, where usually there are more jobs available than skilled people. 
+In Austria, there are many kinds of visas, but the most common for work in the IT field is called **rot-weiß-rot-karte** (red-white-red card) and there are a few categories within that one can pick. Mine was [**Other key workers**](https://www.migration.gv.at/en/types-of-immigration/permanent-immigration/other-key-workers/). This category can be used when a company cannot find a capable person in the local labor market. That is fairly common in the IT market around the world, where usually there are more jobs available than skilled people. 
 
 I am originally from Brazil, but currently living in Vienna, Austria. in 2016, my wife and I decided to move abroad to have a different experience. It has been an amazing journey so far and we don't regret of doing that.
 
@@ -21,7 +23,7 @@ According to the Austrian immigration office, I should apply again for a new vis
 
 After that decision, some unexpected things happened. I am writing this so if you are in a similar situation or considering to move abroad, you might want to think twice about what could happen, specially if you have a family to provide for.
 
-It took 5 fucking months to receive the final decision. I was unemployed for this whole period, even though I had a job offer, an working visa, was living in the country for almost 2 years and the company had a letter from the AMS(Austrian labor office) stating they couldn't find any professional available in the local market. What would have happened if I didn't have any savings? I cannot even imagine.
+It took 5 f\*cking months to receive the final decision. I was unemployed for this whole period, even though I had a job offer, an working visa, was living in the country for almost 2 years and the company had a letter from the AMS(Austrian labor office) stating they couldn't find any professional available in the local market. What would have happened if I didn't have any savings? I cannot even imagine.
 
 Some things you should consider before deciding to move:
 

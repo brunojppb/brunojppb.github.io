@@ -3,6 +3,8 @@ layout: post
 author: Bruno
 title: iOS push notifications for Rails Developers
 permalink: entries/1-ios-push-notifications-for-rails-developers
+keywords: ios,swift,ruby,rails,dev,programming
+meta_description: While creating mobile applications, one of the the main features that we can explore is the Notification.
 ---
 
 While creating mobile applications, one of the the main features that we can explore is the Notification. Basically, there are two types of notification:

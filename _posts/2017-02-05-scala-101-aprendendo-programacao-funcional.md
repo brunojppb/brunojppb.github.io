@@ -3,6 +3,8 @@ layout: post
 author: Bruno Paulino
 title: "Scala 101: Aprendendo Programação Funcional"
 permalink: entries/6-scala-101-aprendendo-programacao-funcional
+keywords: scala,funcional,programação,computação
+meta_description: Trabalhando no journi, decidi ajudar no backend e aprender Scala foi uma das melhores coisa que fiz.
 ---
 
 Trabalhando no [journi](https://www.journiapp.com/) como iOS developer, em poucos meses, percebi que a melhor forma de aprender e evoluir rápido é usando o que você precisa no dia-a-dia. Todo dia um desafio novo, um nova funcionalidade para implementar e forma nova de aprender algo. Agora chegou a hora de trabalhar em nosso backend. Como a alguns amigos sabem, eu tenho trabalhado com Ruby on Rails em meu trabalho passando, onde adquiri um bom conhecimento no assunto. Porém nosso backend aqui na empresa é escrito em Scala. Um linguagem que trás o melhor dos 2 mundos: Orientação a Objeto e Programação Funcional.

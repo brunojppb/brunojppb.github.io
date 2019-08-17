@@ -1,6 +1,8 @@
 ---
 layout: default
 title: Work
+keywords: experience,work,companies,countries
+meta_description: Some of my work experiences in many countries and different companies.
 ---
 <div class="work">
 

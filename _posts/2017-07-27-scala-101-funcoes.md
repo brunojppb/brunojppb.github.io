@@ -3,6 +3,8 @@ layout: post
 author: Bruno Paulino
 title: "Scala 101: Funções"
 permalink: entries/7-scala-101-funcoes
+keywords: scala,funcional,programação,computação
+meta_description: Continuando meus estudos em Scala explorando os conceitos básicos da linguagem.
 ---
 
 Continuando meus estudos em Scala, temos que falar de um conceito muito importante da linguagem: Funções. Em Scala, funções são tratados como valores normais como Int e String, ou seja, podemos declarar funções, armazená-las em variáveis e até passá-las como parâmetro para outras funções. Aqui utilizarei os exemplos do lívro Scala in Action, mostrando como utilizar funções, desde o básico até casos mais avançados.

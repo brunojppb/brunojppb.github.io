@@ -3,6 +3,9 @@ layout: post
 author: Bruno Paulino
 title: Indo Estudar nos EUA
 permalink: entries/5-indo-estudar-no-exterior-eua-20142015
+keywords: intercambio,estudar,exterior,usa,eua,florida,computação,programação
+meta_description: "Em Julho de 2014 tive uma das melhores oportunidades da minha vida: Estudar Fora do País."
+meta_image: https://i.imgur.com/gcvRyO7.jpg
 ---
 
 Em Julho de 2014 tive uma das melhores oportunidades da minha vida: **Estudar Fora do País**. Durante minha graduação no [IFPB](http://www.ifpb.edu.br/) no Curso Superior de Tecnologia em Sistemas para Internet (TSI), decobri o programa governamental [Ciências sem Fronteiras](http://www.cienciasemfronteiras.gov.br/). Após ler toda a documentação no site, resolve procurar amigos ou conhecidos que já participaram do programa no passado. Dois grandes amigos da mesma turma de TSI estavam participando de programas de intercâmbio no momento, um no Canadá e outro nos Estados Unidos. Passei algumas semanas conversando com eles e adquirindo um pouco da experiência a qual eles estavam passando no momento. Eles confirmaram tudo aquilo que eu já imaginava. Uma experiência única que só estando lá conseguiria descrever.
@@ -11,7 +14,7 @@ Foi então que resolvi arriscar, ou melhor, resolvi tentar. Como um grande amigo
 
 Assim que iniciei meus estudos no IFPB eu percebi que precisaria aprender inglês. Tudo na área de tecnologia é escrito em inglês, as linguagens de programação são escritas em inglês, os melhores sites são em inglês, os melhores livros são escritos em inglês e a lista so cresce. Percebendo essa necessidade, que é básica em muitos países desenvolvidos(como na Áustria onde moro atualmente), resolvi cumprir o papel do estado, o qual foi omisso durante toda a minha educação básica, e me matriculei em uma escola particular de inglês em João Pessoa. Durante 2 anos, eu teria aulas todos os sábados durante 2 horas. Nada se compara a uma experiência em um país de lingua inglesa durante alguns meses, porém esses 2 anos de aulas foram suficientes para me ajudar a construir uma boa base, me dando condições de evoluir rapidamente.
 
-Com essa simples base que pode construir ao longo de 2 anos, é chegado o momento da prova. Realizamos o exame em nossa própria instituição, onde ficamos por 3 horas sendo avaliados. Com o passar de algumas semanas recebemos o resultado. Fiquei no segundo grupo. Eu receberia 3 meses de aulas de inglês nos Estados Unidos, com um professor americano e logo após ingressaria na universidade.
+Com essa simples base que pude construir ao longo de 2 anos, é chegado o momento da prova. Realizamos o exame em nossa própria instituição, onde ficamos por 3 horas sendo avaliados. Com o passar de algumas semanas recebemos o resultado. Fiquei no segundo grupo. Eu receberia 3 meses de aulas de inglês nos Estados Unidos, com um professor americano e logo após ingressaria na universidade.
 
 Após todo o processo de aceitação no [Florida Institute of Technology (FIT)](http://www.fit.edu/), em junho de 2014 eu estava em Melbourne, Florida, iniciando minhas aulas de inglês. Passados 3 meses aulas de inglês, 8 horas por dia, 5 dias por semana, percebi o quanto eu aprendi em tão pouco tempo. Arrisco a dizer que esse pouco tempo equivaleria a mais de 20 anos de aulas nos sábados nas escolas particulares no Brasil. Um dica que dou para todos os meus amigos é: _Junte grana e va fazer um curso de inglês fora. Nem que seja por apenas 20 dias. Vai valer muito mais a pena que pagar por um ano de inglês no Brasil._
 

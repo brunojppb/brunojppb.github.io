@@ -3,18 +3,18 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    {% assign domain = site.url | replace: "https://", "" | replace: "http://", "" %}
+    {% assign absolute_url = site.url | append: page.url %}
     {% assign keywords = "programming,development,web,javascript,backend,scala,frontend,ios,api,rest" %}
-    {% if page.keywords != blank %}
+    {% if page.keywords %}
         {% assign keywords = page.keywords %}
     {% endif %}
     {% assign meta_image = site.url | append: "/assets/images/me.jpg" %}
-    {% if page.meta_image != blank %}
+    {% if page.meta_image %}
         {% assign meta_image = page.meta_image %}
     {% endif %}
-    {% assign domain = site.url | replace: "https://", "" | replace: "http://", "" %}
-    {% assign absolute_url = site.url | append: page.url %}
     {% assign meta_desc = "I am a software engineer. Here I blog about programming and life experiences." %}
-    {% if page.meta_description != blank %}
+    {% if page.meta_description %}
         {% assign meta_desc = page.meta_description %}
     {% endif %}
     <meta name="author" content="Bruno Paulino">

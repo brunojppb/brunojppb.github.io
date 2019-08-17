@@ -11,7 +11,12 @@
     {% endif %}
     {% assign meta_image = site.url | append: "/assets/images/me.jpg" %}
     {% if page.meta_image %}
-        {% assign meta_image = page.meta_image %}
+        {% if page.meta_image contains "http" %}
+            {% assign meta_image = page.meta_image %}
+        {% else %}
+            {% assign meta_image = site.url | append: page.meta_image %}
+        {% endif %}
+        
     {% endif %}
     {% assign meta_desc = "I am a software engineer. Here I blog about programming and life experiences." %}
     {% if page.meta_description %}

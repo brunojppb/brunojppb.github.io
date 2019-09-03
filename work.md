@@ -11,7 +11,11 @@ meta_image: /assets/images/woombikes.jpg
             <div>
                 <h2><a href="https://woombikes.com">woombikes.com (Vienna, Austria)</a></h2>
                 <p>
-                    Currently working as the main Software Engineer on the online shop and back-office applications like mobile apps and Odoo ERP.
+                    Working at woom is a joy and challenging at the same time. The exact type of environment I feel comfortable with. We deal with a large scale infrastructure that spams across many continents (EU, North America, Asia) and at the same time we are still a startup with a very small and efficient team. and cmon! we make bikes for kids. How cool is it? It is not just cool, it is awesome! 
+                    <br/><br/>
+                    On the technical side, I am writing high-scale, cloud-based tools using Scala and the Play framework for high concurrency and high availability for our very international and remote team. But also application extensions for our Odoo ERP using Python and the Web stack(Javascript, CSS, HTML).
+                    <br/><br/>
+                    On top of that, I deeply care about soft skills (commonly underrated among the software community), mainly focusing on good communication, making sure I can pass the message in an understandable and friendly way, specially for Non-tech-savvy users.
                 </p>
             </div>
             <img src="/assets/images/woombikes.jpg" alt="Bruno placing a helmet on a little lady to go for a bike ride"/>

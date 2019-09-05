@@ -7,7 +7,7 @@ keywords: mythical man month,book,reading,takeways,learning
 meta_description: Important points I would like to point out from Brooks' still up2date famous book.
 ---
 
-After finishing up reading the classic book **[The Mythical Man-Month](https://en.wikipedia.org/wiki/The_Mythical_Man-Month)** from Frederick Brooks, it was astonishing to realise that most of his ideas are still sharp and relevant today in the field of software engineering. Apart from very few topics that are somehow changed nowadays, I would like to point out my three favorites topics from his essays that are still relevant today and I personally have experienced in my career.
+After finishing up reading the classic book **[The Mythical Man-Month](https://en.wikipedia.org/wiki/The_Mythical_Man-Month)** from Frederick Brooks, it was astonishing to realise that most of his ideas are still sharp today in the field of software engineering. Apart from very few topics that somehow changed nowadays, I would like to point out my three favorites topics from his essays that are still relevant today and I personally have experienced in my career.
 
 ## Adding manpower to a late project makes it later
 

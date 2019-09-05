@@ -52,6 +52,9 @@ html, body {
   display: flex;
   flex-direction: column;
   padding: 0 8px 50px 8px;
+  img:hover {
+    cursor: pointer;
+  }
 }
 
 .flex-center {

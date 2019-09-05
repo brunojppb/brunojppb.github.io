@@ -67,14 +67,20 @@
         {% include footer.html %}
     </div>
 
+    <!-- Full-screen image presentation -->
+    <div class="fullscreen-overlay" style="display: none;">
+        <button class="close-overlay">close</button>
+    </div>
+    <script src="/assets/js/fullscreen-overlay.js"></script>
+
     <!-- Night/Light mode switch -->
     <div id="theme-switcher" data-moon="/assets/images/moon.svg" data-sun="/assets/images/sun.svg"></div>
     <script src="/assets/js/theme-switcher.js"></script>
-    
+
     <!-- Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=UA-66025495-5"></script>
         <script>
-            if (!window.location.host.includes('localhost')) {
+            if (!window.location.host.indexOf('localhost') !== -1) {
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());

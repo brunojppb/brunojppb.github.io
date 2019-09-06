@@ -1,0 +1,15 @@
+name: deploy
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: deploy
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1 # necessary to fetch all files from repo, including actions
+      - uses: ./.github/actions/build-dist-site
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

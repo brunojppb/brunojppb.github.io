@@ -1,12 +1,12 @@
 ## bpaulino.com blog
 ![workflow-badge](https://github.com/brunojppb/brunojppb.github.io/workflows/deploy/badge.svg)
 
-Add Jekyll:
+Install dependencies:
 ```sh
 # If bundler is not there yet, execute:
 $ gem install bundler
 # Now install all dependencies
-$ gem install
+$ bundle install
 ```
 
 ## Now with Github Actions 🎉

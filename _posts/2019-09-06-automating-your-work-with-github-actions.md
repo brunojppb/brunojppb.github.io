@@ -211,4 +211,27 @@ echo "🎉 New version deployed 🎊"
 
 🤯 That was a lot different from what I started with right? Ok, the reason for that is just Docker. Now we have a more robust implementation of our deployment pipeline where we could even move away from Github to Gitlab and reuse the Dockerfile and entrypoint.sh (with minor changes).
 
-Now that we are armed with those files, lets commit our changes and push to to github and see what happens.
+Now that we are armed with those files, lets commit our changes and push to Github and see what happens. Going to our Github repository page, there you can see a new button called **Actions**:
+
+![Github Actions button](/assets/images/github_actions_button.jpg)
+
+Lets click on it. You will be taken to the **Workflows** list. There we see our **Deploy** workflow we just created.
+
+![Github Actions button](/assets/images/github_workflows_running.jpg)
+
+Now inside of our workflow execution context, we can see all of our actions being executed:
+
+![Github Actions button](/assets/images/github_execution_pipeline.jpg)
+
+Ok, now our automation work was fully done. As a cherry on top, you can also add a badge to your README.md file showing the current status of your custom actions like that:
+
+```md
+# Where /deploy/ must be replaced with your workflow name
+![workflow-badge](https://github.com/brunojppb/brunojppb.github.io/workflows/deploy/badge.svg)
+```
+
+That will render a nice image automatically by Github on your repository page.
+![Github Actions Badge](/assets/images/github_action_badge.jpg)
+
+Now I can enjoy my time spent building and deploying my website doing something else like playing videogames 🎮 or drawing 🎨. Here is the open-source repository of my blog if you want to take a look:
+[https://github.com/brunojppb/brunojppb.github.io](https://github.com/brunojppb/brunojppb.github.io)

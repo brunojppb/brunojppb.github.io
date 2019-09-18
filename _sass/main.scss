@@ -123,19 +123,19 @@ html, body {
     text-align: left;
   }
 
-  .job-item {
-    img {
-      display: block;
-      width: 100%;
-      max-width: 500px;
-      margin: auto;
-      border-radius: 4px;
-    }
-    &:last-child {
-      margin-bottom: 50px;
-    }
-  }
+}
 
+.job-item {
+  img {
+    display: block;
+    width: 100%;
+    max-width: 500px;
+    margin: auto;
+    border-radius: 4px;
+  }
+  &:last-child {
+    margin-bottom: 50px;
+  }
 }
 
 .not-found {

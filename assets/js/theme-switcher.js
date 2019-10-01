@@ -7,8 +7,8 @@
   var isLightModeOn = function() {
     try {
       var switcherState = localStorage.getItem(LIGHT_MODE_ON);
-      if (isNaN(switcherState)) {
-        return window.matchMedia("prefers-color-scheme: light").matches
+      if (switcherState === null) {
+        return window.matchMedia('(prefers-color-scheme: light)').matches;
       }
       return switcherState === ON
     } catch (e) {

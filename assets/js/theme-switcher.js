@@ -7,7 +7,10 @@
   var isLightModeOn = function() {
     try {
       var switcherState = localStorage.getItem(LIGHT_MODE_ON);
-      return switcherState !== null && switcherState === ON;
+      if (isNaN(switcherState)) {
+        return window.matchMedia("prefers-color-scheme: light").matches
+      }
+      return switcherState === ON
     } catch (e) {
       console.warn('could not get light mode config from local storage', e);
     }

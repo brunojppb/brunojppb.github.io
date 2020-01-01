@@ -16,12 +16,12 @@ a {
 /** screens >= 600px in width */
 @media screen and (min-width: 600px) {
   p {
-    font-size: 19px;
+    font-size: 22px;
   }
 
   ul {
     li {
-      font-size: 19px;
+      font-size: 22px;
       font-weight: bold;
     }
   }
@@ -30,12 +30,12 @@ a {
 /** screens <= 599px in width */
 @media screen and (max-width: 599px) {
   p {
-    font-size: 17px;
+    font-size: 19px;
   }
 
   ul {
     li {
-      font-size: 17px;
+      font-size: 19px;
       font-weight: bold;
     }
   }

@@ -21,7 +21,7 @@ Como Scala roda em cima da JVM, nós precisamos do [Java SDK](http://www.oracle.
 ```shell
 $ scala -version
 ```
-![versão atual](https://i.imgur.com/HLMm23g.png)
+![versão atual](/assets/images/posts/scala_current_version.png)
 ### Scala REPL
 
 Como programador Ruby, estou acostumado a ter um console rápido onde posso escrever um código rápido e testa-lo sem precisar instalar uma IDE e criar uma aplicação, em Scala não é diferente. com o Scala REPL(read-evaluate-print loop) podemos executar código Scala direto em nosso terminal e ter resposta imediata. Isso facilita bastante o uso da linguagem para aprendizado e para testes rápidos.
@@ -32,7 +32,7 @@ $ scala
 ```
 Logo você verá seu console aguardando seu input e cada linha adicionada é avaliada imediatamente trazendo sua resposta. #rubyFeelings
 
-![Scala REPL](https://i.imgur.com/B64545k.png)
+![Scala REPL](/assets/images/posts/scala_repl.png)
 
 ## Declarando Variáveis
 

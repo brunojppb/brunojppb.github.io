@@ -84,7 +84,7 @@ We have to create a App ID for our iOS App. Go to the [Apple Dev Portal - Apple 
 
 When filling the and remember to check "Push Notifications" in the "App Sevices" area. Get done with the form, go to the App ID list and select the App ID that was just created and click **edit** to generate the SSL Certificates.
 
-![Certificate generation](https://i.imgur.com/QQvWT6l.png)
+![Certificate generation](/assets/images/posts/certificate_generation.jpg)
 
 Those SSL Certificates will be used in our Backend to authenticate with _Apple Push Notification Service(APNS)_. Click in **create certificate** for both **Development SSL Certificate** and **Production SSL Certificate** because we will need a certificate for each environment(Development and Production). Follow the creation instructions for each certificate and download both the **Development SSL Certificate** and **Production SSL Certificate**. After download it, double click each one to add them to the Keychain Access.
 
@@ -97,7 +97,7 @@ Now that we have our certificates, we have to convert them in a format the is co
  - 3: Right click over the certificate where you see something like this: **Apple Development Push Services: com.yourname.appname** and click on **Export**
  - 4: On the dialog box, make sure to select **Personal Information Exchange(.p12)** format before save.
 
- ![Exporting Certificates](https://i.imgur.com/3xlZlWC.png)
+ ![Exporting Certificates](/assets/images/posts/exporting_certificates.jpg)
 
 Repeat the same steps for the **production certificate**.
 

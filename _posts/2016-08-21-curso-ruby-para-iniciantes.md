@@ -2,7 +2,7 @@
 layout: post
 author: Bruno Paulino
 title: Ruby Para Iniciantes
-permalink: entries/3-curso-ruby-para-iniciantes\
+permalink: entries/3-curso-ruby-para-iniciantes
 keywords: ruby,linguagem,programação
 meta_description: 1 ano e meio atrás eu descobri o Ruby. Nesse pouco tempo utilizando essa maravilhosa linguagem, a experiência que tenho tido já me permitiu decidir que essa será a linguagem que irei investir em meus projetos pessoais e em minha carreira profissional.
 ---

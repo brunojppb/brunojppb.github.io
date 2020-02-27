@@ -5,7 +5,7 @@ title: Indo Estudar nos EUA
 permalink: entries/5-indo-estudar-no-exterior-eua-20142015
 keywords: intercambio,estudar,exterior,usa,eua,florida,computação,programação
 meta_description: "Em Julho de 2014 tive uma das melhores oportunidades da minha vida: Estudar Fora do País."
-meta_image: https://i.imgur.com/gcvRyO7.jpg
+meta_image: /assets/images/posts/fit_diploma.jpg
 ---
 
 Em Julho de 2014 tive uma das melhores oportunidades da minha vida: **Estudar Fora do País**. Durante minha graduação no [IFPB](http://www.ifpb.edu.br/) no Curso Superior de Tecnologia em Sistemas para Internet (TSI), decobri o programa governamental [Ciências sem Fronteiras](http://www.cienciasemfronteiras.gov.br/). Após ler toda a documentação no site, resolve procurar amigos ou conhecidos que já participaram do programa no passado. Dois grandes amigos da mesma turma de TSI estavam participando de programas de intercâmbio no momento, um no Canadá e outro nos Estados Unidos. Passei algumas semanas conversando com eles e adquirindo um pouco da experiência a qual eles estavam passando no momento. Eles confirmaram tudo aquilo que eu já imaginava. Uma experiência única que só estando lá conseguiria descrever.
@@ -20,14 +20,14 @@ Após todo o processo de aceitação no [Florida Institute of Technology (FIT)](
 
 Ao ingressar no FIT, percebi que as aulas não são muito diferentes que as aulas no Brasil. A diferença está no interesse dos alunos e no suporte que esses mesmos alunos recebem dos professores e da instituição. Tive a grande oportunidade de trabalhar com um dos melhores professores da instituição, o Dr. Eraldo Ribeiro, e aprendi muito sobre como o ensino e a pesquisa funcionavam la fora. Foram 2 semestres de muito aprendizado, não apenas conhecimentos técnicos, mas também uma grande experiência cultural, a qual mudou completamente minha forma de ver o mundo.
 
-![Entrega do diploma pelo Presidente do FIT Dr. Anthony James Catanese](https://i.imgur.com/gcvRyO7.jpg)
+![Entrega do diploma pelo Presidente do FIT Dr. Anthony James Catanese](/assets/images/posts/fit_diploma.jpg)
 <span style="text-align: center; display: block; font-weight: bold;">
 Entrega do diploma pelo Presidente do FIT Dr. Anthony James Catanese
 <span>
 
 Ao finalizar meu segundo semestre no FIT, tive a grande oportunidade de realizar estágio no [Embraer Engineering & Technology Center (EETC)](http://www.embraer.com/en-us/Pages/home.aspx) como Web Developer. Trabalhei com pessoas incríveis de todo o mundo, aprendi muito sobre a cultura do trabalho americano e como os relacionamentos interpessoais possuem um papel gigantesco em nossas carreiras. Foram 3 meses de muitas experiências, onde fiz muitos amigos, recebi valiosíssimos conselhos que estão me ajudando até os dias de hoje.
 
-![Visita ao Embraer Lineage 1000](https://i.imgur.com/MnQ4Do2.jpg)
+![Visita ao Embraer Lineage 1000](/assets/images/posts/inside_embraer_lineage_1000.jpg)
 <span style="text-align: center; display: block; font-weight: bold;">
 Visita ao Embraer Lineage 1000
 </span>

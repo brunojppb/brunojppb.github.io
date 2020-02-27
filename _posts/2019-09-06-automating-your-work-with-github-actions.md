@@ -233,5 +233,4 @@ Ok, now our automation work was fully done. As a cherry on top, you can also add
 That will render a nice image by Github on your repository page with the current action status.
 ![Github Actions Badge](/assets/images/github_action_badge.jpg)
 
-Now I can enjoy my time spent building and deploying my website doing something else like playing videogames 🎮 or drawing 🎨. Here is the open-source repository of my blog if you want to take a look:
-[https://github.com/brunojppb/brunojppb.github.io](https://github.com/brunojppb/brunojppb.github.io)
+Now I can enjoy my time spent building and deploying my website doing something else like playing videogames 🎮 or drawing 🎨. Here is the [open-source repository of my blog if you want to take a look.](https://github.com/brunojppb/brunojppb.github.io)

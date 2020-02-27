@@ -24,7 +24,7 @@ em paralelo a **master** branch, teremos a branch **origin/develop** que sempre 
    Ilustração da arquitetura de branching
 </span>
 
-![Ilustração da arquitetura de branching](https://i.imgur.com/QqQXZsz.png)
+![Ilustração da arquitetura de branching](/assets/images/posts/git_branch_architecture.jpg)
 Fonte: [A successful Git branching model](http://nvie.com/posts/a-successful-git-branching-model/)
 
 ### Branches de suporte

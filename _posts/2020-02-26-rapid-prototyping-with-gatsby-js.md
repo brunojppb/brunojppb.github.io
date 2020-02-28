@@ -78,7 +78,7 @@ yarn install
 yarn develop
 ```
 
-Now lets go to our browser and type on `localhost:8000` to see what happens.
+Now lets go to our browser and type in `localhost:8000` to see what happens.
 You will see a nice and bare-minimum website, very similar to the screenshot I posted above, but with a link to the blog section of the website.
 
 ![Gatsby Minimal website home page](/assets/images/posts/gatsby_minimal_website_home.png)
@@ -180,5 +180,5 @@ The same thing happens to the **Article** component. it expects a `pageContext` 
 
 ## Next Steps
 
-This example was very naive and simplistic, but you can already have a feeling of what Gatsby can do. If you are considering to develop a new website and don't want to waste your time with tooling configuration, give Gatsby a try. I will probably worth it.  
+This example was very naive and simplistic, but you can already have a feeling of what Gatsby can do. If you are considering to develop a new website and don't want to waste your time with tooling configuration, give Gatsby a try. It will be probably worth it.  
 We are now evaluating if makes sense or not to build out Shop frontend with it in a way that supports multi-language. I got some interesting feedback from folks using Gatsby in production during my React Vienna talk that will definitely help to try it out.

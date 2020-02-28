@@ -151,3 +151,16 @@ html, body {
 .courses {
   padding-bottom: 30px;
 }
+
+/** Custom Prism settings */
+/** support my custom font and size  */
+code.highlighter-rouge, code.highlighter-rouge.language-plaintext {
+  display: inline-block;
+  font-family: inherit;
+  font-size: inherit;
+  background-color: #333;
+  color: white;
+  padding: 0 8px;
+  border-radius: 3px;
+  line-height: 1.3;
+}

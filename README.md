@@ -1,5 +1,5 @@
 ## bpaulino.com blog
-![workflow-badge](https://github.com/brunojppb/brunojppb.github.io/workflows/deploy/badge.svg)
+![deploy](https://github.com/brunojppb/brunojppb.github.io/workflows/deploy/badge.svg?branch=master)
 
 Install dependencies:
 ```sh

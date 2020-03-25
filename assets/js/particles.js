@@ -5,7 +5,7 @@
     const numCircles = 10;
   
     const resize = (window.resize = function() {
-      canvas.height = canvas.parentNode.parentElement.clientHeight * 0.8;
+      canvas.height = document.querySelector('.main-header').clientHeight;
       canvas.width = window.innerWidth;
     });
 

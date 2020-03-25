@@ -75,6 +75,8 @@
     })();
 
     loop();
+
+    window.addEventListener("resize", resize);
   };
 
   const canvas = document.querySelector('.particles-canvas');

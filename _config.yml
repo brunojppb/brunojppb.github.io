@@ -1,2 +1,8 @@
 permalink: /entries/:title:output_ext
 url: https://bpaulino.com
+title: bpaulino.com
+description: I am a software engineer. Here I blog about programming and life experiences.
+author: Bruno Paulino
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap

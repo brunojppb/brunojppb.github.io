@@ -1,4 +1,3 @@
-@import "common/font";
 @import "lib/normilize";
 @import "lib/prism";
 @import "common/constants";
@@ -20,9 +19,7 @@
 
 html,
 body {
-  font-family: "Futura PT", -apple-system, "BlinkMacSystemFont", "Segoe UI",
-    "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
-    "Helvetica Neue", "Arial", sans-serif;
+  font-family: 'Fira Sans', sans-serif;
   background-color: $dark-primary-color;
   color: $dark-text-color;
   position: relative;
@@ -53,7 +50,7 @@ body {
   width: 100%;
   display: flex;
   flex-direction: column;
-  padding: 0 8px 50px 8px;
+  padding: 0 16px 64px 16px;
   img:hover {
     cursor: pointer;
   }
@@ -116,7 +113,8 @@ body {
 .me {
   width: 150px;
   height: 150px;
-  border-radius: 75px;
+  border-radius: 50%;
+  box-shadow: rgba(0,0,0,0.22) 0 0 16px 1px;
 }
 
 .work {

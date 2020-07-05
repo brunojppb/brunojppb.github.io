@@ -5,6 +5,7 @@ title: Why Austrian visa applications have to suck?
 permalink: entries/8-why-work-visa-applications-have-to-suck
 keywords: visa,work,austria,red-white-red card,IT,expat
 meta_description: Visa applications are usually messy, but in Austria... It's complicated.
+meta_image: /assets/images/posts/why_austrian_visa_applications_have_to_suck.jpg
 ---
 
 In Austria, there are many kinds of visas, but the most common for work in the IT field is called **rot-weiß-rot-karte** (red-white-red card) and there are a few categories within that one can pick. Mine was [**Other key workers**](https://www.migration.gv.at/en/types-of-immigration/permanent-immigration/other-key-workers/). This category can be used when a company cannot find a capable person in the local labor market. That is fairly common in the IT market around the world, where usually there are more jobs available than skilled people. 

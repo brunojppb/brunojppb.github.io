@@ -1,7 +1,5 @@
-@import "constants";
-
 .main-header {
-  background-color: $dark-secondary-color;
+  background-color: var(--secondary-color);
   -webkit-clip-path: polygon(0 0, 100% 0, 100% calc(100% - 3rem), 0 100%);
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - 3rem), 0 100%);
   text-align: center;

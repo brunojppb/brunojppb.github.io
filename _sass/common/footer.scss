@@ -1,8 +1,6 @@
-@import "constants";
-
 .main-footer {
   text-align: center;
-  background-color: $dark-secondary-color;
+  background-color: var(--secondary-color);
   position: absolute;
   bottom: 0;
   width: 100%;

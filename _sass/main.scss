@@ -1,13 +1,18 @@
 @import "lib/normilize";
 @import "lib/prism";
-@import "common/constants";
 @import "common/common";
-@import "common/navigation";
 @import "common/header";
 @import "common/footer";
 @import "home/home";
 @import "entries/entry_list";
 @import "entries/entry";
+
+:root {
+  --primary-color: #0F2438;
+  --secondary-color: #20364C;
+  --text-color: #E4E4E4;
+  --progress-bar-color: #E4E4E4;
+}
 
 * {
   box-sizing: border-box;
@@ -20,13 +25,13 @@
 html,
 body {
   font-family: 'Fira Sans', sans-serif;
-  background-color: $dark-primary-color;
-  color: $dark-text-color;
+  background-color: var(--primary-color);
+  color: var(--text-color);
   position: relative;
   height: 100%;
-  //transition: color 0.5s;
+  transition: color 0.5s;
   input[type="submit"] {
-    color: $dark-text-color;
+    color: var(--text-color);
   }
 }
 
@@ -78,28 +83,10 @@ body {
 }
 
 .light-mode {
-  transition: all 0.5s;
-  background-color: $light-primary-color !important;
-  body {
-    background-color: $light-primary-color !important;
-    color: $light-text-color !important;
-  }
-
-  a {
-    color: $light-text-color;
-  }
-
-  input[type="submit"] {
-    color: $light-text-color;
-  }
-
-  .main-header {
-    background-color: $light-secondary-color;
-  }
-
-  .main-footer {
-    background-color: $light-secondary-color;
-  }
+  --primary-color: #FFFFFF;
+  --secondary-color: #F3EFEC;
+  --text-color: #222222;
+  --progress-bar-color: #f0d2bd;
 }
 
 .about-me {
@@ -171,4 +158,14 @@ code.highlighter-rouge.language-plaintext {
   left: 0;
   top: 0;
   z-index: -10;
+}
+
+#progress-bar {
+  background-color: var(--progress-bar-color);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 5px;
+  z-index: 99;
 }

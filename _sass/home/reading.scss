@@ -1,0 +1,54 @@
+/** Reading Page */
+@keyframes spinner {
+  to {transform: rotate(360deg);}
+}
+
+.spinner {
+  position: relative;
+  padding: 8px;
+  &:before {
+    content: '';
+    box-sizing: border-box;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin-top: -10px;
+    margin-left: -10px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    border-top-color: var(--progress-bar-color);
+    border-bottom-color: var(--progress-bar-color);
+    animation: spinner .8s ease infinite;
+  }
+
+}
+
+
+
+.book-list {
+  width: 100%;
+  padding-bottom: 32px;
+  .book-item {
+    display: flex;
+    margin-top: 16px;
+    img {
+      width: 70px;
+      height: 100%;
+    }
+    .book-data {
+      padding-top: 8px;
+      padding-left: 8px;
+      display: flex;
+      flex-direction: column;
+      a {
+        font-weight: bold;
+      }
+      span {
+        margin-top: 8px;
+      }
+    }
+  }
+
+}

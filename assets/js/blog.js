@@ -202,10 +202,87 @@
     updateProgress();
   }
 
+  /** Fetch reading list from GoodReads
+   * From a custom worker in Cloudflare (GD doesn't allow CORS) */
+  var maybeFetchReadingList = function() {
+    if (!('fetch' in window)) return;
+    
+    var readingListContainer = document.getElementById('reading-list');
+    var readListContainer = document.getElementById('read-list');
+    if (!readingListContainer || !readListContainer) return;
+
+    /** Render each book item individually */
+    var renderBook = function(container, book) {
+      var div = document.createElement('div');
+      div.className = 'book-item';
+      // book image
+      var img = document.createElement('img');
+      img.src = book.imgUrl;
+      img.alt = 'book cover from ' + book.title;
+      img.className = 'book-img'
+      div.appendChild(img);
+      // book data
+      var bookDataDiv = document.createElement('div');
+      bookDataDiv.className = 'book-data'
+      var bookTitleLink = document.createElement('a');
+      bookTitleLink.href = book.url
+      bookTitleLink.innerText = book.title
+      bookDataDiv.appendChild(bookTitleLink);
+      
+      // author
+      var authorName = document.createElement('span');
+      authorName.innerText = 'By ' + book.authorName;
+      bookDataDiv.appendChild(authorName);
+
+      div.appendChild(bookDataDiv);
+      container.appendChild(div);
+    }
+
+    /** Fetch reading list from GoodReads */
+    var fetchList = function(listName, containerNode) {
+      var currentlyReadingUrl = 'https://reading-list.bpaulino0.workers.dev/?readingList=' + listName;
+      fetch(currentlyReadingUrl)
+      .then(function(response) {
+        return response.text();
+      })
+      .then(function(xml) {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(xml, 'text/xml');
+        var reviews = doc.getElementsByTagName('review');
+        var getTextContent = function(xmlNode, property) {
+          return xmlNode.getElementsByTagName(property)[0].textContent;
+        };
+        containerNode.innerHTML = '';
+        for (var i=0; i < reviews.length; i++) {
+          var book = reviews[i].getElementsByTagName('book')[0];
+          var title = getTextContent(book, 'title_without_series');
+          var url = getTextContent(book, 'link');
+          var imgUrl = getTextContent(book, 'image_url');
+          var description = getTextContent(book, 'description');
+          var author = book.getElementsByTagName('authors')[0].getElementsByTagName('author')[0];
+          var authorName = getTextContent(author, 'name');
+          var bookData = {title, url, imgUrl, description, authorName}; 
+          renderBook(containerNode, bookData);
+        }
+      }).catch(function(error) {
+        console.error('could not load reading list ' + listName, error);
+        containerNode.innerHTML = '';
+        var errorMessage = document.createElement('span');
+        errorMessage.innerText = 'Could not load reading list. Please try to refresh the page.';
+        containerNode.appendChild(errorMessage);
+      })
+    };
+
+    fetchList('currently-reading', readingListContainer);
+    fetchList('read', readListContainer);
+
+  }
+
   drawParticles();
   listenToThemeSwitch();
   attachFullScreenEvents();
   maybeShowProgressBar();
+  maybeFetchReadingList();
 
 
 })(window, document);

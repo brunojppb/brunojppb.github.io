@@ -35,7 +35,9 @@
     margin-top: 16px;
     img {
       width: 70px;
-      height: 100%;
+      min-width: 70px;
+      height: 106px;
+      min-height: 106px;
     }
     .book-data {
       padding-top: 8px;

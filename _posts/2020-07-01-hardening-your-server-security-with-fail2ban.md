@@ -43,6 +43,15 @@ cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
 
 Fail2Ban uses the concept of `jails` to monitor specific services like nginx, ssh, apache and so on. Each jail specifies a configuration for a specific application or service running on your server. By default, the `sshd` jail is active.
 
+## Avoid banning specific IP Addresses
+
+To prevent specific IP addresses of being banned, you can create an allow-list in the `fail2ban.local` file. Go ahead and edit the following line with your IP Addresses using space (and/or comma) as a separator:
+
+```shell
+# allow IP addresses from our woom VPN, dev.woombikes.com server
+ignoreip = 127.0.0.1/8 ::1 YOU_IP_ADDRESS_HERE
+```
+
 ## Activating Fail2Ban
 
 Now that we have Fail2Ban installed and pre-configured by default, lets start the service:
@@ -181,8 +190,11 @@ You can wait the default 10 minutes or you can access from a different IP addres
 
 ```shell
 fail2ban-client set jailname unbanip [IP_ADDRESS_HERE]
-# Here is how it could look like for you:
-fail2ban-client set sshd unbanip 103.1.1.103
+# Here is how it could look like
+# if you want to unban an IP address from the sshd jail
+fail2ban-client set sshd unbanip 1.1.1.1
+# from the recidive jail
+fail2ban-client set recidive unbanip 1.1.1.1
 ```
 
 ## Where to go from here

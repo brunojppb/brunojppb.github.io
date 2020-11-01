@@ -288,11 +288,82 @@
 
   }
 
+  function bindThemeSwitcher() {
+    const moonSvg = document.getElementById('moon-svg')
+    const sat = document.getElementById("satellite");
+    const moon = document.getElementById("moon");
+
+    /** Change the satellite and moon origins so they can orbit
+     * around the right center point */
+    TweenMax.set(sat, {
+      svgOrigin:"299, 299", 
+    });
+
+    TweenMax.set(moon, {
+      svgOrigin:"299, 299", 
+    });
+
+    function orbitMoon() {
+      const satDuration = 30;
+      const moonDuration = 240;
+      const tl = new TimelineMax();
+      
+      tl.add("sat")
+      tl.to(sat, satDuration, {
+        rotation:"+=360",
+        repeat:-1,
+        ease: Power0.easeNone,
+      }, "sat");
+      
+      // start together with the satellite animation
+      tl.to(moon, moonDuration, {
+        rotation: "-=360",
+        repeat: -1,
+        ease: Power0.easeNone,
+      }, "sat")
+      
+      return tl;
+    }
+
+    function bounceOut(el) {
+      const tl = new TimelineMax();
+      const duration = 0.12;
+      tl.add('bounceOut')
+      tl.staggerTo(el, duration, {
+        scaleX:1.1,
+        scaleY: 1.3, 
+      }, "bounceOut");
+      tl.to(el, duration, {
+        x: "-=20%",
+        y: "-=20%",
+      }, "bounceOut");
+      tl.staggerTo(el, duration, {
+        scaleX:0.5,
+        scaleY: 0.7,
+        opacity: 0, 
+        x: "+=50%",
+        y: "+=100%",
+      }, "+=bounceOut");
+      
+    }
+
+    const orbitTl = orbitMoon();
+
+    // TODO: Make this function generic enough
+    // so we can bounce back the light svg as well
+    moonSvg.addEventListener('click', function() {
+      bounceOut(moonSvg);
+      orbitTl.pause();
+    })
+
+  }
+
   drawParticles();
   listenToThemeSwitch();
   attachFullScreenEvents();
   maybeShowProgressBar();
   maybeFetchReadingList();
+  bindThemeSwitcher();
 
 
 })(window, document);

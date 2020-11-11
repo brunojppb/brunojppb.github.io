@@ -48,7 +48,7 @@ Fail2Ban uses the concept of `jails` to monitor specific services like nginx, ss
 To prevent specific IP addresses of being banned, you can create an allow-list in the `fail2ban.local` file. Go ahead and edit the following line with your IP Addresses using space (and/or comma) as a separator:
 
 ```shell
-# allow IP addresses from our woom VPN, dev.woombikes.com server
+# allow IP addresses from your VPN or other servers here
 ignoreip = 127.0.0.1/8 ::1 YOU_IP_ADDRESS_HERE
 ```
 

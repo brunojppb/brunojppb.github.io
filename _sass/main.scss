@@ -74,9 +74,11 @@ body {
   right: 12px;
   width: 30px;
   height: 30px;
+  border: none;
   background-image: url("/assets/images/moon.svg");
   background-position: center;
   background-repeat: no-repeat;
+  background: unset;
   transition: all 0.4s;
   &:hover {
     cursor: pointer;

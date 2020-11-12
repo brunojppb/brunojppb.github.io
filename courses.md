@@ -8,7 +8,7 @@ meta_description: Programming courses that I created and some I share for free.
 <div class="flex-center courses">
 	<h1>Courses</h1>
   <div class="course job-item">
-		<h2><a href="https://www.udemy.com/course/react-para-iniciantes-free/">React para Iniciantes</a></h2>
+		<h2><a href="https://www.udemy.com/course/react-para-iniciantes-free/">React para Iniciantes (Portuguese)</a></h2>
 		<h3>Aprenda fundamentos sólidos do React construindo uma aplicação inteiramente do zero.</h3>
 		<p class="course-desc">
 			Se você sempre quis aprender a criar aplicações web modernas e dinâmicas, o React vai te ajudar a ser 10 vezes mais produtivo. Nesse curso, aprenderemos todos os fundamentos sólidos do React.<br/><br/>

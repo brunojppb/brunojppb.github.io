@@ -1,10 +1,12 @@
 (function(window, document) {
 
-  /** Draw particles animation on website header */
+  /** render a cool particle effect on the website header canvas
+   * It renders at all times, but is only noticeable in dark mode.
+   * It resembles a very active night sky :) */
   var drawParticles = function () {
     window.drawParticles = function(canvas) {
       let ctx;
-      let circles;
+      let circles = [];
       const numCircles = 10;
     
       const resize = (window.resize = function() {
@@ -23,9 +25,8 @@
         return i ? canvas.height : canvas.width;
       };
   
-      let i;
       Circle.prototype.frame = function() {
-        for (i = 0; i < 2; i++) {
+        for (let i = 0; i < 2; i++) {
           if (this.pos[i] > this.getBound(i) - 5) {
             this.v[i] *= -1;
           } else if (this.pos[i] < 10) {
@@ -45,8 +46,6 @@
   
       ctx = canvas.getContext("2d");
       resize();
-  
-      circles = [];
   
       for (let i = 0; i < numCircles; i++) {
         const x = Math.random() * canvas.width;
@@ -177,7 +176,7 @@
   }
 
   /** While reading an article, you will see a progres bar
-   * on top of the window showing how are you are in the article */
+   * on top of the window showing how far you are in the article */
   var maybeShowProgressBar = function() {
     var progressBar = document.getElementById('progress-bar');
     if (!progressBar) return;
@@ -203,9 +202,12 @@
   }
 
   /** Fetch reading list from GoodReads
-   * From a custom worker in Cloudflare (GD doesn't allow CORS) */
+   * From a custom worker in Cloudflare (GoodReads doesn't allow CORS and that is absolutely understandable) 
+   * See: https://www.goodreads.com/api/index#reviews.list */
   var maybeFetchReadingList = function() {
-    if (!('fetch' in window)) return;
+    if (!('fetch' in window)) {
+      return;
+    }
     
     var readingListContainer = document.getElementById('reading-list');
     var readListContainer = document.getElementById('read-list');
@@ -215,21 +217,21 @@
     var renderBook = function(container, book) {
       var div = document.createElement('div');
       div.className = 'book-item';
-      // book image
+      
       var img = document.createElement('img');
       img.src = book.imgUrl;
       img.alt = 'book cover from ' + book.title;
       img.className = 'book-img'
       div.appendChild(img);
-      // book data
+      
       var bookDataDiv = document.createElement('div');
       bookDataDiv.className = 'book-data'
+      
       var bookTitleLink = document.createElement('a');
       bookTitleLink.href = book.url
       bookTitleLink.innerText = book.title
       bookDataDiv.appendChild(bookTitleLink);
-      
-      // author
+
       var authorName = document.createElement('span');
       authorName.innerText = 'By ' + book.authorName;
       bookDataDiv.appendChild(authorName);
@@ -268,7 +270,7 @@
         console.error('could not load reading list ' + listName, error);
         containerNode.innerHTML = '';
         var errorMessage = document.createElement('span');
-        errorMessage.innerText = 'Could not load reading list. Please try to refresh the page.';
+        errorMessage.innerText = 'Could not load the books. Please try to refresh the page.';
         containerNode.appendChild(errorMessage);
       })
     };

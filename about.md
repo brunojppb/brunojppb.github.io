@@ -6,7 +6,7 @@ meta_description: I am a passionate Software Engineer who loves crafting solutio
 
 <div class="flex-center about-me">
 	<h1>About</h1>
-	<img src="/assets/images/bpaulino.jpg" class="me"/>
+	<img src="/assets/images/bpaulino.jpg" class="me" alt="Bruno Paulino smiling"/>
 	<p>Hi There 👋,<br/>Bruno Paulino here.</p>
     <p>
         I am originally from Brazil and currently based in Vienna, Austria.<br/>

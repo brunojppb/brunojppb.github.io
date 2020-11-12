@@ -19,7 +19,7 @@ meta_image: /assets/images/woombikes.jpg
                     On top of that, I deeply care about soft skills (commonly underrated among the software community), mainly focusing on good communication, making sure I can pass the message in an understandable and friendly way, specially for Non-tech-savvy users.
                 </p>
             </div>
-            <img src="/assets/images/woombikes.jpg" alt="Bruno placing a helmet on a little lady to go for a bike ride"/>
+            <img src="/assets/images/woombikes.jpg" alt="Bruno placing a helmet on a little lady ready for an adventure on her bike"/>
         </div>
 
         <div class="job-item">
@@ -68,7 +68,7 @@ meta_image: /assets/images/woombikes.jpg
                     The backend services are developed with Ruby and Scala.
                 </p>
             </div>
-            <img src="/assets/images/pmpb.jpg" alt="Bruno and hist colegue using the Police uniform in a celebration in Brazil"/>
+            <img src="/assets/images/pmpb.jpg" alt="Bruno and his colleague using the Police uniform for a celebration in Brazil"/>
         </div>
 
         

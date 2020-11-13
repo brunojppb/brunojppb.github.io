@@ -50,3 +50,14 @@ input {
   height: 30px;
   padding-left: 5px;
 }
+
+.theme-switcher-new {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  width: 200px;
+  height: 200px;
+  &:hover {
+    cursor: pointer;
+  }
+}

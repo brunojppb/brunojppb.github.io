@@ -30,7 +30,7 @@ apt install fail2ban
 
 Fail2Ban comes with a pretty solid default configuration, but since our goal is to customize it to our needs, they recommend us to copy the default configuration file with the `.local` extension. The reason for this is that if we update Fail2Ban, the original configuration file will get changed and we will lose our custom configuration.
 
-## Put those bad guys in jail
+## Put those bad actors in jail
 
 The configuration files are located at `/etc/fail2ban`, so lets go ahead and create a local copy of those files:
 
@@ -41,7 +41,7 @@ cp /etc/fail2ban/fail2ban.conf /etc/fail2ban/fail2ban.local
 cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
 ```
 
-Fail2Ban uses the concept of `jails` to monitor specific services like nginx, ssh, apache and so on. Each jail specifies a configuration for a specific application or service running on your server. By default, the `sshd` jail is active.
+Fail2Ban uses the concept of `jails` to monitor specific services like nginx, ssh, apache and even your custom application logs like Node.js or Java apps. Each jail specifies a configuration for a specific application or service running on your server. By default, the `sshd` jail is active.
 
 ## Avoid banning specific IP Addresses
 
@@ -60,7 +60,7 @@ Now that we have Fail2Ban installed and pre-configured by default, lets start th
 systemctl start fail2ban
 ```
 
-As soon as you start Fail2Ban, you might already see some bad guys blocked. First lets check which jails are active with the following command:
+As soon as you start Fail2Ban, you might already see some bad actors blocked. First lets check which jails are active with the following command:
 
 ```shell
 fail2ban-client status
@@ -164,7 +164,7 @@ Status
 `- Jail list:	recidive, sshd
 ```
 
-Now that `recidive` is active, You can check if some IP addresses were banned for the whole week:
+Now that `recidive` is active, you can check if some IP addresses were banned for the whole week:
 
 ```shell
 fail2ban-client status recidive

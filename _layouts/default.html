@@ -53,7 +53,8 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
     <title>{{ page.title }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/css/styles.css?{{site.time | date: '%s'}}">
+    <!-- Timestamp from jekyll build to make sure the latest version is loaded correctly on our lovely readers' clients -->
+    <link rel="stylesheet" href="/assets/css/styles.css?v={{site.time | date: '%s'}}">
   </head>
   <body>
 
@@ -85,7 +86,7 @@
 
 
     <!-- Minimal Blog scripts -->
-    <script src="/assets/js/blog.js"></script>
+    <script src="/assets/js/blog.js?v={{site.time | date: '%s'}}"></script>
 
     <!-- Privacy-first Analytics -->
     <script data-goatcounter="https://bpaulino.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>

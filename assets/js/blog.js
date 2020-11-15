@@ -134,13 +134,13 @@
    * Also uses the default theme from the user on the first visit 
    * and persists it on local storage */
   const listenToThemeSwitch = function () {
-    const LIGHT_MODE_ON = 'LIGHT_MODE_ON';
+    const LIGHT_MODE_STATE = 'LIGHT_MODE_ON';
+    const LIGHT_MODE_STYLE_CLASS = 'light-mode';
     const ON = '1';
     const OFF = '2';
-    const LIGHT_MODE_CLASS = 'light-mode';
     const isLightModeOn = function() {
       try {
-        const switcherState = localStorage.getItem(LIGHT_MODE_ON);
+        const switcherState = window.localStorage.getItem(LIGHT_MODE_STATE);
         if (switcherState === null) {
           return window.matchMedia('(prefers-color-scheme: light)').matches;
         }
@@ -154,23 +154,23 @@
     const setLightMode = function(isOn) {
       try {
         const switcherState = isOn ? ON : OFF;
-        localStorage.setItem(LIGHT_MODE_ON, switcherState);
+        window.localStorage.setItem(LIGHT_MODE_STATE, switcherState);
       } catch (e) {
-        console.warn('could not store light mode config', e);
+        console.error('could not store light mode config on local storage', e);
       }
     };
 
     /** switch light-mode switcher button background image based on current state */
     const setSwitcherBackground = function(isOn) {
-      const bgUrl = isOn ? themeSwitcherNode.dataset.moon : themeSwitcherNode.dataset.sun;
+      const bgUrl = isOn ? themeSwitcherNode.dataset.darkAsset : themeSwitcherNode.dataset.lightAsset;
       themeSwitcherNode.style.backgroundImage = 'url(' + bgUrl + ')';
     };
 
 
     const themeSwitcherNode = document.getElementById("theme-switcher");
     themeSwitcherNode.addEventListener('click', function() {
-      document.documentElement.classList.toggle(LIGHT_MODE_CLASS);
-      const isOn = document.documentElement.classList.contains(LIGHT_MODE_CLASS);
+      document.documentElement.classList.toggle(LIGHT_MODE_STYLE_CLASS);
+      const isOn = document.documentElement.classList.contains(LIGHT_MODE_STYLE_CLASS);
       setLightMode(isOn);
       setSwitcherBackground(isOn);
     });
@@ -179,11 +179,11 @@
     const isOn = isLightModeOn();
     setSwitcherBackground(isOn);
     if (isOn) {
-      document.documentElement.classList.add(LIGHT_MODE_CLASS);
+      document.documentElement.classList.add(LIGHT_MODE_STYLE_CLASS);
     }
   }
 
-  /** While reading an article, you will see a progres bar
+  /** While reading an article, you will see a progress bar
    * on top of the window showing how far you are in the article */
   const maybeShowProgressBar = function() {
     const progressBar = document.getElementById('progress-bar');
@@ -251,7 +251,7 @@
     /** Fetch reading list from GoodReads */
     const fetchList = function(listName, containerNode) {
       const currentlyReadingUrl = 'https://reading-list.bpaulino0.workers.dev/?readingList=' + listName;
-      fetch(currentlyReadingUrl)
+      window.fetch(currentlyReadingUrl)
       .then(function(response) {
         return response.text();
       })

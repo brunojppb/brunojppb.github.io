@@ -58,7 +58,7 @@ systemctl restart ssh.service
 
 We could see that the MaxStartups change instantly fixed the issue. Our builds were flying again with zero connection drops. The new settings allowed us greater leeway to connect to our server simultaneously, reducing the risk of dropped connections.
 
-## Defaults can take you only so far
+## Defaults can only take you so far
 
 The default settings were more than enough for us to start using [Gitlab with its Omnibus package](https://docs.gitlab.com/omnibus/). I didn't even know about those SSH settings to begin with, but once you start hitting scaling problems, there is usually a escape hatch that can help you to leverage the same resources to a much greater usage scenario.
 

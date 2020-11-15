@@ -19,7 +19,7 @@
         this.pos = [x, y];
         this.r = 1.5 * Math.random() + 1;
         this.c = "#F9F6F7";
-        // The vector data where we want to point the particle to
+        // The coordinates where we want to point the particle to
         this.v = [(Math.random() - 0.5) * 0.3, (Math.random() - 0.5) * 0.3];
       };
   

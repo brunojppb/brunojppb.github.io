@@ -26,14 +26,17 @@
     <meta name="description" content="{{ meta_desc }}">
     <meta name="keywords" content="{{ keywords }}">
     <meta name="theme-color" content="#21364B">
-    <!-- Open Graph tags -->
+    
+    <!-- Open Graph meta properties for beautifully rendering link previews on social -->
+    <!-- See: https://ogp.me/ -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="{{ absolute_url }}" />
     <meta property="og:title" content="{{ page.title }}" />
     <meta property="og:description" content="{{ meta_desc }}" />
     <meta property="og:image" content="{{ meta_image }}" />
 
-    <!-- twitter card tags additive with the og: tags -->
+    <!-- twitter card tags additive to og: meta properties -->
+    <!-- See: https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/markup -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:domain" value="{{ domain }}" />
     <meta name="twitter:title" value="{{ page.title }}" />

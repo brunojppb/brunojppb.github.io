@@ -219,6 +219,7 @@
     
     const readingListContainer = document.getElementById('reading-list');
     const readListContainer = document.getElementById('read-list');
+    // We are not at the reading page. skip it.
     if (!readingListContainer || !readListContainer) return;
 
     /** Render each book item individually */

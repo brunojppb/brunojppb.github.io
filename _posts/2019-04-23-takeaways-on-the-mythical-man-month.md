@@ -7,11 +7,12 @@ keywords: mythical man month,book,reading,takeways,learning
 meta_description: Important points I would like to point out from Brooks' still up2date famous book.
 ---
 
-After finishing up reading the classic book **[The Mythical Man-Month](https://en.wikipedia.org/wiki/The_Mythical_Man-Month)** from Frederick Brooks, it was astonishing to realise that most of his ideas are still sharp today in the field of software engineering. Apart from very few topics that somehow changed nowadays, I would like to point out my three favorites topics from his essays that are still relevant today and I personally have experienced in my career.
+After finishing up reading the classic book **[The Mythical Man-Month](https://en.wikipedia.org/wiki/The_Mythical_Man-Month)** from Frederick Brooks, it was astonishing to realize that most of his ideas are still sharp today in the field of software engineering. Apart from very few topics that somehow changed nowadays, I would like to point out my three favorites topics from his essays that are still relevant today and I personally have experienced in my career.
 
 ## Adding manpower to a late project makes it later
 
 Brooks argues that it is generally a bad idea to add more people to a project that is already late. He has some convincing arguments:
+
 - Whenever a new member joins the team, we need to share the existing knowledge, otherwise this person cannot contribute. It has a side effect that must be carefully considered: The once active and productive developer, has to stop her development tasks to take a training role, delaying the project even more.
 - Whenever the team grows, the communication overhead also increases, meaning that new channels of communication will be created and the team will have to keep up.
 
@@ -31,4 +32,4 @@ I personally have experienced that. Once working on an iOS app, I had by my side
 
 There are many other great arguments in the book where Brooks talks extensively, but at the end of the reading what is clear is that communication is the key for a project success. You might have the 10x rockstar developer, but if they cannot communicate well with your team, the project is likely to fail.
 
-This book has suvived the toughest of all challenges: **Time**. It was originally published in 1975 and at the time of this writing it is still rock solid. This is a must-read for anyone interested in software engineering and project success.
+This book has survived the toughest of all challenges: **Time**. It was originally published in 1975 and at the time of this writing it is still rock solid. This is a must-read for anyone interested in software engineering and project success.

@@ -44,14 +44,15 @@ But what are the main advantages of Gatsby anyway? What really made us to look a
 
 If you never heard of [React](https://reactjs.org/) before, it is the state-of-the-art of frontend libraries. Writing frontend with React requires a different approach, but it definitely pays off. It lets you break your application into reusable components, which makes it infinitely simpler to reason about it and debug.
 
-### React hooks.
+### React hooks
 
 Even though Gatsby generates static pages, you can still benefit from React state management. hooks like `useState` and `useContext` are still there to help us have a more dynamic page.
+
 ### GraphQL included
 
 Using the built-in GraphQL API, you can pull data from a remote datasource, process static files from your local repository, like lets say images and transform them to alternative resolutions for different device sizes and so on.
 
-### Development and Production configuration out-of-the-box.
+### Development and Production configuration out-of-the-box
 
 You don't have to hassle around Webpack configurations, pipelines or anything like this. The basics, which is already what you need to start, is already there, properly configured and ready to row with the single command `yarn develop` during development and  `yarn build` to deploy a new build.
 

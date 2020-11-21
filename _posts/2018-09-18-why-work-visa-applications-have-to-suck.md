@@ -37,5 +37,5 @@ From the economic standpoint, the state just wasted 5 months of my tax contribut
 
 I got my new visa 2 weeks ago and I don't regret accepting the new job, but I don't think I would do the visa application again. If I have to go through this whole visa process once more, I would rather move back to my country and work remote.
 
-Of course I am talking about my experience in Austria. For other countries it will must probably be different. What I think is important to consider is the potential of attracting skilled workers (which means, good tax payers) that some countries are just ignoring and with remote work on the rise, people don't even have to think about this whole visa trouble. 
-At the end, everyone loses.  
+Of course I am talking about my experience in Austria. For other countries it will must probably be different. What I think is important to consider is the potential of attracting skilled workers (which means, good tax payers) that some countries are just ignoring and with remote work on the rise, people don't even have to think about this whole visa trouble.
+At the end, everyone loses.

@@ -14,11 +14,14 @@ I am currently using [Github Pages](https://pages.github.com/) to host my blog a
 ## But how does a Github Action work anyway?
 Github Actions is a way to perform tasks automatically for you. To give you an example, I will use my blog workflow.  
 It all starts when I want to write a new post. I just create a new markdown file, write down whatever is on my head and save it. After this whole process, I need a way to transform my text in a website. Jekyll is doing the heavy-lifting for me, so I just go to my terminal and type:
+
 ```shell
 # This command will generate my entire website and all its dependencies
 jekyll build
 ```
+
 After generating all the necessary files, I need to upload it somewhere. In this case, I just have to commit my changes to a specific branch called **gh-pages** and Github will serve my site on the web. For doing that, I usually perform the following commands in a bash script:
+
 ```shell
 # This is the folder Jekyll generates with my website. Lets just open it
 cd _site
@@ -46,6 +49,7 @@ It all starts with a folder on your repository called `.github/workflows`.
 inside of this folder, create a file called `deploy-workflow.yml` with the content below. Each line will be explained with a comment:
 
 ### deploy-workflow.yml
+
 ```yaml
 # This is the name of our workflow.
 # Github will show it on its Website UI
@@ -85,10 +89,12 @@ jobs:
 ```
 
 Now lets create our custom action. [Github Actions are divided in 2 types](https://help.github.com/en/articles/about-actions#types-of-github-actions):
+
 - Docker container
 - Javascript
 
 We are running our action using a Docker Container. Using Docker, we make sure the environment where our scripts are running will be the same, no matter what happens to the Github environment. So, lets dig deeper and create our `actions` folder under `.github`.
+
 ```shell
 # build-dist-site will be the folder for holding
 # our action configuration (Dockerfile, scripts and Metadata)
@@ -96,11 +102,13 @@ mkdir -p .github/actions/build-dist-site
 ``` 
   
 Under `.github/actions/build-dist-site` lets create 3 files:
+
 - `action.yml`: It will hold the metadata of our action
 - `Dockerfile:` Will specify our Docker image to run Jekyll in a container
 - `entrypoint.sh:` Will have our custom scripts to generate and deploy our website update
 
 ### Dockerfile
+
 ```dockerfile
 # Our Docker image will be based on ruby:2-slim
 # it is a very light docker image.
@@ -135,7 +143,9 @@ ENTRYPOINT ["sh", "/entrypoint.sh"]
 ```
 
 Now that we have our Dockerfile ready, we need to tell Github to use it. That is why we need the `action.yml` file.
+
 ### action.yml
+
 ```yaml
 # Ok, here the keys are pretty much self explanatory :)
 name: 'Deploy new version'
@@ -151,6 +161,7 @@ The `action.yml` file tells Github what to do. In this case, just tell it to use
 Now we just need our `entrypoint.sh` script to execute our website generation and deployment. Lets get our hands dirty with a bit of bash script:
 
 ### entrypoint.sh
+
 ```shell
 #!/bin/bash
 # Exit immediately if a pipeline returns a non-zero status.
@@ -233,4 +244,4 @@ Ok, now our automation work was fully done. As a cherry on top, you can also add
 That will render a nice image by Github on your repository page with the current action status.
 ![Github Actions Badge](/assets/images/github_action_badge.jpg)
 
-Now I can enjoy my time spent building and deploying my website doing something else like playing videogames 🎮 or drawing 🎨. Here is the [open-source repository of my blog if you want to take a look.](https://github.com/brunojppb/brunojppb.github.io)
+Now I can enjoy my time spent building and deploying my website doing something else like playing video games 🎮 or drawing 🎨. Here is the [open-source repository of my blog if you want to take a look.](https://github.com/brunojppb/brunojppb.github.io)

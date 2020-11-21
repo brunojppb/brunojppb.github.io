@@ -9,6 +9,25 @@
     text-align: left;
     box-sizing: border-box;
     line-height: 1.6;
+
+    ul {
+      font-weight: normal;
+      padding-left: 24px;
+      li + li {
+        margin-top: 8px;
+      }
+    }
+
+    a {
+      transition: background-color 0.3s ease, 
+                  color 0.3s ease;
+      border-radius: 4px;
+      &:hover {
+        background-color: var(--text-color);
+        color: var(--secondary-color);
+      }
+
+    }
   }
 
   .legend-center {

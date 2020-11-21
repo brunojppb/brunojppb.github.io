@@ -66,7 +66,7 @@ As soon as you start Fail2Ban, you might already see some bad actors blocked. Fi
 fail2ban-client status
 # You should see something like this as output:
 Status
-|- Number of jail:	2
+|- Number of jail:	1
 `- Jail list: sshd
 ```
 

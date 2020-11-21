@@ -17,11 +17,8 @@ a {
     font-size: 18px;
   }
 
-  ul {
-    li {
-      font-size: 18px;
-      font-weight: lighter;
-    }
+  ul li {
+    font-size: 18px;
   }
 }
 
@@ -32,9 +29,8 @@ a {
   }
 
   ul {
-    li {
+    ul li {
       font-size: 16px;
-      font-weight: lighter;
     }
   }
 }

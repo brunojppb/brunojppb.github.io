@@ -46,7 +46,7 @@ On the second half of the code, we create a new Docker image based on `nginx:1.1
 # To support react-router, we must configure nginx
 # to route the user to the index.html file for all initial requests
 # e.g. landing on /users/1 should render index.html
-# then React takes care of mouting the correct routes
+# then React takes care of mounting the correct routes
 server {
 
   listen 80;

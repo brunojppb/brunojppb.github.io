@@ -13,7 +13,7 @@ While creating mobile applications, one of the the main features that we can exp
   Are stored on the phone and there is no need for internet connection.
 
  - Push Notifications:
-  We need to implement a service in our backend to send those messages to the Apple Push Notification Sevice(APNS), which will send the notification to the client's device.
+  We need to implement a service in our backend to send those messages to the Apple Push Notification Service(APNS), which will send the notification to the client's device.
 
 
  In my last iOS App, I needed this feature working well with my backend, a Rails application, and I feel like I will have to read those steps again in the future to refresh my memory. The focus here is just about Push Notifications. I will write a post about Local Notifications.
@@ -52,6 +52,7 @@ func application(application: UIApplication, didFinishLaunchingWithOptions launc
    return true
  }
 ```
+
  As soon as our application starts, it will popup an alert and ask the user if he allows us to send notifications. For now on, we need to get the device token and send it to out backend.
 
  ```swift
@@ -74,25 +75,25 @@ func application(application: UIApplication, didFailToRegisterForRemoteNotificat
 }
  ```
 
- - **Caution**: We have to notice that the device token can be changed at any time. Apple can assign a new token at any moment, so we should always check if the device token is updated in our backend. I will show you how to get this token, but how to update it in your backend is up to you.
+ **Caution**: We have to notice that the device token can be changed at any time. Apple can assign a new token at any moment, so we should always check if the device token is updated in our backend. I will show you how to get this token, but how to update it in your backend is up to you.
 
-# #2 Step: Request SSL Certificates
+## #2 Step: Request SSL Certificates
 
 We have to create a App ID for our iOS App. Go to the [Apple Dev Portal - Apple App ID Page](https://developer.apple.com/account/ios/identifiers/bundle/bundleList.action)
 
  - Alert: We have to create an "Explicit App ID" because anything different than that will not allow us to use the Push Notification Service
 
-When filling the and remember to check "Push Notifications" in the "App Sevices" area. Get done with the form, go to the App ID list and select the App ID that was just created and click **edit** to generate the SSL Certificates.
+When filling the and remember to check "Push Notifications" in the "App Services" area. Get done with the form, go to the App ID list and select the App ID that was just created and click **edit** to generate the SSL Certificates.
 
 ![Certificate generation](/assets/images/posts/certificate_generation.jpg)
 
 Those SSL Certificates will be used in our Backend to authenticate with _Apple Push Notification Service(APNS)_. Click in **create certificate** for both **Development SSL Certificate** and **Production SSL Certificate** because we will need a certificate for each environment(Development and Production). Follow the creation instructions for each certificate and download both the **Development SSL Certificate** and **Production SSL Certificate**. After download it, double click each one to add them to the Keychain Access.
 
-# #3 Step: Export SSL Certificates from Keychain
+## #3 Step: Export SSL Certificates from Keychain
 
 Now that we have our certificates, we have to convert them in a format the is compatible with our backend. We ca do it following the steps bellow:
 
- - 1: Open the Keychan;
+ - 1: Open the Keychain;
  - 2: Select "Certificates"
  - 3: Right click over the certificate where you see something like this: **Apple Development Push Services: com.yourname.appname** and click on **Export**
  - 4: On the dialog box, make sure to select **Personal Information Exchange(.p12)** format before save.
@@ -113,7 +114,7 @@ $ openssl pkcs12 -in development.p12 -out development.pem -nodes -clcerts
 $ openssl pkcs12 -in production.p12 -out production.pem -nodes -clcerts
 ```
 
-# #5 Step: Install the APNS gem
+## #5 Step: Install the APNS gem
 
 Assuming we already have our Rails backend with a Device model with the token string, we are going to send out our notifications from the server to the APNS in out controller. In this example, I will simulate the creating of a blog post that will send a notification to the users that are using the blog app for iOS.
 
@@ -124,13 +125,14 @@ gem "apns"
 ```
 
 Now, in the terminal, execute:
+
 ```shell
 $ bundle install
 ```
 
-# #6 Step: Setup Environment (Development and Production)
+## #6 Step: Setup Environment (Development and Production)
 
-While our iOS App is still in development, we need to send notifications to the APNS host: _gateway.sandbox.push.apple.com_ using the **development.pem** certificate. However, after submiting the App to the App Store, we need to send push notifications to the APNS host: _gateway.push.apple.com_ using the **production.pem certiticate**.
+While our iOS App is still in development, we need to send notifications to the APNS host: _gateway.sandbox.push.apple.com_ using the **development.pem** certificate. However, after submitting the App to the App Store, we need to send push notifications to the APNS host: _gateway.push.apple.com_ using the **production.pem certificate**.
 
 Copy and paste the **development.pem** and **production.pem** files in your Rails app folder. fell free to put it wherever you want, just make sure to know the path for those files. Create a file called _config/initializers/apns.rb_ and put this code:
 
@@ -149,7 +151,7 @@ if Rails.env.production?
 end
 ```
 
-# #7 Step: Send Push Notifications
+## #7 Step: Send Push Notifications
 
 Now that we have our environment already set up, we can easily send out the notifications:
 ```ruby
@@ -174,7 +176,7 @@ class PostsController < ApplicationController
 end
 ```
 
-# Last Step: Receive the Notifications on the iOS App
+#@ Last Step: Receive the Notifications on the iOS App
 
 Remember that we need an Apple Device to test this feature. We just need to implement a delegate method in the AppDelegate.swift
 ```swift
@@ -186,4 +188,4 @@ func application(application: UIApplication, didReceiveRemoteNotification userIn
 ```
 # We are done!
 
-Remember that the Apple Push Notification Service does not guarantee the delivery of those notifications, which means that you can not relly on those notifications. the [Apple Docs](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Introduction.html) is pretty cool. You should give it a shot.
+Remember that the Apple Push Notification Service does not guarantee the delivery of those notifications, which means that you can not really on those notifications. the [Apple Docs](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Introduction.html) is pretty cool. You should give it a shot.

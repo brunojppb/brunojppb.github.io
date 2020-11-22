@@ -4,7 +4,8 @@ author: Bruno Paulino
 title: Automating your work with Github Actions
 permalink: entries/10-automating-your-work-with-github-actions
 keywords: github,actions,automation,workflow,jekyll,git,blog,programming
-meta_description: How to automate your workflow using Github Actions. In this case, my blog deployment :-)
+meta_description: How to automate your workflow using Github Actions. In this case, my blog deployment.
+meta_image: /assets/images/posts/2019-09-06-automating-your-work-with-github-actions.jpg
 ---
 
 I have finally joined the [Github Actions](https://github.com/features/actions) beta program this week and figured why not play with it for a bit and see what I can do. So my first idea was to automate the deployment process of my blog, this one you are currently reading. I am currently using [Jekyll](https://jekyllrb.com/) as my static site generator. It works flawless for what I need. I just write whatever I want using [Markdown](https://daringfireball.net/projects/markdown/) and Jekyll digests everything inside my source folder and spits out HTML, CSS and JS files in a **"ready-to-publish"** folder where I can just upload to the cloud.

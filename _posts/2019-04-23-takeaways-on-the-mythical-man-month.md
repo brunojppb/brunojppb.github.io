@@ -4,7 +4,8 @@ author: Bruno Paulino
 title: Takeaways on The Mythical Man-Month book
 permalink: entries/9-mythical-man-month
 keywords: mythical man month,book,reading,takeways,learning
-meta_description: Important points I would like to point out from Brooks' still up2date famous book.
+meta_description: Important points I would like to point out from Brooks' never old and famous book.
+meta_image: /assets/images/posts/2019-04-23-takeaways-on-the-mythical-man-month.jpg
 ---
 
 After finishing up reading the classic book **[The Mythical Man-Month](https://en.wikipedia.org/wiki/The_Mythical_Man-Month)** from Frederick Brooks, it was astonishing to realize that most of his ideas are still sharp today in the field of software engineering. Apart from very few topics that somehow changed nowadays, I would like to point out my three favorites topics from his essays that are still relevant today and I personally have experienced in my career.

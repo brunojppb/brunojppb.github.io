@@ -5,7 +5,7 @@ title: Rapid Prototyping with GatsbyJS
 permalink: entries/11-rapid-prototyping-with-gatsby-js
 keywords: react,reactjs,gatsbyjs,website,dev,programming
 meta_description: Learn how to rapid prototype a website with the most modern Javascript frameworks out there.
-meta_image: /assets/images/rapid-prototyping-with-gatsby.jpg
+meta_image: /assets/images/posts/rapid-prototyping-with-gatsby.jpg
 ---
 
 On February 17th, I [gave a talk at the React Vienna Meetup](https://www.meetup.com/ReactVienna/events/268478297/) about this topic and I thought writing a blogpost about could benefit some folks that either couldn't make it or are living somewhere else around the globe. You can find my slides [here.](https://bpaulino.com/rapid-prototyping-gatsby-js/)  

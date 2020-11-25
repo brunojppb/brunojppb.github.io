@@ -22,7 +22,7 @@ Over the years, I started to learn about DevOps and incrementally adopted it whe
 
 ## Starting with Continuous Integration
 
-To start things off, you want to make your deployment process as predictable and as reproducible as possible. Which means that you have to make sure the work done by a developer can be built, tested and deployed to a safe environment, only then it can be shipped to production. This is called Continuous Integration (CD). Once you define and validate your integration steps for your application stack, be it Java, Node.js or even mobile apps, you must reproduce those steps in code using version control, better yet if you can make this a part of your application repository. As an example, those steps could look like this:
+To start things off, you want to make your deployment process as predictable and as reproducible as possible. Which means that you have to make sure the work done by a developer can be built, tested and deployed to a safe environment, only then it can be shipped to production. This is called Continuous Integration (CI). Once you define and validate your integration steps for your application stack, be it Java, Node.js or even mobile apps, you must reproduce those steps in code using version control, better yet if you can make this a part of your application repository. As an example, those steps could look like this:
 
 - Code is committed by an engineer in a feature branch
 - A build of the application is triggered. This build is technically production-grade, which means that it has minimal or no difference between development and production, mainly configuration differences (e.g. a sandbox payment gateway where fake payments can be issued), preferably configured via environment variables
@@ -55,7 +55,7 @@ Once you are confident enough with your first scripts, make it executable from a
 
 ## Wrapping up
 
-DevOps is a very broad topic and we only have covered a very shallow surface here, so there is much more to learn and explore. If you are an engineer and you let the "Ops team handle it", I ask you to look at it differently. You don’t have to become a DevOps specialist, but if you manage to include DevOps on your tool belt, you and your team will be much better off.
+DevOps is a very broad topic and we have only covered a very shallow surface here, so there is much more to learn and explore. If you are an engineer and you let the "Ops team handle it", I ask you to look at it differently. You don’t have to become a DevOps specialist, but if you manage to include DevOps on your tool belt, you and your team will be much better off.
 
 There is also a very interesting chapter in the book where specific actions can be taken by managers so software delivery is treated as a "first-class citizen" across your organization. Some actions that I find very interesting and I have personally seen it working:
 

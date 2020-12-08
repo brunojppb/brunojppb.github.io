@@ -94,11 +94,11 @@ I have been following those principles for a long time and it actually became qu
 
 Sometimes your ticket will still leave room for questions and clarifications, and that is fine too. As long as your ticket was well prepared, even those follow-up questions will be more meaningful and complete, leading to less frustration and a more fluid communication path with your team.
 
-I believe by now you you have the superpowers to create bulletproof tickets 🦸🏼‍♀️. Here is the complete ticket we created during this blogpost:
+I believe by now you have the superpowers to create bulletproof tickets 🦸🏼‍♀️. Here is the complete ticket we created during this blogpost:
 
 > **Subject**
 >
-> Product URL breaks after updating product version product reference.
+> Product URL breaks after updating product version reference.
 >
 > **Problem**
 >
@@ -108,7 +108,7 @@ I believe by now you you have the superpowers to create bulletproof tickets 🦸
 >
 > - The customer must have a stable URL for any published product
 > - It should never change for the same product in the eyes of the customer
-> - With an immutable URL none of our marketing campaigns running on our Ad platforms would stop working.
+> - With an immutable URL, none of our marketing campaigns running on our Ad platforms would stop working.
 >
 > **How to Reproduce**
 >

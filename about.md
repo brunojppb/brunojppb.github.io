@@ -2,6 +2,7 @@
 layout: default
 title: About
 meta_description: I am a passionate Software Engineer who loves crafting solutions that can help ease our lives and make it more fun.
+meta_image: /assets/images/about_cover.jpg
 ---
 
 <div class="flex-center about-me">

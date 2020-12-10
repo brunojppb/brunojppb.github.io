@@ -3,7 +3,7 @@ layout: default
 title: Work
 keywords: experience,work,companies,countries
 meta_description: Some of my work experiences in many countries and different companies.
-meta_image: /assets/images/woombikes.jpg
+meta_image: /assets/images/work_cover.jpg
 ---
 
 <div class="work">

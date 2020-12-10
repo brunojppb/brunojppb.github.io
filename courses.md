@@ -3,6 +3,7 @@ layout: default
 title: Courses
 keywords: courses,cursos,programming,programação,ruby,rails,web,html,javascript
 meta_description: Programming courses that I created and some I share for free.
+meta_image: /assets/images/courses_cover.jpg
 ---
 
 <div class="flex-center courses">

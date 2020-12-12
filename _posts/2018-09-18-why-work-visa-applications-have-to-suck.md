@@ -26,12 +26,12 @@ After that decision, some unexpected things happened. I am writing this so if yo
 
 It took 5 freaking months to receive the final decision. I was unemployed for this whole period, even though I had a job offer, an working visa, was living in the country for almost 2 years and the company had a letter from the AMS (Austrian labor office) stating they couldn't find any professional available in the local market. What would have happened if I didn't have any savings? I cannot even imagine.
 
-Some things you should consider before deciding to move:
-
-- You cannot work for the new company until the visa is ready. Actually, if you are in the country already, you cannot work at all until you have the visa;
-- If you don't have a tourist visa, you are fucked. As a Brazilian, I am lucky enough to have a tourist period of 3 months to stay without having to apply for it. And also as I applied for the new visa before the former company deregistered me, I could stay and wait for the new visa even after the 3 months period expired. Depending on your passport, you might have to leave the country immediately.
-- As soon as I left my former job, I was deregistered from my health insurance. Although I wanted to keep paying for it, they didn't allow me. Long story short, my wife and I were left alone without insurance. We had to use travel insurance during this period.
-- Although I already provided them proof of my skills on my first visa application, they required me to prove everything again. I had to take the TOEFL test and prove once again that I had a professional level of English.
+>Some things you should consider before deciding to move:
+>
+> - You cannot work for the new company until the visa is ready. Actually, if you are in the country already, you cannot work at all until you have the visa.
+> - If you don't have a tourist visa, you are f\*cked. As a Brazilian, I am lucky enough to have a tourist period of 3 months to stay without having to apply for it. And also as I applied for the new visa before the former company deregistered me, I could stay and wait for the new visa even after the 3 months period expired. Depending on your passport, you might have to leave the country immediately.
+> - As soon as I left my former job, I was deregistered from my health insurance. Although I wanted to keep  paying for it, they didn't allow me. Long story short, my wife and I were left alone without insurance. We  had to use travel insurance during this period.
+> - Although I already provided them proof of my skills on my first visa application, they required me to prove everything again. I had to take the TOEFL test and prove once again that I had a professional level of English.
 
 From the economic standpoint, the state just wasted 5 months of my tax contributions where I could have been paying happily (taxes are quite high in Austria compared to Brazil). The state could also have lost a good contributor, since I could have changed my mind, decided not to continue with the visa application and move back to my country.
 

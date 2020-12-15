@@ -21,7 +21,7 @@ Here is the live implementation of our modal component we will build during this
      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
    ></iframe>
 
-For cases like this, you must probably want to watch for clicks or taps outside the main view, in this case, the modal, so you can take the correct action of closing it. But how could you do that in [React?](https://reactjs.org/) one way would be to implement a global click handler in the component, something like this:
+For cases like this, you most probably want to watch for clicks or taps outside the main view, in this case, the modal, so you can take the correct action of closing it. But how could you do that in [React?](https://reactjs.org/) one way would be to implement a global click handler in the component, something like this:
 
 ```jsx
 import React, { useRef, useEffect } from "react";

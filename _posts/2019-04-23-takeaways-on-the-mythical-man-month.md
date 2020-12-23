@@ -23,7 +23,7 @@ During some development tasks, we usually know that we can never rush it, specia
 
 Brooks makes a good analogy with cooking. He suggests that if you want to have proper meal with nice taste, good appearance and nicely done, you have to give the necessary time for the chef to prepare. Otherwise you will end up with some disastrous food, burned in one side and raw in the other. That analogy fits really well for certain software development tasks. We must understand what is critical to the system, putting more thought on its design and implementation. Rushing its completion can cause a lot of issues in the long-term of the project.
 
-## Small Sharp Teams
+## Small, Sharp Teams
 
 Brooks really nails it down with this analogy. He uses a surgical team of doctors to point out how a small and multidisciplinary team makes progress more effectively.
 

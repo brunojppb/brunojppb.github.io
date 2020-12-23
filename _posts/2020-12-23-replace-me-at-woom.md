@@ -18,11 +18,11 @@ I'm writing this blogpost to express my gratitude for the amazing woom team and 
 
 woom is still a young company, but it has been quite successful and growing fast like a rocket since it was founded by [Marcus Ihlenfeld](https://www.linkedin.com/in/marcus-ihlenfeld-a13b433/) and [Christian Bezdeka](https://www.linkedin.com/in/bezdeka/) in 2013.
 
-Whenever I get the chance to talk about [woom](https://woombikes.com/we-are-woom), especially for friends who have kids, I tell them we make _"Lamborghini"_ bikes for kids. I'm not talking about luxury or pricing here, I am talking about an amazing design and quality which makes our bikes insanely good. Our mission is to see as many children as possible loving to ride their bikes, and for that to happen, we have to make damn good bikes. And to be completely honest, we do a pretty awesome job. Our motto is **"Think like a kid, act like a Pro."**
+Whenever I get the chance to talk about [woom](https://woombikes.com/we-are-woom), especially for friends who have kids, I tell them we make _"Lamborghini"_ bikes for kids. I'm not talking about luxury or pricing here, I am talking about an amazing design and quality which makes our bikes insanely good. Our mission is to see as many children as possible loving to ride their bikes, and for that to happen, we have to make damn good bikes. And to be completely honest, we do a pretty awesome job. Our motto is **"Think like a child, act like a Pro."**
 
 Our bikes are super light-weight and tailor-made with kids in mind. It isn't just an adult bike that was shrunk to fit kids. No, far from that, all the components are engineered from scratch taking into consideration real-world kids size, weight and whatnot.
 
-So if you always wanted to work for a company that has a true positive impact in future generations, woom is definitely a great place for you to be part of. Our headquarters is located in [Klosterneuburg, directly on the out skirts of Vienna.](https://www.google.com/maps/place/woom+GmbH/@48.2724804,16.3549515,12.68z/data=!4m8!1m2!2m1!1swoom!3m4!1s0x476d0f409d127629:0x83a3bdb8980c31c2!8m2!3d48.2910947!4d16.343956)
+So if you always wanted to work for a company that has a true positive impact in future generations, woom is definitely a great place for you to be part of. Our headquarters is located in [Klosterneuburg, directly on the outskirts of Vienna.](https://www.google.com/maps/place/woom+GmbH/@48.2724804,16.3549515,12.68z/data=!4m8!1m2!2m1!1swoom!3m4!1s0x476d0f409d127629:0x83a3bdb8980c31c2!8m2!3d48.2910947!4d16.343956)
 
 ## A Kick-ass Team
 

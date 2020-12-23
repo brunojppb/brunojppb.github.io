@@ -195,14 +195,10 @@
 
       const scrollDelta = (document.documentElement.scrollTop || document.body.scrollTop) + windowHeight;
       const windowHeightPercentage = (windowHeight * 100) / pageHeight;
-
       const scrollPositionInPercentage = (scrollDelta / pageHeight) * 100;
-      const windowHeightPart = (windowHeightPercentage / 100) * scrollPositionInPercentage;
-
-      const realScrollPositionPercentage = scrollPositionInPercentage - windowHeightPercentage;
-      const width = realScrollPositionPercentage + windowHeightPart;
-
-      progressBar.style.width = Math.max(Math.min(width, 100), 1) + "%";
+      const visibleWindowPart = windowHeightPercentage / 100;
+      const width = (scrollPositionInPercentage - windowHeightPercentage) + (visibleWindowPart * scrollPositionInPercentage)
+      progressBar.style.width = Math.max(Math.min(width, 100), 0) + "%";
     }
 
     window.addEventListener('scroll', updateProgress);

@@ -2,6 +2,8 @@
 
 ![deploy](https://github.com/brunojppb/brunojppb.github.io/workflows/deploy/badge.svg?branch=master)
 
+![Blog cover - welcome to my digital garden](https://repository-images.githubusercontent.com/158101370/5540e200-5739-11eb-8232-7315b07197d0)
+
 ## Install dependencies
 
 This blog is built with [Jekyll](https://jekyllrb.com/), a [Ruby](https://www.ruby-lang.org/en/) based static site generator.  

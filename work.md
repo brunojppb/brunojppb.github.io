@@ -10,6 +10,20 @@ meta_image: /assets/images/work_cover.jpg
 
   <div class="job-item">
       <div>
+          <h2><a href="https://n26.com">N26.com - The bank you’ll love</a></h2>
+          <p>
+              I've recently joined N26 as a Tech Lead of the Web Core team. I'm still figuring out all the intricacies of the job, but getting the chance to do banking in 2021 is amazing, specially being one of the customers that have suffered for decades with crappy internet banking everywhere I go. N26 is doing an amazing job and being part of it is an awesome opportunity to grow and learn more and more.
+              <br/><br/>
+              I don't have a cool picture with my team yet, but will update it here as soon as this Covid shitstorm is over.
+          </p>
+      </div>
+      <img src="/assets/images/n26_app.jpg" 
+        loading="lazy"
+        alt="N26 iOS app with a credit card on the right-hand side of the phone"/>
+  </div>
+
+  <div class="job-item">
+      <div>
           <h2><a href="https://woombikes.com">woombikes.com (Vienna, Austria)</a></h2>
           <p>
               Working at woom is a joy and challenging at the same time. We deal with a large scale infrastructure that spams across many continents (EU, North America, Asia) and yet we are still a startup with a very small and efficient team. And c'mon! we make bikes for kids. How cool is it? isn't just cool, it's awesome! 
@@ -19,7 +33,9 @@ meta_image: /assets/images/work_cover.jpg
               On top of that, I deeply care about soft skills (commonly underrated among the software community), mainly focusing on good communication and putting people first, making sure I can pass the message in an understandable and friendly way, specially for Non-tech-savvy users.
           </p>
       </div>
-      <img src="/assets/images/woombikes.jpg" alt="Bruno placing a helmet on a little lady ready for an adventure on her bike"/>
+      <img src="/assets/images/woombikes.jpg" 
+        loading="lazy"
+        alt="Bruno placing a helmet on a little lady ready for an adventure on her bike"/>
   </div>
 
   <div class="job-item">
@@ -32,7 +48,9 @@ meta_image: /assets/images/work_cover.jpg
               You can download it on the <a href="https://apps.apple.com/us/app/card-vault-lite/id1389892665">App Store</a>
           </p>
       </div>
-      <img src="/assets/images/card_vault.jpg" alt="Screenshots of the iOS app Card Vault"/>
+      <img src="/assets/images/card_vault.jpg" 
+        loading="lazy"
+        alt="Screenshots of the iOS app Card Vault"/>
   </div>
 
   <div class="job-item">
@@ -56,7 +74,9 @@ meta_image: /assets/images/work_cover.jpg
               Design and development of an internal Web app for Project Management and Internal Excellence Program (Embraer P3E) using Ruby on Rails.
           </p>
       </div>
-      <img src="/assets/images/embraer.jpg" alt="Bruno inside a luxury aircraft with the Embraer team"/>
+      <img src="/assets/images/embraer.jpg" 
+        loading="lazy"
+        alt="Bruno inside a luxury aircraft with the Embraer team"/>
   </div>
 
   <div class="job-item">
@@ -68,7 +88,9 @@ meta_image: /assets/images/work_cover.jpg
               The backend services are developed with Ruby and Scala.
           </p>
       </div>
-      <img src="/assets/images/pmpb.jpg" alt="Bruno and his colleague using the Police uniform for a celebration in Brazil"/>
+      <img src="/assets/images/pmpb.jpg" 
+        loading="lazy"
+        alt="Bruno and his colleague using the Police uniform for a celebration in Brazil"/>
   </div>
 
         

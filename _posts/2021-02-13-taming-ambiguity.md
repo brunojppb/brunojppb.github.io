@@ -8,7 +8,7 @@ meta_description: Ambiguity is a fundamental part of working with people. Here i
 meta_image: /assets/images/posts/2021-02-13-taming-ambiguity.jpg
 ---
 
-The more senior your get at your job, the more comfortable you have to get with ambiguity.
+The more senior you get at your job, the more comfortable you have to get with ambiguity.
 
 We, engineers, have this drive to find binary answers quickly. Is either `"yes, we can do it"` or `"No, that doesn't work"`.
 But we forget that most of the time we are not talking to machines, but with people. This is where binary answers sometimes must be replaced with a spectrum.

@@ -67,4 +67,11 @@
     display: block;
     margin: auto auto;
   }
+
+  // For mermaid JS diagrams
+  // generated for posts at:
+  // https://mermaid-js.github.io/mermaid-live-editor
+  img[src$="-diagram.svg"] {
+    background-color: white;
+  }
 }

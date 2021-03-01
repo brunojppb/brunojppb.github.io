@@ -51,6 +51,10 @@
     height: auto;
     width: auto;
     margin: auto;
+
+    &[src$="-diagram.svg"] {
+      background-color: white;
+    }
   }
 
 }

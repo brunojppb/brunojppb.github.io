@@ -45,10 +45,9 @@
       will-change: background-color,box-shadow;
     }
     img {
-      width: 70px;
-      min-width: 70px;
-      height: 106px;
-      min-height: 106px;
+      width: 100%;
+      max-width: 70px;
+      height: 100%;
     }
     .book-data {
       padding-top: 8px;

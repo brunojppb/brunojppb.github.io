@@ -12,7 +12,7 @@ I joined [woom](https://woombikes.com/we-are-woom) in early 2018 and it has been
 
 I'm writing this blogpost to express my gratitude for the amazing woom team and also to invite you, if you are interested in challenging projects, to replace me and continue the amazing work we have been doing so far.
 
-> **Disclaimer:** This is not a job ad. If you wish to apply, please have a look at our [application page here.](https://woombikes.bewerberportal.at/Job/142240)
+> **Disclaimer:** This is not a job ad. If you wish to apply, please have a look at the [application page here.](https://woom-gmbh.jobbase.io/)
 
 ## About the Company
 
@@ -62,6 +62,6 @@ Since your primary focus would be on our e-commerce platform, you are probably i
 * [AWS](https://aws.amazon.com/) is our cloud provider. We also use [Hetzner](https://www.hetzner.com/?country=en) for some other web applications.
 
 ## Wrapping Up
-If you made it this far and you feel like working with this amazing team, give it a shot. Even If you don't check all the boxes for this role, but if you feel strongly and motivated to work in a fun and friendly company, I would still encourage you to apply. Our lovely HR team will be happy to review your application. Finally and above all, we value diversity, so we would love to see folks from underrepresented groups [applying for this position.](https://woombikes.bewerberportal.at/Job/142240)
+If you made it this far and you feel like working with this amazing team, give it a shot. Even If you don't check all the boxes for this role, but if you feel strongly and motivated to work in a fun and friendly company, I would still encourage you to apply. Our lovely HR team will be happy to review your application. Finally and above all, we value diversity, so we would love to see folks from underrepresented groups [applying for this position.](https://woom-gmbh.jobbase.io/)
 
 In case you have any particular question, don't hesitate to [reach out to me via twitter.](https://twitter.com/bpaulino0) My DMs are open.

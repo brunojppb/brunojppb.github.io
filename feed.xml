@@ -1,0 +1,1051 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="https://bpaulino.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bpaulino.com/" rel="alternate" type="text/html" /><updated>2021-06-13T17:06:37+00:00</updated><id>https://bpaulino.com/feed.xml</id><title type="html">bpaulino.com</title><subtitle>I am Bruno Paulino. Software is my craft.</subtitle><author><name>Bruno Paulino</name></author><entry><title type="html">Retrying API Calls with Exponential Backoff</title><link href="https://bpaulino.com/entries/retrying-api-calls-with-exponential-backoff" rel="alternate" type="text/html" title="Retrying API Calls with Exponential Backoff" /><published>2021-03-01T00:00:00+00:00</published><updated>2021-03-01T00:00:00+00:00</updated><id>https://bpaulino.com/entries/retrying-api-calls-with-exponential-backoff</id><content type="html" xml:base="https://bpaulino.com/entries/retrying-api-calls-with-exponential-backoff">&lt;p&gt;Have you ever implemented an integration with a third-party service where you have to call their API endpoints several times a day? Depending on the number of times you call this API, some of those calls will inevitably fail.&lt;/p&gt;
+
+&lt;p&gt;One solution to mitigate this problem is to implement a &lt;code class=&quot;highlighter-rouge&quot;&gt;retry&lt;/code&gt; algorithm. Here is a sequence diagram showing how this algorithm could look like:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/api-without-exponential-backoff-diagram.svg&quot; alt=&quot;Exponential backoff diagram&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Notice that once our API call fails, our app immediately tries to call it again. That could be extremely fast and there is nothing wrong with that, but that isn’t very effective. Why?&lt;/p&gt;
+
+&lt;h2 id=&quot;being-polite-with-exponential-backoff&quot;&gt;Being polite with Exponential Backoff&lt;/h2&gt;
+
+&lt;p&gt;Lets assume the restaurants API we were trying to call on the chart above is having some trouble. Maybe it’s overloaded or is completely down. Retrying to call it immediately after a failed attempt will do no good. It will actually make the situation worse: The restaurants API will be hammered harder and won’t have time to recover.&lt;/p&gt;
+
+&lt;p&gt;To countermeasure that, we can wait a little before retries. We can actually do better than that. What if on every failed attempt, we exponentially increase the waiting time for the next attempt? Bingo, This is what &lt;a href=&quot;https://en.wikipedia.org/wiki/Exponential_backoff&quot;&gt;Exponential Backoff&lt;/a&gt; is.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;ul&gt;
+    &lt;li&gt;Our app tries to call the Restaurants API.&lt;/li&gt;
+    &lt;li&gt;The API call fails.&lt;/li&gt;
+    &lt;li&gt;Our app waits for &lt;code class=&quot;highlighter-rouge&quot;&gt;200 millisecods&lt;/code&gt; before calling it again.&lt;/li&gt;
+    &lt;li&gt;Our app retries to call the Restaurants API again.&lt;/li&gt;
+    &lt;li&gt;The API call fails again.&lt;/li&gt;
+    &lt;li&gt;Our app waits for &lt;code class=&quot;highlighter-rouge&quot;&gt;400 millisecods&lt;/code&gt; before calling it again.&lt;/li&gt;
+    &lt;li&gt;Our app retries to call the Restaurants API again.&lt;/li&gt;
+    &lt;li&gt;The API call completes successfully.&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Here is how the diagram would look like when we implement Exponential Backoff:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/api-with-exponential-backoff-diagram.svg&quot; alt=&quot;Exponential backoff diagram&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;how-can-we-do-that-in-javascript&quot;&gt;How can we do that in Javascript?&lt;/h2&gt;
+
+&lt;p&gt;The implementation of the algorithm above is actually quite straightforward in Javascript. The implementation below works in Node.js and also in modern browsers, with zero dependencies.&lt;/p&gt;
+
+&lt;div class=&quot;language-js highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cm&quot;&gt;/**
+ * Wait for the given milliseconds
+ * @param {number} milliseconds The given time to wait
+ * @returns {Promise} A fulfiled promise after the given time has passed
+ */&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;waitFor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;milliseconds&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Promise&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;setTimeout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;milliseconds&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;cm&quot;&gt;/**
+ * Execute a promise and retry with exponential backoff
+ * based on the maximum retry attempts it can perform
+ * @param {Promise} promise promise to be executed
+ * @param {function} onRetry callback executed on every retry
+ * @param {number} maxRetries The maximum number of retries to be attempted
+ * @returns {Promise} The result of the given promise passed in
+ */&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;retry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;promise&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;onRetry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;maxRetries&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// Notice that we declare an inner function here&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// so we can encapsulate the retries and don't expose&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// it to the caller. This is also a recursive function&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;async&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;retryWithBackoff&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;retries&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;c1&quot;&gt;// Make sure we don't wait on the first attempt&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;retries&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// Here is where the magic happens.&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// on every retry, we exponentially increase the time to wait.&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// Here is how it looks for a `maxRetries` = 4&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// (2 ** 1) * 100 = 200 ms&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// (2 ** 2) * 100 = 400 ms&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// (2 ** 3) * 100 = 800 ms&lt;/span&gt;
+        &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;timeToWait&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;retries&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;`waiting for &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;timeToWait&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;ms...`&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;await&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;waitFor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;timeToWait&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+      &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;await&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;promise&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;c1&quot;&gt;// only retry if we didn't reach the limit&lt;/span&gt;
+      &lt;span class=&quot;c1&quot;&gt;// otherwise, let the caller handle the error&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;retries&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;maxRetries&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;onRetry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;retryWithBackoff&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;retries&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+      &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;warn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;Max retries reached. Bubbling the error up&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+      &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;retryWithBackoff&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;And here is how you can quickly test this implementation:&lt;/p&gt;
+
+&lt;div class=&quot;language-js highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cm&quot;&gt;/** Fake an API Call that fails for the first 3 attempts
+ * and resolves on its fourth attempt.
+ */&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;generateFailableAPICall&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;counter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;counter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;nx&quot;&gt;counter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Promise&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;reject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;Simulated error&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Promise&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;ok&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;cm&quot;&gt;/*** Testing our Retry with Exponential Backoff */&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;async&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;apiCall&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;generateFailableAPICall&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;await&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;retry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;apiCall&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;onRetry called...&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+    &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+  &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;result: &lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;If you want to try this out, here is a &lt;a href=&quot;https://codesandbox.io/s/exponential-backoff-ziy8h?file=/src/index.js&quot;&gt;Codesanbox link&lt;/a&gt; where you can play with it.&lt;/p&gt;</content><author><name>Bruno</name></author><summary type="html">Have you ever implemented an integration with a third-party service where you have to call their API endpoints several times a day? Depending on the number of times you call this API, some of those calls will inevitably fail.</summary></entry><entry><title type="html">Taming ambiguity</title><link href="https://bpaulino.com/entries/taming-ambiguity" rel="alternate" type="text/html" title="Taming ambiguity" /><published>2021-02-13T00:00:00+00:00</published><updated>2021-02-13T00:00:00+00:00</updated><id>https://bpaulino.com/entries/taming-ambiguity</id><content type="html" xml:base="https://bpaulino.com/entries/taming-ambiguity">&lt;p&gt;The more senior you get at your job, the more comfortable you have to get with ambiguity.&lt;/p&gt;
+
+&lt;p&gt;We, engineers, have this drive to find binary answers quickly. Is either &lt;code class=&quot;highlighter-rouge&quot;&gt;&quot;yes, we can do it&quot;&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;&quot;No, that doesn't work&quot;&lt;/code&gt;.
+But we forget that most of the time we are not talking to machines, but with people. This is where binary answers sometimes must be replaced with a spectrum.&lt;/p&gt;
+
+&lt;p&gt;To cope with ambiguity, which is a fundamental part of working with people, you probably end up saying &lt;code class=&quot;highlighter-rouge&quot;&gt;&quot;it depends...&quot;&lt;/code&gt; more frequently. While you are considering several variables on your head before reaching to an answer, this usually signals that you didn’t frame the problem well enough yet and it doesn’t make it clear to the other person on what you are considering to find the right answer.&lt;/p&gt;
+
+&lt;p&gt;One strategy that has been working well for me is to replace &lt;code class=&quot;highlighter-rouge&quot;&gt;&quot;it depends&quot;&lt;/code&gt; with &lt;code class=&quot;highlighter-rouge&quot;&gt;&quot;tell me more...&quot;&lt;/code&gt;.
+It will implicitly send a more positive message that you are truly interested in learning more about the topic in order to help, which will lead to a more clarifying and perhaps engaging conversation.&lt;/p&gt;</content><author><name>Bruno</name></author><summary type="html">The more senior you get at your job, the more comfortable you have to get with ambiguity.</summary></entry><entry><title type="html">Replace me at woombikes.com</title><link href="https://bpaulino.com/hidden/replace-me-at-woom" rel="alternate" type="text/html" title="Replace me at woombikes.com" /><published>2020-12-23T00:00:00+00:00</published><updated>2020-12-23T00:00:00+00:00</updated><id>https://bpaulino.com/hidden/replace-me-at-woom</id><content type="html" xml:base="https://bpaulino.com/hidden/replace-me-at-woom">&lt;p&gt;I joined &lt;a href=&quot;https://woombikes.com/we-are-woom&quot;&gt;woom&lt;/a&gt; in early 2018 and it has been a challenging, but very rewarding adventure so far. After almost 3 years working with a wide range of interesting software projects that allowed us to scale across the globe, I felt it was time for me to take on a new challenge in a different field. I’m joining the fantastic Web team at &lt;a href=&quot;https://n26.com/en-at&quot;&gt;N26&lt;/a&gt; as a Tech Lead of their Core segment next year to help them change banking for the better and that is pretty exciting.&lt;/p&gt;
+
+&lt;p&gt;I’m writing this blogpost to express my gratitude for the amazing woom team and also to invite you, if you are interested in challenging projects, to replace me and continue the amazing work we have been doing so far.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;Disclaimer:&lt;/strong&gt; This is not a job ad. If you wish to apply, please have a look at the &lt;a href=&quot;https://woom-gmbh.jobbase.io/&quot;&gt;application page here.&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;about-the-company&quot;&gt;About the Company&lt;/h2&gt;
+
+&lt;p&gt;woom is still a young company, but it has been quite successful and growing fast like a rocket since it was founded by &lt;a href=&quot;https://www.linkedin.com/in/marcus-ihlenfeld-a13b433/&quot;&gt;Marcus Ihlenfeld&lt;/a&gt; and &lt;a href=&quot;https://www.linkedin.com/in/bezdeka/&quot;&gt;Christian Bezdeka&lt;/a&gt; in 2013.&lt;/p&gt;
+
+&lt;p&gt;Whenever I get the chance to talk about &lt;a href=&quot;https://woombikes.com/we-are-woom&quot;&gt;woom&lt;/a&gt;, especially for friends who have kids, I tell them we make &lt;em&gt;“Lamborghini”&lt;/em&gt; bikes for kids. I’m not talking about luxury or pricing here, I am talking about an amazing design and quality which makes our bikes insanely good. Our mission is to see as many children as possible loving to ride their bikes, and for that to happen, we have to make damn good bikes. And to be completely honest, we do a pretty awesome job. Our motto is &lt;strong&gt;“Think like a child, act like a Pro.”&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Our bikes are super light-weight and tailor-made with kids in mind. It isn’t just an adult bike that was shrunk to fit kids. No, far from that, all the components are engineered from scratch taking into consideration real-world kids size, weight and whatnot.&lt;/p&gt;
+
+&lt;p&gt;So if you always wanted to work for a company that has a true positive impact in future generations, woom is definitely a great place for you to be part of. Our headquarters is located in &lt;a href=&quot;https://www.google.com/maps/place/woom+GmbH/@48.2724804,16.3549515,12.68z/data=!4m8!1m2!2m1!1swoom!3m4!1s0x476d0f409d127629:0x83a3bdb8980c31c2!8m2!3d48.2910947!4d16.343956&quot;&gt;Klosterneuburg, directly on the outskirts of Vienna.&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;a-kick-ass-team&quot;&gt;A Kick-ass Team&lt;/h2&gt;
+
+&lt;p&gt;The whole woom team is distributed across Europe, USA and now it’s expanding to Asia. But talking about the Tech team specifically, we are four developers, two project managers, a system admin and a team lead working on different projects, ranging from internal systems that help to expand our business to our e-commerce platform that delivers our bikes in several countries and continents.&lt;/p&gt;
+
+&lt;p&gt;Besides small projects that help other teams in the company to work with ease, The developers are working in two high-profile projects:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;The Odoo ERP system which powers our warehouse. It’s written in Python and it’s &lt;a href=&quot;https://github.com/odoo/odoo&quot;&gt;open-source&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;The e-commerce platform (more about it later on)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Those are the main projects that need love the most, so you will probably be helping on both (mostly on the e-commerce side), either by writing highly scalable code or contributing to technical decisions that have a big impact on the future of the business.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-job&quot;&gt;The Job&lt;/h2&gt;
+&lt;p&gt;I usually describe myself as the &lt;em&gt;Jack-of-all-trades&lt;/em&gt; Software Engineer at woom, but if you like a cooler term, you can call it a &lt;strong&gt;Full-Stack Software Engineer&lt;/strong&gt;. Jokes aside, the job is quite broad and requires strong technical skills on “how the Web works”, attention to detail and focus on making our customers happy.
+With that being said, I still believe that this isn’t the most important thing we need. Most importantly, &lt;strong&gt;you must be good at people&lt;/strong&gt;. We need someone kind and understanding, that can put themselves in other people’s shoes and listen to what they have to say. The software you write is meant to help the people around you, so if you seriously consider the person on the other side, I’m pretty damn sure you can write good software.&lt;/p&gt;
+
+&lt;p&gt;Your responsibilities would be quite broad, but if I could pin-point them, they would be:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Primarily focused on our e-commerce platform by writing code, caring about infrastructure (mostly automated with &lt;a href=&quot;https://www.terraform.io/&quot;&gt;Terraform&lt;/a&gt;), monitoring and scalability (More on the tech-stack later).&lt;/li&gt;
+  &lt;li&gt;Contribute to technical discussions and decisions, even for things unrelated to the e-commerce platform. After all, you are a Software Engineer that will be there to support the team on solving challenging problems.&lt;/li&gt;
+  &lt;li&gt;Define and document internal processes. An example could be &lt;strong&gt;“How to deploy our e-commerce infrastructure in a new country”&lt;/strong&gt; including all the technical steps necessary to tackle a new market like accepting multi-currency payments, localization and so on.&lt;/li&gt;
+  &lt;li&gt;Nice to have:
+    &lt;ul&gt;
+      &lt;li&gt;Interested in project management, agile and topics related to that.&lt;/li&gt;
+      &lt;li&gt;Experience with CI and CD. (We use &lt;a href=&quot;https://gitlab.com&quot;&gt;Gitlab&lt;/a&gt;)&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;the-tech-stack&quot;&gt;The Tech Stack&lt;/h2&gt;
+&lt;p&gt;Since your primary focus would be on our e-commerce platform, you are probably interested in its ins and outs. Here is a breakdown of the tech we use at woom:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;JavaScript and TypeScript are our languages of choice.&lt;/li&gt;
+  &lt;li&gt;MongoDB is our database through &lt;a href=&quot;https://www.mongodb.com/cloud/atlas&quot;&gt;MongoDB Atlas.&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Our frontend is written with &lt;a href=&quot;https://nuxtjs.org/&quot;&gt;Nuxt.js&lt;/a&gt; (an isomorphic framework based on &lt;a href=&quot;https://vuejs.org/&quot;&gt;Vue.js.&lt;/a&gt;)&lt;/li&gt;
+  &lt;li&gt;We use several SaaS platforms that are vital for scalability and growth. Here the most important ones you will be dealing with on a daily basis:
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;https://www.shopify.com/&quot;&gt;Shopify&lt;/a&gt; as our headless GraphQL e-commerce platform.&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://kontent.ai/&quot;&gt;Kentico Kontent&lt;/a&gt; as our multi-language/multi-country CMS platform.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;All those services are brought together via a &lt;a href=&quot;https://graphql.org/&quot;&gt;GraphQL API&lt;/a&gt; using &lt;a href=&quot;https://www.apollographql.com/docs/federation/&quot;&gt;Apollo Federation.&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://aws.amazon.com/&quot;&gt;AWS&lt;/a&gt; is our cloud provider. We also use &lt;a href=&quot;https://www.hetzner.com/?country=en&quot;&gt;Hetzner&lt;/a&gt; for some other web applications.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;wrapping-up&quot;&gt;Wrapping Up&lt;/h2&gt;
+&lt;p&gt;If you made it this far and you feel like working with this amazing team, give it a shot. Even If you don’t check all the boxes for this role, but if you feel strongly and motivated to work in a fun and friendly company, I would still encourage you to apply. Our lovely HR team will be happy to review your application. Finally and above all, we value diversity, so we would love to see folks from underrepresented groups &lt;a href=&quot;https://woom-gmbh.jobbase.io/&quot;&gt;applying for this position.&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;In case you have any particular question, don’t hesitate to &lt;a href=&quot;https://twitter.com/bpaulino0&quot;&gt;reach out to me via twitter.&lt;/a&gt; My DMs are open.&lt;/p&gt;</content><author><name>Bruno</name></author><summary type="html">I joined woom in early 2018 and it has been a challenging, but very rewarding adventure so far. After almost 3 years working with a wide range of interesting software projects that allowed us to scale across the globe, I felt it was time for me to take on a new challenge in a different field. I’m joining the fantastic Web team at N26 as a Tech Lead of their Core segment next year to help them change banking for the better and that is pretty exciting.</summary></entry><entry><title type="html">How to Create Bulletproof Tickets</title><link href="https://bpaulino.com/entries/how-to-create-bulletproof-tickets" rel="alternate" type="text/html" title="How to Create Bulletproof Tickets" /><published>2020-12-08T00:00:00+00:00</published><updated>2020-12-08T00:00:00+00:00</updated><id>https://bpaulino.com/entries/how-to-create-bulletproof-tickets</id><content type="html" xml:base="https://bpaulino.com/entries/how-to-create-bulletproof-tickets">&lt;p&gt;It’s Monday morning, you just had your first coffee in front of the computer and you open your project management app to start planning your week with your team. You start reading your backlog of tasks and then you see a ticket with the title:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;[BUG] Button doesn’t respond&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;You open the ticket and for your astonishment, the description is empty, there are no screenshots, no urls, &lt;em&gt;nada&lt;/em&gt;. You can only see that this ticket was created by Joe. You immediately start to think &lt;em&gt;“Ho dear Joe, what did you see? on which page did you see this button? Which button specifically doesn’t respond? Was it happening constantly, was it intermittent, was it you who found this issue? Can you reproduce?”&lt;/em&gt; So many questions you want to ask Joe, but so little time.&lt;/p&gt;
+
+&lt;p&gt;If you have never had a similar situation like I mentioned before while working on a project with multiple people, you can consider yourself the luckiest person on the planet. The truth is, you have to put a good deal of thought and time into creating a great ticket. Reporting a bug or defining a requirement well is a kind of art.&lt;/p&gt;
+
+&lt;p&gt;Whenever you are in a position of reporting something in written form, in this case creating a ticket, you have to put yourself in the shoes of the other person that will read and work on it.&lt;/p&gt;
+
+&lt;h2 id=&quot;why-is-creating-good-tickets-so-important&quot;&gt;Why is creating good tickets so important?&lt;/h2&gt;
+
+&lt;p&gt;At first sight, it seems like a time consuming task, and to be completely honest, it does take time to create a good ticket. But what we often miss is the time we save by avoiding roundtrips of questions that could have been answered during the ticket creation in the first place. Here are some reasons why creating a meaningful ticket is important:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;It saves time:&lt;/strong&gt; People don’t have to run around to gather the information that is already there.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;More understanding:&lt;/strong&gt; A well written ticket helps to give more understanding about the problem that might be hard to track down.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Solid solutions:&lt;/strong&gt; The more you understand the problem, the better and more reliable the solution will be. And the understanding usually starts by reading the ticket.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Less frustration:&lt;/strong&gt; Once the context is well detailed and understood, the people that will work on the problem will have less ambiguous questions to ask which will reduce the cognitive load while reasoning about a solution.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;You might be thinking &lt;em&gt;“Okay Bruno, but how the heck do I know whether a ticket is good or not?”&lt;/em&gt;. I’m Glad you asked and this is a super valid question by the way. After dealing with hundreds of tickets along the years, I have got an interesting method that I want to share with you in the next section.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-method&quot;&gt;The Method&lt;/h2&gt;
+
+&lt;p&gt;There is zero scientific evidence to back me up here, but what I noticed was that I could use some small principles to have a well defined method to create good tickets. So based on what we have seen up until this point, here are the steps we can take to create good tickets:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Set the stage&lt;/strong&gt;: Explain the context and the impact the problem has.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;How to reproduce&lt;/strong&gt;: If the ticket is related to a bug, here you provide detailed information on how to recreate the problem in a consistent way.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Offer Solutions&lt;/strong&gt;: If you are able to, offer potential solutions for the problem you just found.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;In the following sections, I will construct a fictional ticket (but based on real world examples of web projects) so you can have a decent example on how you could apply those steps.&lt;/p&gt;
+
+&lt;h2 id=&quot;set-the-stage&quot;&gt;Set the stage&lt;/h2&gt;
+
+&lt;p&gt;Let’s imagine you have just found a bug on the website from the company you work with. Now you need to report the problem and hopefully someone will fix it as quickly as possible. How do you start explaining the problem to someone that you might not even know?&lt;/p&gt;
+
+&lt;p&gt;To start things off, you need to give as much information as possible about the context of the bug. And what do I mean by context? Here the important thing is to explain in detail what you expect in a normal case and what the bug introduces. But don’t be too verbose on it otherwise you leave a lot of room for ambiguity. Here is an example:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;With the introduction of the new product versions, we changed the URLs our customers see on our public website. This causes several problems with external tools that rely on the previous URLs (e.g. Marketing Campaigns).&lt;/p&gt;
+
+  &lt;p&gt;The basic premises of existing product URLs are:&lt;/p&gt;
+
+  &lt;ul&gt;
+    &lt;li&gt;The customer must have a stable URL for any published product&lt;/li&gt;
+    &lt;li&gt;It should never change for the same product in the eyes of the customer&lt;/li&gt;
+    &lt;li&gt;With an immutable URL none of our marketing campaigns running on our Ad platforms would stop working.&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;In the example above, we have given a good overview of the problem and also a good reason for the problem to be solved. This is a good starting point for a discussion about the ticket and also helps to prioritize it during planning.&lt;/p&gt;
+
+&lt;h2 id=&quot;how-to-reproduce&quot;&gt;How to Reproduce&lt;/h2&gt;
+
+&lt;p&gt;Now that we have set up a good context by explaining the problem in detail and why it is important to fix it, it’s time to write down the steps to reproduce it. In software development, debugging can be a challenging task and the more clues you have, the easier it gets to find and fix the problem.
+One part of the puzzle is to consistently reproduce the problem in a safe environment so it can be monitored, tracked down and fixed. For that to happen, you usually have to define a set of steps that lead to the problem you found. Here is an example following our fictional problem above:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;To reproduce the problem, please follow the steps below:&lt;/p&gt;
+
+  &lt;ul&gt;
+    &lt;li&gt;Open an existing product in the admin interface&lt;/li&gt;
+    &lt;li&gt;Open the product preview and write down the current URL&lt;/li&gt;
+    &lt;li&gt;Go back to the admin interface and update the product reference for a new version of the same product&lt;/li&gt;
+    &lt;li&gt;save the changes&lt;/li&gt;
+    &lt;li&gt;Open the product preview again on the website&lt;/li&gt;
+    &lt;li&gt;Compare the new URL with the previous URL you saved&lt;/li&gt;
+  &lt;/ul&gt;
+
+  &lt;p&gt;The comparison will result in an URL mismatch.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;With the clear steps mentioned above, anyone who gets assigned to work on this ticket will quickly manage to verify the problem and test it as many times as they need.&lt;/p&gt;
+
+&lt;p&gt;Sometimes you won’t be able to have a consistent way of reproducing the problem and that is fine too, but try to find as many reproducible steps as possible. This will save a good chunk of time for the development team which leads to a faster bug-fix being deployed.&lt;/p&gt;
+
+&lt;h2 id=&quot;offer-solutions&quot;&gt;Offer Solutions&lt;/h2&gt;
+
+&lt;p&gt;The cherry on top, if you have more understanding of the systems you are reporting the bug, is to offer potential solutions for the problem you just found. Developers like challenges, but nobody has infinite time and at the end of the day, we have to produce value for the business, so the quicker a problem can be solved, the better.&lt;/p&gt;
+
+&lt;p&gt;in some cases, you might even know exactly what the problem is and how to fix it, so don’t spare words into giving a more detailed and technical suggestion at this stage. Here is how I would suggest a solution for our fictional URL problem we have been creating:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;It looks like this problem happens at the e-commerce platform level. Since this is a third-party application which we don’t have access to the source code, we have to fix this problem on another layer of our system.&lt;/p&gt;
+
+  &lt;p&gt;A potential solution could be to set rules on our reverse proxy so we keep accepting requests from old URLs and map them to the new ones.
+In the meantime, I will also report this problem to our e-commerce provider.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;It is clear that in the example above, the author has a deeper understanding of what is happening in the internal systems and that is a big advantage. But if you don’t have this level of insight, you can still provide good feedback on how to solve the problem. Any potential solution should be considered, especially if that is coming from someone that understands the problem.&lt;/p&gt;
+
+&lt;h2 id=&quot;wrapping-up&quot;&gt;Wrapping up&lt;/h2&gt;
+
+&lt;p&gt;I have been following those principles for a long time and it actually became quite natural for me while creating a ticket, but I understand that it takes time to build up this understanding.&lt;/p&gt;
+
+&lt;p&gt;Sometimes your ticket will still leave room for questions and clarifications, and that is fine too. As long as your ticket was well prepared, even those follow-up questions will be more meaningful and complete, leading to less frustration and a more fluid communication path with your team.&lt;/p&gt;
+
+&lt;p&gt;I believe by now you have the superpowers to create bulletproof tickets 🦸🏼‍♀️. Here is the complete ticket we created during this blogpost:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;Subject&lt;/strong&gt;&lt;/p&gt;
+
+  &lt;p&gt;Product URL breaks after updating product version reference.&lt;/p&gt;
+
+  &lt;p&gt;&lt;strong&gt;Problem&lt;/strong&gt;&lt;/p&gt;
+
+  &lt;p&gt;With the introduction of the new Product versions, we changed the URLs our customers see on our public website. This causes several problems with external tools that rely on the previous URLs (e.g. Marketing Campaigns).&lt;/p&gt;
+
+  &lt;p&gt;The basic premises of existing product URLs are:&lt;/p&gt;
+
+  &lt;ul&gt;
+    &lt;li&gt;The customer must have a stable URL for any published product&lt;/li&gt;
+    &lt;li&gt;It should never change for the same product in the eyes of the customer&lt;/li&gt;
+    &lt;li&gt;With an immutable URL, none of our marketing campaigns running on our Ad platforms would stop working.&lt;/li&gt;
+  &lt;/ul&gt;
+
+  &lt;p&gt;&lt;strong&gt;How to Reproduce&lt;/strong&gt;&lt;/p&gt;
+
+  &lt;p&gt;To reproduce the problem, please follow the steps below:&lt;/p&gt;
+
+  &lt;ul&gt;
+    &lt;li&gt;Open an existing product in the admin interface&lt;/li&gt;
+    &lt;li&gt;Open the product preview and write down the current URL&lt;/li&gt;
+    &lt;li&gt;Go back to the admin interface and update the product reference for a new model&lt;/li&gt;
+    &lt;li&gt;Save the changes&lt;/li&gt;
+    &lt;li&gt;Open the product preview on the website&lt;/li&gt;
+    &lt;li&gt;Compare the new URL with the previous URL you saved&lt;/li&gt;
+  &lt;/ul&gt;
+
+  &lt;p&gt;The comparison will result in an URL mismatch.&lt;/p&gt;
+
+  &lt;p&gt;&lt;strong&gt;Potential Solution&lt;/strong&gt;&lt;/p&gt;
+
+  &lt;p&gt;It looks like this problem happens at the e-commerce platform level. Since this is a third-party application which we don’t have access to the source code, we have to fix this problem on another layer of our system.&lt;/p&gt;
+
+  &lt;p&gt;A potential solution could be to set rules on our reverse proxy so we keep accepting requests from old URLs and map them to the new ones.
+In the meantime, I will also report this problem to our e-commerce provider.&lt;/p&gt;
+&lt;/blockquote&gt;</content><author><name>Bruno Paulino</name></author><summary type="html">It’s Monday morning, you just had your first coffee in front of the computer and you open your project management app to start planning your week with your team. You start reading your backlog of tasks and then you see a ticket with the title:</summary></entry><entry><title type="html">DevOps and its impact on Developer Productivity</title><link href="https://bpaulino.com/entries/devops-and-its-impact-on-developer-productivity" rel="alternate" type="text/html" title="DevOps and its impact on Developer Productivity" /><published>2020-11-22T00:00:00+00:00</published><updated>2020-11-22T00:00:00+00:00</updated><id>https://bpaulino.com/entries/devops-and-its-impact-in-developer-productivity</id><content type="html" xml:base="https://bpaulino.com/entries/devops-and-its-impact-on-developer-productivity">&lt;p&gt;I have recently finished reading &lt;a href=&quot;https://www.goodreads.com/book/show/35747076&quot;&gt;Accelerate: building and Scaling High Performing Technology Organizations&lt;/a&gt; to get a more in-depth view into the DevOps landscape and its influence in developer productivity. The book is based on solid research conducted by &lt;a href=&quot;https://twitter.com/nicolefv&quot;&gt;Dr. Nicole Forsgren&lt;/a&gt;, &lt;a href=&quot;https://twitter.com/jezhumble&quot;&gt;Jez Humble&lt;/a&gt; and &lt;a href=&quot;https://twitter.com/RealGeneKim&quot;&gt;Gene Kim.&lt;/a&gt; The book is an eye-opener for the importance of software delivery performance and the value it brings to any organization that takes it seriously.&lt;/p&gt;
+
+&lt;p&gt;This book made me reflect on my experience with DevOps, my own productivity and the productivity of my team. I don’t want to quote every topic mentioned in the book here, but I absolutely recommend you to give it a read. My focus is actually to explore how it relates to my journey adopting DevOps along my career and the benefits it brings.&lt;/p&gt;
+
+&lt;h2 id=&quot;shipping-code-to-production-and-developer-confidence&quot;&gt;Shipping code to production and developer confidence&lt;/h2&gt;
+
+&lt;p&gt;When I started my career, I worked at a company where the deployment process was done by a magician developer that held all the powers. Nobody was allowed to deploy code unless this wizard could cast his spells. The second problem we had was that all engineers knew how to run the application on their local machines but once the rubber hits the road, nobody had a clue about setting up dependencies and building the application for production.&lt;/p&gt;
+
+&lt;p&gt;That was a terrible workflow to work with and once during a lucky day, I had no choice but to perform a production deployment by myself. I was feeling scared just thinking about what could go wrong. Having this deployment workflow was a huge blow on the confidence of the engineers in my team, including myself, where not only nobody wanted to be responsible for it, but also not a single person wanted to get involved with it.&lt;/p&gt;
+
+&lt;p&gt;Over the years, I started to learn about DevOps and incrementally adopted it wherever I go so I could avoid the bad experience I had in the past. Since then, I have been reaping the benefits of it over and over again. The productivity gain was immense.&lt;/p&gt;
+
+&lt;h2 id=&quot;starting-with-continuous-integration&quot;&gt;Starting with Continuous Integration&lt;/h2&gt;
+
+&lt;p&gt;To start things off, you want to make your deployment process as predictable and as reproducible as possible. Which means that you have to make sure the work done by a developer can be built, tested and deployed to a safe environment, only then it can be shipped to production. This is called Continuous Integration (CI). Once you define and validate your integration steps for your application stack, be it Java, Node.js or even mobile apps, you must reproduce those steps in code using version control, better yet if you can make this a part of your application repository. As an example, those steps could look like this:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Code is committed by an engineer in a feature branch&lt;/li&gt;
+  &lt;li&gt;A build of the application is triggered. This build is technically production-grade, which means that it has minimal or no difference between development and production, mainly configuration differences (e.g. a sandbox payment gateway where fake payments can be issued), preferably configured via environment variables&lt;/li&gt;
+  &lt;li&gt;A suite of automated tests will be executed on this build&lt;/li&gt;
+  &lt;li&gt;Once all tests pass, the code can be reviewed and merged to the production branch (commonly known as main)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The steps above can be performed by any developer in the team. Once you have a continuous integration pipeline in place, the engineers don’t even have to think about it much since they can be triggered automatically by a continuous integration service like &lt;a href=&quot;https://github.com/features/actions&quot;&gt;Github Actions&lt;/a&gt; or &lt;a href=&quot;https://docs.gitlab.com/ee/ci/&quot;&gt;Gitlab CI.&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Once you have this process in place, you will have robustness built-in on your development workflow, which will inevitably lead to more confidence with your code, ultimately leading to more productivity.&lt;/p&gt;
+
+&lt;h2 id=&quot;nail-it-down-with-continuous-deployment&quot;&gt;Nail it down with Continuous Deployment&lt;/h2&gt;
+
+&lt;p&gt;What if I told you that once code is reviewed and merged to your production branch, this code could be automatically released to production with minimal or no impact to your users? Yes, that is possible. This is called Continuous Deployment (CD). The same thought process applied to continuous integration can be transferred to your deployment workflow, where automated pipelines will make sure your code is pushed to your servers clusters.&lt;/p&gt;
+
+&lt;p&gt;Here you can apply the same constraints as before: You want to make sure that every deployment is predictable and reproducible. Any failed steps should leave traces (logs, error messages/code) for further inspection and debug. Here is an example on how it could work for a backend application deployed in a multi-node architecture.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Code is merged into the production branch (Build and tests were previously executed, so the confidence level here is already very high)&lt;/li&gt;
+  &lt;li&gt;Traffic is diverted to specific nodes in your cluster, inactive nodes are updated with the new version of your build. This step is done incrementally for every node, which will result in a &lt;a href=&quot;https://spring.io/blog/2016/05/31/zero-downtime-deployment-with-a-database&quot;&gt;zero downtime deployment (or blue/green deployment)&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Notification is sent to your team about the newly deployed version. Could be as simple as an email or more sophisticated integrations with your internal chat of choice. (e.g. &lt;a href=&quot;https://slack.com/intl/en-at/&quot;&gt;Slack&lt;/a&gt;, &lt;a href=&quot;https://mattermost.com&quot;&gt;Matterost&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Once again, all the steps mentioned above can be executed automatically, with zero manual intervention. Of course, you won’t probably have the full confidence to do it right away, which is totally understandable. But you can start with small steps by automating the process in code and triggering them manually in the beginning. Once the confidence is high enough, this step can be performed automatically for every new code merged.&lt;/p&gt;
+
+&lt;p&gt;Once you enable anyone in your team to perform a deployment with confidence, the productivity of your peers will be noticeably better. As a result, you will be delivering value to your customers much faster, most probably much faster than other companies that don’t adopt such practices, which will give an edge on the competition.&lt;/p&gt;
+
+&lt;h2 id=&quot;where-to-go-from-here&quot;&gt;Where to go from here&lt;/h2&gt;
+
+&lt;p&gt;If you are reading about CI and CD for the first time, fear not, you can absolutely do this and adopt such practices. Start with very small actions, I like to call it “start with baby steps”. Do you build and test your application manually? Start by automating the build steps in a simple script. Have no automated test suite? Start adding automated tests to critical paths on your app. Those steps will slowly build robustness and resilience into your codebase.&lt;/p&gt;
+
+&lt;p&gt;Once you are confident enough with your first scripts, make it executable from a remote service like Github Actions. That is a good start to enable your team to execute the same steps without being concerned with having the right machine or dependency installed.&lt;/p&gt;
+
+&lt;h2 id=&quot;wrapping-up&quot;&gt;Wrapping up&lt;/h2&gt;
+
+&lt;p&gt;DevOps is a very broad topic and we have only covered a very shallow surface here, so there is much more to learn and explore. If you are an engineer and you let the “Ops team handle it”, I ask you to look at it differently. You don’t have to become a DevOps specialist, but if you manage to include DevOps on your tool belt, you and your team will be much better off.&lt;/p&gt;
+
+&lt;p&gt;There is also a very interesting chapter in the book where specific actions can be taken by managers so software delivery is treated as a “first-class citizen” across your organization. Some actions that I find very interesting and I have personally seen it working:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Use failure as a learning opportunity to improve&lt;/li&gt;
+  &lt;li&gt;Create budgets for continuous learning and training&lt;/li&gt;
+  &lt;li&gt;Space to explore new ideas and share it with others&lt;/li&gt;
+  &lt;li&gt;Let your team use their tool of choice (in other words, don’t force them to write Java if they are high-skilled and productive with JavaScript)&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>Bruno Paulino</name></author><summary type="html">I have recently finished reading Accelerate: building and Scaling High Performing Technology Organizations to get a more in-depth view into the DevOps landscape and its influence in developer productivity. The book is based on solid research conducted by Dr. Nicole Forsgren, Jez Humble and Gene Kim. The book is an eye-opener for the importance of software delivery performance and the value it brings to any organization that takes it seriously.</summary></entry><entry><title type="html">Using custom React hooks to handle components external events</title><link href="https://bpaulino.com/entries/using-custom-react-hooks-to-handle-components-external-events" rel="alternate" type="text/html" title="Using custom React hooks to handle components external events" /><published>2020-09-20T00:00:00+00:00</published><updated>2020-09-20T00:00:00+00:00</updated><id>https://bpaulino.com/entries/using-custom-react-hooks-to-handle-components-external-events</id><content type="html" xml:base="https://bpaulino.com/entries/using-custom-react-hooks-to-handle-components-external-events">&lt;p&gt;On a side project this weekend, I had the classic case for a modal implementation. In most of the applications you have to deal with daily, you come to a place where you have to confirm some action or review some changes before pushing the &lt;em&gt;“I am 100% sure about this”&lt;/em&gt; button.&lt;/p&gt;
+
+&lt;p&gt;This is the perfect case for a modal, a small view that partially covers the screen and presents you with a few options. Most of the time, there will be a button to close the modal away by clicking on the “close” button on the top-right corner. But an even better way to let the user dismiss the modal is to let them click outside of the view in focus, without forcing them to hit the often too small &lt;strong&gt;“x”&lt;/strong&gt; on top.&lt;/p&gt;
+
+&lt;p&gt;Here is the live implementation of our modal component we will build during this post. Try it out on our &lt;a href=&quot;https://codesandbox.io/s/small-browser-vosod?file=/src/Modal.js&quot;&gt;Codesandbox&lt;/a&gt;.&lt;/p&gt;
+
+&lt;iframe src=&quot;https://codesandbox.io/embed/react-custom-hooks-see0d?fontsize=14&amp;amp;hidenavigation=1&amp;amp;theme=dark&amp;amp;view=preview&quot; style=&quot;width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;&quot; title=&quot;react-custom-hooks&quot; allow=&quot;accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking&quot; sandbox=&quot;allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts&quot;&gt;&lt;/iframe&gt;
+
+&lt;p&gt;For cases like this, you most probably want to watch for clicks or taps outside the main view, in this case, the modal, so you can take the correct action of closing it. But how could you do that in &lt;a href=&quot;https://reactjs.org/&quot;&gt;React?&lt;/a&gt; one way would be to implement a global click handler in the component, something like this:&lt;/p&gt;
+
+&lt;div class=&quot;language-jsx highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;useRef&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;useEffect&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;react&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;default&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Modal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;onClose&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;props&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;modalRef&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;useRef&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+  &lt;span class=&quot;nx&quot;&gt;useEffect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+
+    &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;handleClick&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;modalRef&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;current&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;modalRef&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;current&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;contains&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// Here you can close your modal.&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// how to close it, that is up to you&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// (e.g. removing components, changing routes)&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// in this case, I am calling a `onClose` function&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// passed down as a prop.&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;Click happened outside. you can close now.&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;onClose&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+      &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// Pointer events are more device agnostic&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// which are able to handle clicks on Desktops and Taps on mobile devices&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/pointerdown_event&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;document&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;addEventListener&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;pointerdown&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;handleClick&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// Once our component unmount or update, we must remove the event listener&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;document&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;removeEventListener&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;pointerdown&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;handleClick&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// Use the modalRef as dependency for the useEffect hook&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// so whenever this reference changes, the listener will update&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;modalRef&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+  
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;ref=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;modalRef&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;className=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;my-modal&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;className=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;modal-header&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+        Super important Action
+      &lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;className=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;modal-body&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+        This is an important message. read it carefully.
+      &lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;className=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;modal-footer&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;button&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;Cancel&lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;button&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;button&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;Ok&lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;button&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;But this implementation leaves a lot of room for duplication isn’t? If we need to handle a similar case on a different component, we will be doomed to repeat the same click away logic. We can do better than that by leveraging the power of custom React hooks.&lt;/p&gt;
+
+&lt;h2 id=&quot;sharing-logic-with-custom-react-hooks&quot;&gt;Sharing logic with Custom React hooks&lt;/h2&gt;
+
+&lt;p&gt;In my opinion, hooks are one of the most beautiful features in React. You can compose your components in such a way that gives your application superpowers. React itself leverages the power of hooks with &lt;a href=&quot;https://reactjs.org/docs/hooks-state.html&quot;&gt;useState&lt;/a&gt;, &lt;a href=&quot;https://reactjs.org/docs/hooks-effect.html&quot;&gt;useEffect&lt;/a&gt; and a bunch of others.&lt;/p&gt;
+
+&lt;p&gt;But we are not limited to the hooks React offers, we can create our own hooks, enabling us to share logic in a very functional way across our app. Lets extract that click away logic from our previous modal component into a custom hook:&lt;/p&gt;
+
+&lt;div class=&quot;language-jsx highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;useEffect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;useRef&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;react&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;useClickAway&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;onClickAway&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// Keep a mutable reference to click away callback&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// and change it every time the component using it changes&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// using 'useRef' here will make sure that we have a mutable&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// and single callback lying around.&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;callbackRef&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;useRef&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;onClickAway&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;useEffect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;callbackRef&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;current&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;onClickAway&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;onClickAway&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;// listen for click events on ref element&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// attaching a handler and calling the callback if necessary&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;useEffect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;onPointerDown&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;current&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;current&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;contains&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;callbackRef&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;current&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+      &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;document&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;addEventListener&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;pointerdown&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;onPointerDown&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;nb&quot;&gt;document&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;removeEventListener&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;pointerdown&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;onPointerDown&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;lets break our custom hook down.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;We start by declaring a plain javascript function called &lt;code class=&quot;highlighter-rouge&quot;&gt;useClickAway&lt;/code&gt;. This function takes two arguments. A &lt;code class=&quot;highlighter-rouge&quot;&gt;ref&lt;/code&gt; which is a mutable reference to the component we want to watch for clicks “outside” of its boundaries. And a &lt;code class=&quot;highlighter-rouge&quot;&gt;onClickAway&lt;/code&gt; callback, which will be executed once we detect a click outside.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;We created a ref for the &lt;code class=&quot;highlighter-rouge&quot;&gt;useClickAway&lt;/code&gt; callback using the &lt;code class=&quot;highlighter-rouge&quot;&gt;useRef&lt;/code&gt; hook. This will make sure that we have only one reference to our &lt;code class=&quot;highlighter-rouge&quot;&gt;useClickAway&lt;/code&gt; callback that is captured by our &lt;code class=&quot;highlighter-rouge&quot;&gt;useEffect&lt;/code&gt; calls we will use later.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;On our first useEffect call, we make sure to keep track of the &lt;code class=&quot;highlighter-rouge&quot;&gt;useClickAway&lt;/code&gt; reference. So in case our component updates the &lt;code class=&quot;highlighter-rouge&quot;&gt;useClickAway&lt;/code&gt; reference, we also have to update our internal reference inside our custom hook.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;On our second useEffect call, this where rubber hits the road. If you pay close attention, this call is exactly the same as we implemented in our modal component. The only difference is that we are calling our &lt;code class=&quot;highlighter-rouge&quot;&gt;callbackRef&lt;/code&gt; reference for the &lt;code class=&quot;highlighter-rouge&quot;&gt;onClickAway&lt;/code&gt; function instead. This is an extra layer of check to make sure that we are calling the right reference of the callback once a click happens outside of the view.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;With that in place, how can we use that in our modal component? Lets see how the code looks like now:&lt;/p&gt;
+
+&lt;div class=&quot;language-jsx highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;useRef&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;react&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;useClickAway&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;./useClickAway&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;default&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Modal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;onClose&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;modalRef&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;useRef&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+  &lt;span class=&quot;nx&quot;&gt;useClickAway&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;modalRef&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;onClose&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;className=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;shadow-overlay&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;ref=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;modalRef&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;className=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;my-modal&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;className=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;modal-header&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;Super important Action&lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;className=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;modal-body&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+          This is an important message. read it carefully.
+        &lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;className=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;modal-footer&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;button&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;onClick=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;onClose&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;Cancel&lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;button&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;button&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;Ok&lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;button&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Can you notice how clean our modal component looks now? Better yet, we can reuse that same logic across our app just by reusing the &lt;code class=&quot;highlighter-rouge&quot;&gt;useClickAway&lt;/code&gt; hook. Isn’t that cool?&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://codesandbox.io/s/react-custom-hooks-see0d&quot;&gt;Here is the link&lt;/a&gt; to the Codesandbox demo we built on this blogpost. Feel free to copy and use it on your apps.&lt;/p&gt;</content><author><name>Bruno Paulino</name></author><summary type="html">On a side project this weekend, I had the classic case for a modal implementation. In most of the applications you have to deal with daily, you come to a place where you have to confirm some action or review some changes before pushing the “I am 100% sure about this” button.</summary></entry><entry><title type="html">Fine tuning self-hosted Gitlab server to solve SSH scaling problems</title><link href="https://bpaulino.com/entries/allowing-more-connections-on-self-hosted-gitlab" rel="alternate" type="text/html" title="Fine tuning self-hosted Gitlab server to solve SSH scaling problems" /><published>2020-07-05T00:00:00+00:00</published><updated>2020-07-05T00:00:00+00:00</updated><id>https://bpaulino.com/entries/allowing-more-connections-to-gitlab</id><content type="html" xml:base="https://bpaulino.com/entries/allowing-more-connections-on-self-hosted-gitlab">&lt;p&gt;At my current job, we have a self-hosted &lt;a href=&quot;https://gitlab.com/&quot;&gt;Giltab&lt;/a&gt; instance to control our codebases and run automation jobs. If you don’t know what Gitlab is, you probably know &lt;a href=&quot;https://github.com/&quot;&gt;Github&lt;/a&gt; which is a platform to work in collaboration with software teams using &lt;a href=&quot;https://git-scm.com/&quot;&gt;Git&lt;/a&gt; for version control.&lt;/p&gt;
+
+&lt;p&gt;We recently onboarded a new partner to support us with our &lt;a href=&quot;https://github.com/odoo/odoo&quot;&gt;ERP system&lt;/a&gt;. We are working together to improve our current deployment pipeline and make it more resilient and robust. We use &lt;a href=&quot;https://docs.gitlab.com/ee/ci/&quot;&gt;Gitlab CI&lt;/a&gt; to automate our workflows and make our codebase more reliable.&lt;/p&gt;
+
+&lt;p&gt;After setting up &lt;a href=&quot;https://docs.gitlab.com/runner/&quot;&gt;more runners&lt;/a&gt;, we noticed something strange happening randomly and quite frequently during our CI builds. While fetching more repositories, some builds were failing with the following message:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-txt&quot;&gt;fatal: Could not read from remote repository.
+Please make sure you have the correct access rights
+and the repository exists.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Humm, that seems strange. Our runners have the correct access rights to the repositories. Also, this error was happening randomly for different repositories that was clearly working during other exact same builds.&lt;/p&gt;
+
+&lt;p&gt;With this information at hand, we started off the debugging journey. We started monitoring the system and checking the server logs. Everything seemed normal. There was nothing draining our resources to the point where our server would start dropping connections.&lt;/p&gt;
+
+&lt;h2 id=&quot;ssh-load-balancing-and-maxstartups&quot;&gt;SSH Load Balancing and MaxStartups&lt;/h2&gt;
+
+&lt;p&gt;Discussing the issue among my smart teammates, we couldn’t see a reason for Gitlab itself to be dropping connections with the amount of workload. There could be some configuration with our &lt;a href=&quot;https://www.openssh.com/&quot;&gt;OpenSSH&lt;/a&gt; defaults that might be responsible for that. And we indeed found one.&lt;/p&gt;
+
+&lt;p&gt;OpenSSH has this neat setting called &lt;code class=&quot;highlighter-rouge&quot;&gt;MaxStartups&lt;/code&gt; which is composed by 3 values separated by columns represented as &lt;code class=&quot;highlighter-rouge&quot;&gt;start:rate:full&lt;/code&gt;. They mean:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;start&lt;/code&gt;: The max number of unauthenticated connections&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;rate&lt;/code&gt;: The percentage of connections that will be dropped once our total of unauthenticated connections reaches the number specified at &lt;strong&gt;start&lt;/strong&gt;.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;full&lt;/code&gt;: By the time the queue of pending connections reaches the number specified at &lt;strong&gt;full&lt;/strong&gt;, all connections will be dropped.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;If you look at &lt;code class=&quot;highlighter-rouge&quot;&gt;/etc/ssh/sshd_config&lt;/code&gt;, the SSH configuration file, you will see:&lt;/p&gt;
+
+&lt;div class=&quot;language-toml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;err&quot;&gt;MaxStartups&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;100&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This configuration means: starting with &lt;code class=&quot;highlighter-rouge&quot;&gt;10&lt;/code&gt; pending to authenticate connections, our server will start dropping &lt;code class=&quot;highlighter-rouge&quot;&gt;30%&lt;/code&gt; of new connection attempts. Once our queue of pending connections reaches &lt;code class=&quot;highlighter-rouge&quot;&gt;100&lt;/code&gt;, all new connections will be dropped with no mercy.&lt;/p&gt;
+
+&lt;p&gt;After understanding how MaxStartups works, we looked again at our runners and we noticed that some jobs were fetching 10 different repositories in parallel during the build and aggregating them to build a &lt;a href=&quot;https://en.wikipedia.org/wiki/Docker_(software)&quot;&gt;Docker image&lt;/a&gt;. We were really playing the dice when running those builds 😅.&lt;/p&gt;
+
+&lt;p&gt;With that in mind, we tweaked MaxStartups with the following values:&lt;/p&gt;
+
+&lt;div class=&quot;language-toml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;err&quot;&gt;MaxStartups&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;60&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;60&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;300&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;After that, just restart our SSH daemon with:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;systemctl restart ssh.service
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;We could see that the MaxStartups change instantly fixed the issue. Our builds were flying again with zero connection drops. The new settings allowed us greater leeway to connect to our server simultaneously, reducing the risk of dropped connections.&lt;/p&gt;
+
+&lt;h2 id=&quot;defaults-can-only-take-you-so-far&quot;&gt;Defaults can only take you so far&lt;/h2&gt;
+
+&lt;p&gt;The default settings were more than enough for us to start using &lt;a href=&quot;https://docs.gitlab.com/omnibus/&quot;&gt;Gitlab with its Omnibus package&lt;/a&gt;. I didn’t even know about those SSH settings to begin with, but once you start hitting scaling problems, there is usually a escape hatch that can help you to leverage the same resources to a much greater usage scenario.&lt;/p&gt;
+
+&lt;p&gt;Only after fixing the issue that I found Gitlab themselves had the exact same issue. &lt;a href=&quot;https://about.gitlab.com/blog/2019/08/27/tyranny-of-the-clock/&quot;&gt;They wrote a great blog post about it.&lt;/a&gt;&lt;/p&gt;</content><author><name>Bruno Paulino</name></author><summary type="html">At my current job, we have a self-hosted Giltab instance to control our codebases and run automation jobs. If you don’t know what Gitlab is, you probably know Github which is a platform to work in collaboration with software teams using Git for version control.</summary></entry><entry><title type="html">Hardening your server security with Fail2Ban</title><link href="https://bpaulino.com/entries/hardening-your-server-security-with-fail2ban" rel="alternate" type="text/html" title="Hardening your server security with Fail2Ban" /><published>2020-07-01T00:00:00+00:00</published><updated>2020-07-01T00:00:00+00:00</updated><id>https://bpaulino.com/entries/hardening-your-server-security-with-fail2ban</id><content type="html" xml:base="https://bpaulino.com/entries/hardening-your-server-security-with-fail2ban">&lt;p&gt;I was recently checking the access logs from some linux servers I maintain and I was very surprised by the ssh login attempts those servers were facing. My servers have password access disabled by default, so only previously registered ssh keys are allowed to login. But even then, the amount of login attempts was disturbing. Around 500 attempts a day. I had to do something about it.&lt;/p&gt;
+
+&lt;p&gt;Talking to my coworkers about it, one of them suggested a tool called &lt;a href=&quot;https://www.fail2ban.org/wiki/index.php/Main_Page&quot;&gt;Fail2Ban&lt;/a&gt;. It runs a background service that monitors the log files on your server and based on suspicious activities, like unsuccessful login attempts, it blocks access from those bad actors by updating firewall rules to reject any connection for their IP addresses.&lt;/p&gt;
+
+&lt;p&gt;My first thought was &lt;em&gt;“I should be careful because I could ban myself and lose access to my server permanently”&lt;/em&gt;. So I started the installation process very carefully. Fortunately, the default configuration only blocks the IP access for 10 minutes, so worst case I would have a few minutes to have coffee. I also started the process in a “trashable” server, so if something goes wrong, I could just throw it away and start anew.&lt;/p&gt;
+
+&lt;p&gt;We will customize those settings for a more robust strategy later on here on this post.&lt;/p&gt;
+
+&lt;h2 id=&quot;installing-fail2ban&quot;&gt;Installing Fail2Ban&lt;/h2&gt;
+
+&lt;p&gt;Let’s get started. The first step is to install Fail2Ban on your server (Ubuntu):&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# Update dependencies&lt;/span&gt;
+apt update &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; apt upgrade &lt;span class=&quot;nt&quot;&gt;-y&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# install fail2ban&lt;/span&gt;
+apt &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;fail2ban
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Fail2Ban comes with a pretty solid default configuration, but since our goal is to customize it to our needs, they recommend us to copy the default configuration file with the &lt;code class=&quot;highlighter-rouge&quot;&gt;.local&lt;/code&gt; extension. The reason for this is that if we update Fail2Ban, the original configuration file will get changed and we will lose our custom configuration.&lt;/p&gt;
+
+&lt;h2 id=&quot;put-those-bad-actors-in-jail&quot;&gt;Put those bad actors in jail&lt;/h2&gt;
+
+&lt;p&gt;The configuration files are located at &lt;code class=&quot;highlighter-rouge&quot;&gt;/etc/fail2ban&lt;/code&gt;, so lets go ahead and create a local copy of those files:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# Copy fail2ban default configuration&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;cp&lt;/span&gt; /etc/fail2ban/fail2ban.conf /etc/fail2ban/fail2ban.local
+&lt;span class=&quot;c&quot;&gt;# Copy fail2ban jail configuration&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;cp&lt;/span&gt; /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Fail2Ban uses the concept of &lt;code class=&quot;highlighter-rouge&quot;&gt;jails&lt;/code&gt; to monitor specific services like nginx, ssh, apache and even your custom application logs like Node.js or Java apps. Each jail specifies a configuration for a specific application or service running on your server. By default, the &lt;code class=&quot;highlighter-rouge&quot;&gt;sshd&lt;/code&gt; jail is active.&lt;/p&gt;
+
+&lt;h2 id=&quot;avoid-banning-specific-ip-addresses&quot;&gt;Avoid banning specific IP Addresses&lt;/h2&gt;
+
+&lt;p&gt;To prevent specific IP addresses of being banned, you can create an allow-list in the &lt;code class=&quot;highlighter-rouge&quot;&gt;fail2ban.local&lt;/code&gt; file. Go ahead and edit the following line with your IP Addresses using space (and/or comma) as a separator:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# allow IP addresses from your VPN or other servers here&lt;/span&gt;
+ignoreip &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 127.0.0.1/8 ::1 YOU_IP_ADDRESS_HERE
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;activating-fail2ban&quot;&gt;Activating Fail2Ban&lt;/h2&gt;
+
+&lt;p&gt;Now that we have Fail2Ban installed and pre-configured by default, lets start the service:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;systemctl start fail2ban
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;As soon as you start Fail2Ban, you might already see some bad actors blocked. First lets check which jails are active with the following command:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;fail2ban-client status
+&lt;span class=&quot;c&quot;&gt;# You should see something like this as output:&lt;/span&gt;
+Status
+|- Number of jail:	1
+&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;- Jail list: sshd
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Ok, so we have Fail2Ban up and running, lets check the &lt;code class=&quot;highlighter-rouge&quot;&gt;sshd&lt;/code&gt; jail with the following command:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;fail2ban-client status sshd
+&lt;span class=&quot;c&quot;&gt;# You should see something like this as output&lt;/span&gt;
+Status &lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;the jail: sshd
+|- Filter
+|  |- Currently failed:	10
+|  |- Total failed:	511
+|  &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;- File list:	/var/log/auth.log
+&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;- Actions
+   |- Currently banned:	9
+   |- Total banned:	77
+   &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;- Banned IP list:	218.255.86.106 222.186.31.83 85.209.48.228 180.166.184.66 218.92.0.220 109.255.185.65 150.158.178.137 111.231.132.94 66.70.130.149
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;In my case, I could immediately see the benefit of Fail2Ban. after a few minutes, I had already several IP addresses banned.&lt;/p&gt;
+
+&lt;p&gt;Lets lookup our IP table to see if those IP addresses match with the following command:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;iptables &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-L&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# You should see something like this as output&lt;/span&gt;
+Chain f2b-sshd &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1 references&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+target     prot opt &lt;span class=&quot;nb&quot;&gt;source               &lt;/span&gt;destination         
+REJECT     all  &lt;span class=&quot;nt&quot;&gt;--&lt;/span&gt;  103.100.211.72       0.0.0.0/0            reject-with icmp-port-unreachable
+REJECT     all  &lt;span class=&quot;nt&quot;&gt;--&lt;/span&gt;  66.70.130.149        0.0.0.0/0            reject-with icmp-port-unreachable
+REJECT     all  &lt;span class=&quot;nt&quot;&gt;--&lt;/span&gt;  111.231.132.94       0.0.0.0/0            reject-with icmp-port-unreachable
+REJECT     all  &lt;span class=&quot;nt&quot;&gt;--&lt;/span&gt;  150.158.178.137      0.0.0.0/0            reject-with icmp-port-unreachable
+REJECT     all  &lt;span class=&quot;nt&quot;&gt;--&lt;/span&gt;  109.255.185.65       0.0.0.0/0            reject-with icmp-port-unreachable
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;That is great. Fail2Ban is updating our IP filter rules which will prevent connections from those bad actors.&lt;/p&gt;
+
+&lt;h2 id=&quot;changing-the-defaults&quot;&gt;Changing the defaults&lt;/h2&gt;
+
+&lt;p&gt;The default configuration blocks those IP addresses for 600 seconds (10 minutes). This is a pretty good start, but we can do better. Ideally, if some of those IP addresses are attempting to connect every 10 minutes, we could block them for a greater timespan or even permanently.&lt;/p&gt;
+
+&lt;p&gt;One thing to consider is that if we block IPs permanently, we can potentially increase our IP table lookup time, which means that connecting to our server can become very slow since this list of blocked IPs can grow indefinitely.&lt;/p&gt;
+
+&lt;p&gt;To help us with that, Fail2Ban comes with &lt;code class=&quot;highlighter-rouge&quot;&gt;recidive&lt;/code&gt; which is a jail for its own logs. It works like that:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;It looks into Fail2Ban own logs for banned IP addresses from other jails.&lt;/li&gt;
+  &lt;li&gt;If those IP addresses are found in the logs more than 5 times in the current day, it blocks them for 1 week.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;That sounds like a good strategy. Our IP table won’t grow very large (in theory) because in 1 week it will rollback and allow those IP addresses to connect again. If they act in bad faith again, they will be blocked and the cycle repeats.&lt;/p&gt;
+
+&lt;p&gt;So let’s go ahead and activate &lt;code class=&quot;highlighter-rouge&quot;&gt;recidive&lt;/code&gt;. Edit the file &lt;code class=&quot;highlighter-rouge&quot;&gt;/etc/fail2ban/jail.local&lt;/code&gt; (I am using nano, but feel free to use a different text editor). Look for the following code:&lt;/p&gt;
+
+&lt;div class=&quot;language-conf highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# Jail for more extended banning of persistent abusers
+# !!! WARNINGS !!!
+# 1. Make sure that your loglevel specified in fail2ban.conf/.local
+#    is not at DEBUG level -- which might then cause fail2ban to fall into
+#    an infinite loop constantly feeding itself with non-informative lines
+# 2. Increase dbpurgeage defined in fail2ban.conf to e.g. 648000 (7.5 days)
+#    to maintain entries for failed logins for sufficient amount of time
+&lt;/span&gt;[&lt;span class=&quot;n&quot;&gt;recidive&lt;/span&gt;]
+
+&lt;span class=&quot;n&quot;&gt;logpath&lt;/span&gt;  = /&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt;/&lt;span class=&quot;n&quot;&gt;log&lt;/span&gt;/&lt;span class=&quot;n&quot;&gt;fail2ban&lt;/span&gt;.&lt;span class=&quot;n&quot;&gt;log&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;banaction&lt;/span&gt; = %(&lt;span class=&quot;n&quot;&gt;banaction_allports&lt;/span&gt;)&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;bantime&lt;/span&gt;  = &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;findtime&lt;/span&gt; = &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Notice that the configuration is already in place. We only need to activate it:&lt;/p&gt;
+
+&lt;div class=&quot;language-conf highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# ... comments
+&lt;/span&gt;[&lt;span class=&quot;n&quot;&gt;recidive&lt;/span&gt;]
+&lt;span class=&quot;c&quot;&gt;# Include the next line to enable recidive
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;enabled&lt;/span&gt; = &lt;span class=&quot;n&quot;&gt;true&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;logpath&lt;/span&gt;  = /&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt;/&lt;span class=&quot;n&quot;&gt;log&lt;/span&gt;/&lt;span class=&quot;n&quot;&gt;fail2ban&lt;/span&gt;.&lt;span class=&quot;n&quot;&gt;log&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;banaction&lt;/span&gt; = %(&lt;span class=&quot;n&quot;&gt;banaction_allports&lt;/span&gt;)&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;bantime&lt;/span&gt;  = &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;findtime&lt;/span&gt; = &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Now we only need to restart the Fail2Ban service with:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;systemctl restart fail2ban
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Let’s check our &lt;strong&gt;fail2ban&lt;/strong&gt; status to see which jails are running after our update:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;fail2ban-client status
+&lt;span class=&quot;c&quot;&gt;# You should see something like this as output&lt;/span&gt;
+Status
+|- Number of jail:	2
+&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;- Jail list:	recidive, sshd
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Now that &lt;code class=&quot;highlighter-rouge&quot;&gt;recidive&lt;/code&gt; is active, you can check if some IP addresses were banned for the whole week:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;fail2ban-client status recidive
+&lt;span class=&quot;c&quot;&gt;# You should see something like this as output&lt;/span&gt;
+Status &lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;the jail: recidive
+|- Filter
+|  |- Currently failed:	25
+|  |- Total failed:	90
+|  &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;- File list:	/var/log/fail2ban.log
+&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;- Actions
+   |- Currently banned:	10
+   |- Total banned:	10
+   &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;- Banned IP list:	129.226.114.97 103.246.240.26 142.93.60.53 167.172.163.162 109.255.185.65 150.158.178.137 66.70.130.149 180.166.184.66 64.225.35.135 218.255.86.106
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Now we have Fail2Ban monitoring our SSH access and fully configured.&lt;/p&gt;
+
+&lt;h2 id=&quot;what-to-do-if-i-block-myself&quot;&gt;What to do if I block myself&lt;/h2&gt;
+
+&lt;p&gt;You should be very careful with your server access from now on. Make sure that you have access from your computer and I highly recommend &lt;a href=&quot;https://www.cyberciti.biz/faq/how-to-disable-ssh-password-login-on-linux/&quot;&gt;disabling password access&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;You can wait the default 10 minutes or you can access from a different IP address (like routing your mobile phone) and remove your IP address from the blocklist with the following command:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;fail2ban-client &lt;span class=&quot;nb&quot;&gt;set &lt;/span&gt;jailname unbanip &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;IP_ADDRESS_HERE]
+&lt;span class=&quot;c&quot;&gt;# Here is how it could look like&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# if you want to unban an IP address from the sshd jail&lt;/span&gt;
+fail2ban-client &lt;span class=&quot;nb&quot;&gt;set &lt;/span&gt;sshd unbanip 1.1.1.1
+&lt;span class=&quot;c&quot;&gt;# from the recidive jail&lt;/span&gt;
+fail2ban-client &lt;span class=&quot;nb&quot;&gt;set &lt;/span&gt;recidive unbanip 1.1.1.1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;where-to-go-from-here&quot;&gt;Where to go from here&lt;/h2&gt;
+
+&lt;p&gt;Fail2Ban is quite extensive and supports many different kinds of extensions like your own custom jails. The good thing is that amazing people around the world like to share their experience as well, so if you want to setup Fail2Ban for a different service like nginx, &lt;a href=&quot;https://www.digitalocean.com/community/tutorials/how-to-protect-an-nginx-server-with-fail2ban-on-ubuntu-14-04&quot;&gt;Digital Ocean has a great tutorial about it&lt;/a&gt; with a step-by-step guide.&lt;/p&gt;
+
+&lt;p&gt;You can also read more about it on the &lt;a href=&quot;https://www.fail2ban.org/wiki/index.php/Main_Page&quot;&gt;Fail2Ban official page&lt;/a&gt;&lt;/p&gt;</content><author><name>Bruno Paulino</name></author><summary type="html">I was recently checking the access logs from some linux servers I maintain and I was very surprised by the ssh login attempts those servers were facing. My servers have password access disabled by default, so only previously registered ssh keys are allowed to login. But even then, the amount of login attempts was disturbing. Around 500 attempts a day. I had to do something about it.</summary></entry><entry><title type="html">Dockerizing React Apps</title><link href="https://bpaulino.com/entries/12-dockerizing-react-apps" rel="alternate" type="text/html" title="Dockerizing React Apps" /><published>2020-03-02T00:00:00+00:00</published><updated>2020-03-02T00:00:00+00:00</updated><id>https://bpaulino.com/entries/dockerizing-react-apps</id><content type="html" xml:base="https://bpaulino.com/entries/12-dockerizing-react-apps">&lt;p&gt;While creating ReactJS apps, you probably don’t have to think too much about how to deploy them. ReactJS applications can be easily bundled in a folder, consisting of plain HTML, CSS and Javascript files. That should be simple enough to upload it to a S3 Bucket, host it on &lt;a href=&quot;https://pages.github.com/&quot;&gt;Github Pages&lt;/a&gt; or even integrating great services like &lt;a href=&quot;https://www.netlify.com/&quot;&gt;Netlify&lt;/a&gt; or &lt;a href=&quot;https://zeit.co/&quot;&gt;Zeit&lt;/a&gt; for fast and automated deployments.&lt;/p&gt;
+
+&lt;p&gt;But this week, I had the task of deploying a React app created with &lt;a href=&quot;https://github.com/facebook/create-react-app&quot;&gt;create-react-app&lt;/a&gt; on a VPS under a subdomain. I didn’t want to use stone-age FTP, I wanted to have an automated docker container with my app where I could deploy anywhere without much configuration.&lt;/p&gt;
+
+&lt;p&gt;I created a demo app with all the configurations detailed on this post. The &lt;a href=&quot;https://github.com/brunojppb/dockerized-react-app&quot;&gt;code is available here&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;preparing-our-dockerfile&quot;&gt;Preparing our Dockerfile&lt;/h2&gt;
+
+&lt;p&gt;We start out by creating a &lt;code class=&quot;highlighter-rouge&quot;&gt;Dockerfile&lt;/code&gt; on our project root folder with the following content:&lt;/p&gt;
+
+&lt;div class=&quot;language-dockerfile highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# This image won't be shipped with our final container&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# we only use it to compile our app.&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; node:12.2.0-alpine as build&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;ENV&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; PATH /app/node_modules/.bin:$PATH&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;WORKDIR&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; /app&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;COPY&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; . /app&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;RUN &lt;/span&gt;npm &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;RUN &lt;/span&gt;npm run build
+
+&lt;span class=&quot;c&quot;&gt;# production image using nginx and including our&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# compiled app only. This is called multi-stage builds&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; nginx:1.16.0-alpine&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;COPY&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; --from=build /app/build /usr/share/nginx/html&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;RUN &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;rm&lt;/span&gt; /etc/nginx/conf.d/default.conf
+&lt;span class=&quot;k&quot;&gt;COPY&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; nginx/nginx.conf /etc/nginx/conf.d&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;EXPOSE&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; 80&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;CMD&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; [&quot;nginx&quot;, &quot;-g&quot;, &quot;daemon off;&quot;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;On the snippet of code above, we are using a feature called &lt;a href=&quot;https://docs.docker.com/develop/develop-images/multistage-build/&quot;&gt;multi-stage builds&lt;/a&gt;. It requires Docker 17.05 or higher, but the benefit of this feature is enormous, which I will explain next. On the first half of the script, we are building a Docker image based on &lt;code class=&quot;highlighter-rouge&quot;&gt;node:12.2.0-alpine&lt;/code&gt; which is a very tiny linux image with node included. Now notice the &lt;code class=&quot;highlighter-rouge&quot;&gt;as build&lt;/code&gt; at the end of the first line. This creates an intermediary image with our dependencies that can be thrown away after build. Soon after that, we install all the dependencies from my React app with &lt;code class=&quot;highlighter-rouge&quot;&gt;npm install&lt;/code&gt; and later we execute &lt;code class=&quot;highlighter-rouge&quot;&gt;npm run build&lt;/code&gt; to compile the React app optimized for production.&lt;/p&gt;
+
+&lt;p&gt;On the second half of the code, we create a new Docker image based on &lt;code class=&quot;highlighter-rouge&quot;&gt;nginx:1.16.0-alpine&lt;/code&gt; which is also a tiny linux including &lt;a href=&quot;https://www.nginx.com/&quot;&gt;nginx&lt;/a&gt;, a high performance web server to serve our React app. We use the command &lt;code class=&quot;highlighter-rouge&quot;&gt;COPY&lt;/code&gt; to extract the content from our previous image called &lt;code class=&quot;highlighter-rouge&quot;&gt;build&lt;/code&gt; and copy it into &lt;code class=&quot;highlighter-rouge&quot;&gt;/usr/share/nginx/html&lt;/code&gt;. Next, we remove the default nginx configuration file and add our custom configuration under &lt;code class=&quot;highlighter-rouge&quot;&gt;nginx/nginx.conf&lt;/code&gt; with the following content:&lt;/p&gt;
+
+&lt;div class=&quot;language-nginx highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;# To support react-router, we must configure nginx
+# to route the user to the index.html file for all initial requests
+# e.g. landing on /users/1 should render index.html
+# then React takes care of mounting the correct routes
+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;server&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+
+  &lt;span class=&quot;kn&quot;&gt;listen&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;80&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;kn&quot;&gt;location&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kn&quot;&gt;root&lt;/span&gt;   &lt;span class=&quot;n&quot;&gt;/usr/share/nginx/html&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kn&quot;&gt;index&lt;/span&gt;  &lt;span class=&quot;s&quot;&gt;index.html&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;index.htm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kn&quot;&gt;try_files&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$uri&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$uri&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;/index.html&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;kn&quot;&gt;error_page&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;500&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;502&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;503&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;504&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;/50x.html&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;kn&quot;&gt;location&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;/50x.html&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kn&quot;&gt;root&lt;/span&gt;   &lt;span class=&quot;n&quot;&gt;/usr/share/nginx/html&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This configuration is very important for apps using &lt;a href=&quot;https://reacttraining.com/react-router/web/guides/quick-start&quot;&gt;React Router&lt;/a&gt;. Whenever you share a link to your React app, lets say, a link to &lt;code class=&quot;highlighter-rouge&quot;&gt;/users/1/profile&lt;/code&gt;, this link tells the browser to request this path from the web server. If the web server is not configured properly, our React app won’t be able to render the initial &lt;strong&gt;index.html&lt;/strong&gt; file containing our React application.&lt;br /&gt;
+Using our custom configuration, we tell nginx to route all requests to the root folder &lt;code class=&quot;highlighter-rouge&quot;&gt;/usr/share/nginx/html&lt;/code&gt; which is the directory we previously copied our React app during image build. We should not forget that React apps are Single Page Applications, which means that there is only one page to be rendered on the first request, the rest of the job is taken care by React on the browser.&lt;/p&gt;
+
+&lt;h2 id=&quot;building-our-docker-image&quot;&gt;Building our Docker Image&lt;/h2&gt;
+
+&lt;p&gt;We already have all the required code to build our Docker image. Lets execute the Docker command to build it:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# Make sure to be on the same folder of your React app&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# replace 'my-react-app' with whatever name you find appropriate&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# this is the image tag you will push to your Docker registry&lt;/span&gt;
+docker build &lt;span class=&quot;nt&quot;&gt;-t&lt;/span&gt; my-react-app &lt;span class=&quot;nb&quot;&gt;.&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;When the image is built, lets check the size of the image we just generated with the following command:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# List all the images on your machine&lt;/span&gt;
+docker images
+&lt;span class=&quot;c&quot;&gt;# You should see something like this:&lt;/span&gt;
+REPOSITORY     TAG       IMAGE ID        CREATED          SIZE
+my-react-app   latest    c35c322d4c37    20 seconds ago   22.5MB
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Alright, our Docker image is ready to go on to a Docker Registry somewhere. One interesting thing about this image is that the size is only 22.5MB. This is really great for deployment because small images make automated pipelines run much faster during download, image building and upload.&lt;/p&gt;
+
+&lt;h2 id=&quot;running-our-react-app-with-docker-compose&quot;&gt;Running our React app with docker-compose&lt;/h2&gt;
+
+&lt;p&gt;What we need now is a way to run this Docker image. For testing it locally, lets create a file called &lt;code class=&quot;highlighter-rouge&quot;&gt;docker-compose.yml&lt;/code&gt; with the following content:&lt;/p&gt;
+
+&lt;div class=&quot;language-yml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;na&quot;&gt;version&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;3.7'&lt;/span&gt;
+
+&lt;span class=&quot;na&quot;&gt;services&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;my_react_app&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;build&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;.&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;ports&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;8000:80'&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://docs.docker.com/compose/&quot;&gt;Docker Compose&lt;/a&gt; will take care of building the image in case it doesn’t exist and also bind the port &lt;code class=&quot;highlighter-rouge&quot;&gt;8000&lt;/code&gt; from our local machine to the port &lt;code class=&quot;highlighter-rouge&quot;&gt;80&lt;/code&gt; on the container. Now open your browser on &lt;code class=&quot;highlighter-rouge&quot;&gt;localhost:8000&lt;/code&gt; and check if our React app is running there. You should see something like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/react_js_app_docker.png&quot; alt=&quot;React JS App running on Docker&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;Running a React app with Docker might not be the best deployment, but if you need to run docker like in my case, it can be very simple and effective. This opens the door for a lot of automation pipelines you can hook up on the project like &lt;a href=&quot;https://github.com/features/actions&quot;&gt;Github Actions&lt;/a&gt; or &lt;a href=&quot;https://docs.gitlab.com/ee/ci/&quot;&gt;Gitlab CI/CD&lt;/a&gt; to automate your deployment process. You can find &lt;a href=&quot;https://github.com/brunojppb/dockerized-react-app&quot;&gt;the code of this post here.&lt;/a&gt;&lt;/p&gt;</content><author><name>Bruno Paulino</name></author><summary type="html">While creating ReactJS apps, you probably don’t have to think too much about how to deploy them. ReactJS applications can be easily bundled in a folder, consisting of plain HTML, CSS and Javascript files. That should be simple enough to upload it to a S3 Bucket, host it on Github Pages or even integrating great services like Netlify or Zeit for fast and automated deployments. But this week, I had the task of deploying a React app created with create-react-app on a VPS under a subdomain. I didn’t want to use stone-age FTP, I wanted to have an automated docker container with my app where I could deploy anywhere without much configuration. I created a demo app with all the configurations detailed on this post. The code is available here</summary></entry><entry><title type="html">Rapid Prototyping with GatsbyJS</title><link href="https://bpaulino.com/entries/11-rapid-prototyping-with-gatsby-js" rel="alternate" type="text/html" title="Rapid Prototyping with GatsbyJS" /><published>2020-02-26T00:00:00+00:00</published><updated>2020-02-26T00:00:00+00:00</updated><id>https://bpaulino.com/entries/rapid-prototyping-with-gatsby-js</id><content type="html" xml:base="https://bpaulino.com/entries/11-rapid-prototyping-with-gatsby-js">&lt;p&gt;On February 17th, I &lt;a href=&quot;https://www.meetup.com/ReactVienna/events/268478297/&quot;&gt;gave a talk at the React Vienna Meetup&lt;/a&gt; about this topic and I thought writing a blogpost about could benefit some folks that either couldn’t make it or are living somewhere else around the globe. You can find my slides &lt;a href=&quot;https://bpaulino.com/rapid-prototyping-gatsby-js/&quot;&gt;here.&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;I would like to start off with a question. What if you want to put together a website with the most modern web tech out there? You probably need to know a bunch of things to start a simple website. Do you want to use modern Javascript syntax? no problem, just use &lt;a href=&quot;https://webpack.js.org/&quot;&gt;Webpack&lt;/a&gt; and &lt;a href=&quot;https://babeljs.io/&quot;&gt;Babel&lt;/a&gt; to help you transpile your code. Do you want to put your website online? just configure an small box on Digital Ocean, add Nginx and your website is online. Do you want to write blogposts and publish them using a CMS? No problem, just implement your backend, maybe using Postgres as a database. This list goes on and on if you try to start with a modern tool chain.&lt;/p&gt;
+
+&lt;p&gt;To get this whole setup done, and most importantly, correctly configured, can be hard. It is even worse if you are a beginner.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/stackoverflow_hard_time.jpg&quot; alt=&quot;A beginner having a hard time on Stackoveflow&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;static-site-generators-come-to-the-rescue&quot;&gt;Static site generators come to the rescue&lt;/h2&gt;
+
+&lt;p&gt;So you realize that this is an enormous amount of tools (and knowledge) you need to know upfront to start with a simple website. That is really overwhelming. This is where static site generators really shine. There is usually minimal to none configuration you have to do, there are many templates you can use to start with and most of the configuration thing is done for you. Some cool static site generators are:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://jekyllrb.com/&quot;&gt;Jekyll (Ruby)&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://gohugo.io/&quot;&gt;Hugo (Javascript)&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://vuejs.org/&quot;&gt;NuxtJS (Vue.js)&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.gatsbyjs.org/&quot;&gt;GatsbyJS (ReactJS)&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The most interesting one that caught my attention lately was &lt;a href=&quot;https://www.gatsbyjs.org/&quot;&gt;GatsbyJS.&lt;/a&gt; I have been working with React for the past 3 years and finding a decent static site generator based on React was very interesting. Right from the start, it solves all the problems I mentioned before. You don’t have to configure anything to start. You only need the minimal tools installed like a &lt;a href=&quot;https://code.visualstudio.com/&quot;&gt;good text editor&lt;/a&gt; and &lt;a href=&quot;https://nodejs.org/en/&quot;&gt;node.js&lt;/a&gt;. There is also no need to have a server for hosting. It generates all the pages statically, which means that when you bundle your website, you have one HTML file for each page of your website, just like the web is supposed to work. And simple enough, you can just upload those files to a static site hosting provider like &lt;a href=&quot;https://www.netlify.com/&quot;&gt;netlify&lt;/a&gt; or even use &lt;a href=&quot;https://pages.github.com/&quot;&gt;Github Pages&lt;/a&gt; to host it for free.&lt;/p&gt;
+
+&lt;p&gt;Gatsby has an incredible feature that sets it apart from other generators: Your datasource doesn’t have to be statically located within the code, like markdown files. It can be pulled from a remote datasource, like a headless CMS, before generating the pages.&lt;br /&gt;
+That is a big deal if you want the freedom of publishing blogposts from a nice CMS or you have a team of content creators that are simultaneously creating content. Their don’t have to be developers to be able to create a blog post, and Gatsby enables exactly that.&lt;/p&gt;
+
+&lt;h2 id=&quot;our-little-experiment&quot;&gt;Our little experiment&lt;/h2&gt;
+
+&lt;p&gt;At &lt;a href=&quot;https://woombikes.com/&quot;&gt;woom&lt;/a&gt; we are modernizing our tech stack. One interesting project we had was to rebuild our blog frontend, but in a way that we don’t get stuck at a specific platform like we had before (using our ERP). As the main engineer responsible for this project, I decided to give Gatsby a try. I was impressed with the development speed we had using it to implement our blog prototype. We ended up using &lt;a href=&quot;https://www.hubspot.com/&quot;&gt;Hubspot&lt;/a&gt; as our CMS since we are using it for other marketing purposes, but the frontend is still portable if we decide to shift to a new CMS. &lt;a href=&quot;https://blog.woombikes.com&quot;&gt;You can take a look at our blog here.&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;This is how it looks like after we got it done:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/woom_blog_prototype.png&quot; alt=&quot;woom blog using GatsbyJS&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;But what are the main advantages of Gatsby anyway? What really made us to look at it differently?&lt;/p&gt;
+
+&lt;h3 id=&quot;it-uses-react&quot;&gt;It uses React&lt;/h3&gt;
+
+&lt;p&gt;If you never heard of &lt;a href=&quot;https://reactjs.org/&quot;&gt;React&lt;/a&gt; before, it is the state-of-the-art of frontend libraries. Writing frontend with React requires a different approach, but it definitely pays off. It lets you break your application into reusable components, which makes it infinitely simpler to reason about it and debug.&lt;/p&gt;
+
+&lt;h3 id=&quot;react-hooks&quot;&gt;React hooks&lt;/h3&gt;
+
+&lt;p&gt;Even though Gatsby generates static pages, you can still benefit from React state management. hooks like &lt;code class=&quot;highlighter-rouge&quot;&gt;useState&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;useContext&lt;/code&gt; are still there to help us have a more dynamic page.&lt;/p&gt;
+
+&lt;h3 id=&quot;graphql-included&quot;&gt;GraphQL included&lt;/h3&gt;
+
+&lt;p&gt;Using the built-in GraphQL API, you can pull data from a remote datasource, process static files from your local repository, like lets say images and transform them to alternative resolutions for different device sizes and so on.&lt;/p&gt;
+
+&lt;h3 id=&quot;development-and-production-configuration-out-of-the-box&quot;&gt;Development and Production configuration out-of-the-box&lt;/h3&gt;
+
+&lt;p&gt;You don’t have to hassle around Webpack configurations, pipelines or anything like this. The basics, which is already what you need to start, is already there, properly configured and ready to row with the single command &lt;code class=&quot;highlighter-rouge&quot;&gt;yarn develop&lt;/code&gt; during development and  &lt;code class=&quot;highlighter-rouge&quot;&gt;yarn build&lt;/code&gt; to deploy a new build.&lt;/p&gt;
+
+&lt;h3 id=&quot;rich-plugin-ecosystem&quot;&gt;Rich plugin ecosystem&lt;/h3&gt;
+
+&lt;p&gt;When looking for a framework, you usually have to consider how flexible it can be, so you can benefit from the community, using code extensions and plugins. Gatsby has a very rich plugin ecosystem, and the most important ones, like &lt;a href=&quot;https://www.gatsbyjs.org/packages/gatsby-image/&quot;&gt;gatsby-image&lt;/a&gt; for image processing are already there, provided and maintained by Gatsby directly, which is a good sign that will be kept up2date.&lt;/p&gt;
+
+&lt;h2 id=&quot;lets-try-to-build-something&quot;&gt;Lets try to build something&lt;/h2&gt;
+
+&lt;p&gt;For this &lt;del&gt;talk&lt;/del&gt; blogpost, I created a little demo. This is a website with a blog section. The blogposts come from &lt;a href=&quot;https://www.storyblok.com/&quot;&gt;the headless CMS Storyblok.&lt;/a&gt;. You can find the source code of &lt;a href=&quot;https://github.com/brunojppb/gatsby-minimal-blog&quot;&gt;this demo here.&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/gatsby_minimal_website.png&quot; alt=&quot;Gatsby minimal website with Blog component&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Clone the &lt;a href=&quot;https://github.com/brunojppb/gatsby-minimal-blog&quot;&gt;demo repo&lt;/a&gt; and execute the following commands:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# Clone the repo&lt;/span&gt;
+git clone git@github.com:brunojppb/gatsby-minimal-blog.git
+&lt;span class=&quot;c&quot;&gt;# Now lets go to our newly created project&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;gatsby-minimal-blog
+&lt;span class=&quot;c&quot;&gt;# install all dependencies&lt;/span&gt;
+yarn &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# and fire up the dev server&lt;/span&gt;
+yarn develop
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Now lets go to our browser and type in &lt;code class=&quot;highlighter-rouge&quot;&gt;localhost:8000&lt;/code&gt; to see what happens.
+You will see a nice and bare-minimum website, very similar to the screenshot I posted above, but with a link to the blog section of the website.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/gatsby_minimal_website_home.png&quot; alt=&quot;Gatsby Minimal website home page&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;If you take a look at the terminal, you will see that there was an error with a plugin. something like &lt;code class=&quot;highlighter-rouge&quot;&gt;failed createPages - 0.193s&lt;/code&gt;. This is because when we hit &lt;code class=&quot;highlighter-rouge&quot;&gt;yarn develop&lt;/code&gt; Gatsby kicks in and try to fetch our posts from Storyblok. But since you don’t have an account there yet, it can’t find out your API token to access your blogposts. So go ahead and open &lt;a href=&quot;https://app.storyblok.com/#!/&quot;&gt;Storyblok&lt;/a&gt; to create your account and select the demo.&lt;br /&gt;
+After signing in, you will that there is a &lt;strong&gt;demo space&lt;/strong&gt; created for you. Don’t get bogged down with the details, Lets just try to create content there. On the left-hand side, click on &lt;strong&gt;Content&lt;/strong&gt;, inside content, you will see a list of different assets. You have to delete all of them, but leave &lt;strong&gt;Blog Articles&lt;/strong&gt;. Now select &lt;strong&gt;Blog Articles&lt;/strong&gt;.&lt;br /&gt;
+You will see a list of different contents, select all of them and delete it. We will create a new article from scratch.
+On the top-right corner, select &lt;strong&gt;“+Entry”&lt;/strong&gt;. You will be asked to enter a title. On the &lt;code class=&quot;highlighter-rouge&quot;&gt;content type&lt;/code&gt; dialog, select &lt;code class=&quot;highlighter-rouge&quot;&gt;article&lt;/code&gt; and hit create. After this screen, you will land on a CMS-like page where you can write on the right-hand side menu and see it live rendering on the left-hand side. Try it out, update the title field and write something into the &lt;strong&gt;long text&lt;/strong&gt; dialog. When you are happy with it, just hit &lt;strong&gt;publish&lt;/strong&gt; on the top-right corner.&lt;/p&gt;
+
+&lt;p&gt;Now lets get the API Key to access our content. To to settings -&amp;gt; API-Keys. There you have an API token called &lt;code class=&quot;highlighter-rouge&quot;&gt;public&lt;/code&gt;. copy it to your clipboard. Now head back to your text editor and create a file called &lt;code class=&quot;highlighter-rouge&quot;&gt;.env.development&lt;/code&gt; on your project root folder. and inside of it, add your API token in the following pattern:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-env&quot;&gt;CMS_API_TOKEN=YOUR_API_TOKEN_HERE
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;After that, restart your development server. Go to your browser and click on &lt;code class=&quot;highlighter-rouge&quot;&gt;Visit our blog section&lt;/code&gt;. You should see your recently created article there. You can click on it and to directly to the article page. But what happened there? Lets take a look at the a file called &lt;code class=&quot;highlighter-rouge&quot;&gt;gatsby-node.js&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;language-js highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;axios&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;axios&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;marked&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;marked&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;exports&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;createPages&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;async&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;actions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;createPage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}})&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+
+  &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;url&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;`https://api.storyblok.com/v1/cdn/stories`&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;articles&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;await&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;axios&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;url&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; 
+    &lt;span class=&quot;na&quot;&gt;params&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;token&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;env&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;CMS_API_TOKEN&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;space.version&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Date&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;getTime&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;// Create articles list page&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;createPage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;/articles&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;component&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;./src/templates/all_articles.js&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;articles&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;articles&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;stories&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;// create each individual article page&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;articles&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;stories&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;article&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;createPage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;`/article/&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;article&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;slug&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/`&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;component&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;./src/templates/article.js&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; 
+        &lt;span class=&quot;na&quot;&gt;article&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+          &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;article&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+          &lt;span class=&quot;na&quot;&gt;content&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;article&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;content&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;c1&quot;&gt;// Don't do this at home :)&lt;/span&gt;
+            &lt;span class=&quot;c1&quot;&gt;// You need to sanitize this HTML first&lt;/span&gt;
+            &lt;span class=&quot;na&quot;&gt;long_text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;marked&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;article&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;content&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;long_text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+          &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+       &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This is a lifecycle script executed by Gatsby during build time. What this script does is:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;fetch all articles from Storyblok&lt;/li&gt;
+  &lt;li&gt;create an index page with all the articles so you have a complete list&lt;/li&gt;
+  &lt;li&gt;create individual pages with each article&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;If you look into &lt;code class=&quot;highlighter-rouge&quot;&gt;src/templates/all_article.js&lt;/code&gt; you will see:&lt;/p&gt;
+
+&lt;div class=&quot;language-jsx highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;react&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Link&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;gatsby&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Layout&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;../components/layout&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;default&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;AllArticles&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;pageContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;articles&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}})&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Layout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;className=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;article-list&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;si&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;articles&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;article&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+          &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;key=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;article&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;uuid&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Link&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;to=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;`/article/${article.slug}`&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+              &lt;span class=&quot;si&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;article&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;content&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;title&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Link&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+      &lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Layout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The &lt;strong&gt;AllArticles&lt;/strong&gt; component follows a pattern imposed by Gatsby. It must receive a prop called &lt;code class=&quot;highlighter-rouge&quot;&gt;pageContext&lt;/code&gt;. This necessary for Gatsby to inject the content at build-time and render the component to generate the static pages. If you follow the convention, you get all this magic for free.&lt;br /&gt;
+The same thing happens to the &lt;strong&gt;Article&lt;/strong&gt; component. it expects a &lt;code class=&quot;highlighter-rouge&quot;&gt;pageContext&lt;/code&gt; prop and from there on, you can create your React component in the same way.&lt;/p&gt;
+
+&lt;h2 id=&quot;next-steps&quot;&gt;Next Steps&lt;/h2&gt;
+
+&lt;p&gt;This example was very naive and simplistic, but you can already have a feeling of what Gatsby can do. If you are considering to develop a new website and don’t want to waste your time with tooling configuration, give Gatsby a try. It will be probably worth it.&lt;br /&gt;
+We are now evaluating if makes sense or not to build out Shop frontend with it in a way that supports multi-language. I got some interesting feedback from folks using Gatsby in production during my React Vienna talk that will definitely help to try it out.&lt;/p&gt;</content><author><name>Bruno Paulino</name></author><summary type="html">On February 17th, I gave a talk at the React Vienna Meetup about this topic and I thought writing a blogpost about could benefit some folks that either couldn’t make it or are living somewhere else around the globe. You can find my slides here. I would like to start off with a question. What if you want to put together a website with the most modern web tech out there? You probably need to know a bunch of things to start a simple website. Do you want to use modern Javascript syntax? no problem, just use Webpack and Babel to help you transpile your code. Do you want to put your website online? just configure an small box on Digital Ocean, add Nginx and your website is online. Do you want to write blogposts and publish them using a CMS? No problem, just implement your backend, maybe using Postgres as a database. This list goes on and on if you try to start with a modern tool chain. To get this whole setup done, and most importantly, correctly configured, can be hard. It is even worse if you are a beginner.</summary></entry></feed>

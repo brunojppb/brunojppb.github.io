@@ -150,4 +150,6 @@ export default function Modal({ onClose }) {
 
 Can you notice how clean our modal component looks now? Better yet, we can reuse that same logic across our app just by reusing the `useClickAway` hook. Isn't that cool?
 
+> Disclaimer: This simple modal we created here is highly inaccessible. You should not use that modal sample code in production.
+
 [Here is the link](https://codesandbox.io/s/react-custom-hooks-see0d) to the Codesandbox demo we built on this blogpost. Feel free to copy and use it on your apps.

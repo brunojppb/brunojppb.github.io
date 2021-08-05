@@ -122,7 +122,7 @@ async function test() {
     4
   );
 
-  console.log("result: ", result);
+  assert(result === 'ok')
 }
 
 test();

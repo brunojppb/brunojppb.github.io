@@ -335,20 +335,8 @@ function buildRedisClient() {
       console.error('Redis Error', error)
     })
 
-    client.on('connect', () => {
-      console.log('Redis Connection stablished')
-    })
-
-    client.on('ready', () => {
-      console.log('Redis client ready')
-    })
-
-    client.on('end', () => {
-      console.log('Redis client connection ended')
-    })
-
-    // Emits when an error occurs when connecting 
-    // to a node when using Redis in Cluster mode
+    // Redis emits this error when an something 
+    // occurs when connecting to a node when using Redis in Cluster mode
     client.on('node error', (error, node) => {
       console.error(`Redis error in node ${node}`, error)
     })

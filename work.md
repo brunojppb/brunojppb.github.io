@@ -12,7 +12,7 @@ meta_image: /assets/images/work_cover.jpg
       <div>
           <h2><a href="https://n26.com">N26.com - The bank you’ll love</a></h2>
           <p>
-              As of February 2021, I've joined N26 as a Tech Lead of the Web Core team. Getting the chance to do banking in 2021 is really exciting, specially being one of the customers that have suffered for decades with crappy internet banking everywhere I go. N26 is doing an amazing job and being part of it is an incredible opportunity to grow and learn more and more.
+              As of February 2021, I've joined N26 as the Tech Lead of the Web Core team. Getting the chance to do banking in 2021 is really exciting, specially being one of the customers that have suffered for decades with crappy internet banking everywhere I go. N26 is doing an amazing job and being part of it is an incredible opportunity to grow and learn more and more.
           </p>
       </div>
       <img src="/assets/images/n26_team.jpg"

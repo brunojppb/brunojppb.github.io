@@ -13,13 +13,11 @@ meta_image: /assets/images/work_cover.jpg
           <h2><a href="https://n26.com">N26.com - The bank you’ll love</a></h2>
           <p>
               I've recently joined N26 as a Tech Lead of the Web Core team. I'm still figuring out all the intricacies of the job, but getting the chance to do banking in 2021 is amazing, specially being one of the customers that have suffered for decades with crappy internet banking everywhere I go. N26 is doing an amazing job and being part of it is an awesome opportunity to grow and learn more and more.
-              <br/><br/>
-              I don't have a cool picture with my team yet, but will update it here as soon as this Covid shitstorm is over.
           </p>
       </div>
-      <img src="/assets/images/n26_app.jpg" 
+      <img src="/assets/images/n26_team.jpg"
         loading="lazy"
-        alt="N26 iOS app with a credit card on the right-hand side of the phone"/>
+        alt="On top, Myself and my team in London for the React Advanced conference. Below in Barcelona with some team members."/>
   </div>
 
   <div class="job-item">

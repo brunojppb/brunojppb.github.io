@@ -43,7 +43,7 @@ The implementation of the algorithm above is actually quite straightforward in J
 /**
  * Wait for the given milliseconds
  * @param {number} milliseconds The given time to wait
- * @returns {Promise} A fulfiled promise after the given time has passed
+ * @returns {Promise} A fulfilled promise after the given time has passed
  */
 function waitFor(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));

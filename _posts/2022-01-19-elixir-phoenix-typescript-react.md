@@ -4,7 +4,7 @@ author: Bruno Paulino
 title: Creating Webapps with React, Phoenix, Elixir and TypeScript in 2022
 permalink: entries/how-to-webapp-elixir-phoenix-typescript-react
 keywords: elixir,phoenix,typescript,react,webapp
-meta_description: Creating a Phoenix project with React and TypeScript
+meta_description: How to create a modern Phoenix app with React and TypeScript
 meta_image: /assets/images/posts/2021-09-01-how-to-use-redis-cluster-for-caching.jpg
 ---
 
@@ -131,6 +131,8 @@ with the following components:
 import { useEffect } from 'react';
 import { BrowserRouter, Link, Routes, Route } from 'react-router-dom';
 
+const style = {display: 'flex', gap: '8px', padding: '8px'}
+
 function App() {
 
   /**
@@ -148,7 +150,7 @@ function App() {
 
   return (
     <BrowserRouter basename="app">
-      <nav style={{display: 'flex', gap: 8, padding: 8}}>
+      <nav style={style}>
         <Link to="/">Home</Link>
         <Link to="/settings">Settings Page</Link><br/>
       </nav>
@@ -174,8 +176,9 @@ function SettingsPage() {
 }
 
 function HomePage() {
+  const style = {padding: '8px'}
   return(
-    <div style={{padding: 8}}>
+    <div style={style}>
       <h1>React TS Home</h1>
       <p>Welcome to the homepage</p>
     </div>
@@ -508,7 +511,89 @@ and as long as you have a route and a controller to respond to that,
 API requests will be served just fine.
 
 Authentication via http-only Cookies will also just work without any extra
-setup since everything is under the same domain. (localhost during development
-and myapp.com in production)
+setup since everything is under the same domain. (`localhost` during development
+and `myapp.com` in production)
 
-## Creating a production Elixir Release
+## Creating an Elixir Release
+
+We have got everything setup now and the cherry on top is to generate the Elixir
+release with our production Phoenix app.
+
+The major advantage of an Elixir Release is that it created a single package including
+the Erlang VM, Elixir and all of your code and dependencies. The generated packaged
+can be placed into any machine without any preconfigured dependency.
+
+But before we generate our release, since we are testing the build locally
+we need change the port configuration since our runtime configuration is
+binding to 443 by default. Let's quickly change that at `config/runtime.exs`:
+
+```elixir
+config :phoenix_react, PhoenixReactWeb.Endpoint,
+  # here use the `port` variable so we can control that with environment variables
+  url: [host: host, port: port],
+  # Enable the server 
+  server: true,
+  http: [
+    # Enable IPv6 and bind on all interfaces.
+    # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.
+    # See the documentation on https://hexdocs.pm/plug_cowboy/Plug.Cowboy.html
+    # for details about using IPv6 vs IPv4 and loopback vs public addresses.
+    ip: {0, 0, 0, 0, 0, 0, 0, 0},
+    port: port
+  ],
+  secret_key_base: secret_key_base
+```
+
+With that out of the way, execute the following commands to generate the release:
+
+```shell
+# Generate a secret for our Phoenix app
+mix phx.gen.secret
+# It will output a very long string. Something like this:
+B41pUFgfTJeEUpt+6TwSkbrxlAb9uibgIemaYbm1Oq+XdZ3Q96LcaW9sarbGfMhy
+
+# Now export this secret as a environment variable:
+export SECRET_KEY_BASE=B41pUFgfTJeEUpt+6TwSkbrxlAb9uibgIemaYbm1Oq+XdZ3Q96LcaW9sarbGfMhy
+
+# Export the database URL
+# Probably very different in production for you.
+# I'm just using the local postgreSQL dev instance for this demo
+export DATABASE_URL=ecto://postgres:postgres@localhost/phoenix_react_dev
+
+# Get production dependencies
+mix deps.get --only prod
+
+# Compile the project for production
+MIX_ENV=prod mix compile
+
+# Generate static assets in case you
+# are using Phoenix default assets pipelines
+# For serve-side rendered pages
+MIX_ENV=prod mix assets.deploy
+
+# Generate our React frontend using
+# our custom mix task
+mix webapp
+
+# Genereate the convenience scripts to assist
+# Phoenix applicaiton deployments like running ecto migrations
+mix phx.gen.release
+
+# Now we are ready to generate the Elixir Release
+MIX_ENV=prod mix release
+```
+
+We now have our production release ready. Let's fire it up with the following command:
+
+```shell
+PHX_HOST=localhost _build/prod/rel/phoenix_react/bin/phoenix_react start
+# You should an output similar to the following
+19:52:53.813 [info] Running PhoenixReactWeb.Endpoint with cowboy 2.9.0 at :::4000 (http)
+19:52:53.814 [info] Access PhoenixReactWeb.Endpoint at http://localhost:4000
+```
+
+Great! Now our Phoenix app is running in production mode. Now head to your browser
+and open `localhost:4000/app`. You should see our React app being rendered!
+
+## Where to go from here
+

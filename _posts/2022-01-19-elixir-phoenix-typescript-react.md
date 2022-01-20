@@ -5,7 +5,7 @@ title: Modern Webapps with React, Phoenix, Elixir and TypeScript
 permalink: entries/modern-webapps-with-elixir-phoenix-typescript-react
 keywords: elixir,phoenix,typescript,react,webapp
 meta_description: How to create a modern Phoenix app with React and TypeScript
-meta_image: /assets/images/posts/2021-09-01-how-to-use-redis-cluster-for-caching.jpg
+meta_image: /assets/images/posts/elixir-phoenix-typescript-react.jpg
 ---
 
 I've started working on a side project this year and the tech stack

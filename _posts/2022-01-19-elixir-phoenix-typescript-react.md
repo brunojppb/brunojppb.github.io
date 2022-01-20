@@ -439,7 +439,7 @@ the browser won't even think about checking that because it knows that `myapp.co
 the same domain, so it's pretty sure that you allow requests to come and go from your own domain.
 
 During development, we are running our Phoenix app at port `4000` and our React app
-in port `3000`, we need to find a way for requests made by our React app to `localhost:3000/api/users`
+at port `3000`, we need to find a way for requests made by our React app to `localhost:3000/api/users`
 to be captured by some sort of proxy and forwarded to our Phoenix backend at port `4000`.
 
 Luckily, Vite saves the day again by providing us with the server proxy configuration.

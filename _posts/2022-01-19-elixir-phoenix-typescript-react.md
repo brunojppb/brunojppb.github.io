@@ -199,7 +199,7 @@ that no requests have been fired to your backend. So far so good.
 
 Also notice that we now access our React app via the `/app` route. This is important
 and plays a major role when we bundle our application for production and serve it
-from Phoenix. Use use a small hook to check whether our app was mounted to the `/` path
+from Phoenix. We are using a small hook to check whether our app was mounted to the `/` path
 and redirect to the base path. This is only relevant for development. In production,
 Phoenix will make sure that the user is always in the `/app` when using our React app.
 

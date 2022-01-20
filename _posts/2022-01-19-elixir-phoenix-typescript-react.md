@@ -615,3 +615,5 @@ be simple and while having React as a dependency does increase complexity into o
 the trade-off of building web apps with it pays off in my case. Although, if you
 have simple CRUD apps, sticking with vanilla Phoenix templates and LiveView might
 be more than enough.
+
+> You can find the repo with all the changes we made on this post [here.](https://github.com/brunojppb/React-Phoenix-TS)

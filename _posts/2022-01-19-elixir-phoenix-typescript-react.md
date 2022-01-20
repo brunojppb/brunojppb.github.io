@@ -1,8 +1,8 @@
 ---
 layout: post
 author: Bruno Paulino
-title: Creating Webapps with React, Phoenix, Elixir and TypeScript in 2022
-permalink: entries/how-to-webapp-elixir-phoenix-typescript-react
+title: Modern Webapps with React, Phoenix, Elixir and TypeScript
+permalink: entries/modern-webapps-with-elixir-phoenix-typescript-react
 keywords: elixir,phoenix,typescript,react,webapp
 meta_description: How to create a modern Phoenix app with React and TypeScript
 meta_image: /assets/images/posts/2021-09-01-how-to-use-redis-cluster-for-caching.jpg
@@ -519,25 +519,22 @@ and `myapp.com` in production)
 We have got everything setup now and the cherry on top is to generate the Elixir
 release with our production Phoenix app.
 
-The major advantage of an Elixir Release is that it created a single package including
-the Erlang VM, Elixir and all of your code and dependencies. The generated packaged
-can be placed into any machine without any preconfigured dependency.
+The major advantage of an Elixir Release is that it creates a single package including
+the Erlang VM, Elixir and all of your code and dependencies. The generated package
+can be placed into any machine without any preconfigured dependency. It works similarly
+like Go binaries that you just download and execute.
 
-But before we generate our release, since we are testing the build locally
+But before we generate our release, since we are testing the build locally,
 we need change the port configuration since our runtime configuration is
-binding to 443 by default. Let's quickly change that at `config/runtime.exs`:
+binding to __443__ by default. Let's quickly change that at `config/runtime.exs`:
 
 ```elixir
 config :phoenix_react, PhoenixReactWeb.Endpoint,
   # here use the `port` variable so we can control that with environment variables
   url: [host: host, port: port],
-  # Enable the server 
+  # Enable the web server
   server: true,
   http: [
-    # Enable IPv6 and bind on all interfaces.
-    # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.
-    # See the documentation on https://hexdocs.pm/plug_cowboy/Plug.Cowboy.html
-    # for details about using IPv6 vs IPv4 and loopback vs public addresses.
     ip: {0, 0, 0, 0, 0, 0, 0, 0},
     port: port
   ],
@@ -587,6 +584,7 @@ We now have our production release ready. Let's fire it up with the following co
 
 ```shell
 PHX_HOST=localhost _build/prod/rel/phoenix_react/bin/phoenix_react start
+
 # You should an output similar to the following
 19:52:53.813 [info] Running PhoenixReactWeb.Endpoint with cowboy 2.9.0 at :::4000 (http)
 19:52:53.814 [info] Access PhoenixReactWeb.Endpoint at http://localhost:4000
@@ -595,5 +593,25 @@ PHX_HOST=localhost _build/prod/rel/phoenix_react/bin/phoenix_react start
 Great! Now our Phoenix app is running in production mode. Now head to your browser
 and open `localhost:4000/app`. You should see our React app being rendered!
 
-## Where to go from here
+We have finally succeeded with our Phoenix + React + TypeScript setup. It provides us
+with a great developer experience while simplifying our production builds by
+bundling our Phoenix app together with our React app.
 
+## Wrapping up
+
+While that might have been a tiny bit complex to setup, I believe it is still worth it
+to keep your SPA decoupled from your backend. Here is a list with a few bonus point
+of this setup:
+
+* A single repo to work with which simplifies development, specially with a bigger team
+* Simpler CI/CD pipelines on the same repository
+* Free to swap out Vite in the future in case we decide to go with a different build tool
+* In the extreme case of changing our backend from Phoenix to something else,
+our React frontend is still fully independent and can basically be copy-pasted
+into a new setup.
+
+I personally believe that the development and deployment of our applications should
+be simple and while having React as a dependency does increase complexity into our app,
+the trade-off of building web apps with it pays off in my case. Although, if you
+have simple CRUD apps, sticking with vanilla Phoenix templates and LiveView might
+be more than enough.

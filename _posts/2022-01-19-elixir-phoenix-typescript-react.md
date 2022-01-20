@@ -525,7 +525,7 @@ can be placed into any machine without any preconfigured dependency. It works si
 like Go binaries that you just download and execute.
 
 But before we generate our release, since we are testing the build locally,
-we need change the port configuration since our runtime configuration is
+we need to change the port configuration since our runtime configuration is
 binding to __443__ by default. Let's quickly change that at `config/runtime.exs`:
 
 ```elixir

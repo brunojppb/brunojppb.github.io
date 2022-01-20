@@ -226,7 +226,7 @@ Our custom mix task will make sure that:
 * Move the production files to `priv/static/webapp`
 
 > The `/priv/static/webapp` path will be picked up by Phoenix later on, but make sure
-> that you add it to you `.gitignore` file. We don't want to commit our frontend
+> that you add it to your `.gitignore` file. We don't want to commit our frontend
 > production bundles.
 
 Let's go ahead and create `lib/mix/tasks/webapp.ex` with the following Elixir code:

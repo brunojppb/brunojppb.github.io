@@ -13,6 +13,7 @@
   --secondary-color: #20364C;
   --text-color: #CFD2D6;
   --progress-bar-color: #CFD2D6;
+  --code-bg: #333;
 }
 
 * {
@@ -90,6 +91,7 @@ body {
   --secondary-color: #F3EFEC;
   --text-color: #222222;
   --progress-bar-color: #f0d2bd;
+  --code-bg: #c4ab99;
 }
 
 .about-me {
@@ -148,7 +150,7 @@ code.highlighter-rouge.language-plaintext {
   display: inline-block;
   font-family: inherit;
   font-size: inherit;
-  background-color: #333;
+  background-color: var(--code-bg);
   color: white;
   padding: 0 8px;
   border-radius: 3px;

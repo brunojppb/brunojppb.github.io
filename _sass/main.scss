@@ -117,6 +117,13 @@ body {
 }
 
 .job-item {
+  h2 {
+    margin-bottom: 5px;
+  }
+  .date {
+    font-size: 14px;
+    opacity: 0.8;
+  }
   img {
     display: block;
     width: 100%;

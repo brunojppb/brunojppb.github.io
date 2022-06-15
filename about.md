@@ -14,7 +14,7 @@ meta_image: /assets/images/about_cover.jpg
         I am a passionate Software Engineer who loves crafting solutions that can help ease our lives and make it more fun.
     </p>
     <p>
-        I am mainly interested in iOS and Web development. I have been writing web applications using Scala, Ruby, React and mobile apps with Swift.<br/><br/>Check it out <a href="/work">my work</a> to see what I have done and have been doing.<br/>
+        I am mainly interested in Web development and programming languages these days. I have been writing web applications using Scala, Elixir, JavaScript and TypeScript.<br/><br/>You take a look at <a href="/work">my work</a> and what I've been up to.<br/>
     </p>
     <div style="text-align: center; padding-bottom: 30px;">
         <h2>My profiles on the web</h2>

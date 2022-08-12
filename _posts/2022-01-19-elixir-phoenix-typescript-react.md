@@ -17,6 +17,10 @@ While Phoenix provides a very interesting programming model called [LiveView](ht
 stack I'm most familiar with which is [React](https://reactjs.org/).
 Besides using it heavily in my day job, I also really appreciate the ecosystem around it.
 
+> If you are a savvy Elixir engineer and just want to see the code,
+> [here is the Github repo ready for you.](https://github.com/brunojppb/React-Phoenix-TS) Feel
+> free to leave a Github star so folks can find this template more easily.
+
 I wanted to come up with a solid Phoenix project where I can get all the benefits
 from Elixir and Phoenix itself, but also be flexible enough by not coupling my React frontend
 with Phoenix. My requirements were:

@@ -1,7 +1,7 @@
 ---
 layout: post
 author: Bruno
-title: Retrying API Calls with Exponential Backoff
+title: Retrying API Calls with Exponential Backoff in JavaScript
 permalink: entries/retrying-api-calls-with-exponential-backoff
 keywords: api,js,javascript,exponential,backoff
 meta_description: Making your application more robust with Exponential Backoff.

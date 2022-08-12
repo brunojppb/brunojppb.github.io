@@ -18,7 +18,7 @@ Notice that once our API call fails, our app immediately tries to call it again.
 
 ## Being polite with Exponential Backoff
 
-Lets assume the restaurants API we were trying to call on the chart above is having some trouble. Maybe it's overloaded or is completely down. Retrying to call it immediately after a failed attempt will do no good. It will actually make the situation worse: The restaurants API will be hammered harder and won't have time to recover.
+Lets assume the restaurants API we were trying to call on the diagram above is having some trouble. Maybe it's overloaded or is completely down. Retrying to call it immediately after a failed attempt will do no good. It will actually make the situation worse: The restaurants API will be hammered harder and won't have time to recover.
 
 To countermeasure that, we can wait a little before retries. We can actually do better than that. What if on every failed attempt, we exponentially increase the waiting time for the next attempt? Bingo, This is what [Exponential Backoff](https://en.wikipedia.org/wiki/Exponential_backoff) is.
 
@@ -122,7 +122,7 @@ async function test() {
     4
   );
 
-  assert(result === 'ok')
+  assert(result.status === 'ok')
 }
 
 test();

@@ -4,9 +4,7 @@ author: Bruno Paulino
 title: Arquitetura de branching para desenvolvimento com Git
 permalink: entries/2-arquitetura-de-branching-para-desenvolvimento-com-git
 keywords: git,gitflow,branch,workflow,desenvolvimento,programação
-meta_description:
-  While creating mobile applications, one of the the main features that we can
-  explore is the Notification.
+meta_description: Como usar o gitflow em seus projects Git
 ---
 
 Visando implementar um padrão mais sólido e fácil de gerenciar nossos

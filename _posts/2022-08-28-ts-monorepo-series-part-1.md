@@ -4,6 +4,7 @@ author: Bruno Paulino
 title: "The TypeScript Monorepo Series"
 permalink: entries/typescript-monorepo-series-what-is-a-monorepo
 keywords: monorepo,typescript,javascript,turborepo,scale,teams,dx
+meta_image: /assets/images/posts/2022-08-28-ts-monorepo-series-part-1.jpg
 meta_description: Why a monorepo can be the best way for scaling your teams
 ---
 

@@ -1,13 +1,15 @@
 /** Reading Page */
 @keyframes spinner {
-  to {transform: rotate(360deg);}
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .spinner {
   position: relative;
   padding: 8px;
   &:before {
-    content: '';
+    content: "";
     box-sizing: border-box;
     position: absolute;
     top: 50%;
@@ -20,12 +22,9 @@
     border: 2px solid transparent;
     border-top-color: var(--progress-bar-color);
     border-bottom-color: var(--progress-bar-color);
-    animation: spinner .8s ease infinite;
+    animation: spinner 0.8s ease infinite;
   }
-
 }
-
-
 
 .book-list {
   width: 100%;
@@ -36,13 +35,16 @@
     border-radius: 6px;
     overflow: hidden;
     padding: 4px;
-    box-shadow: 0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12);
-    transition: background-color .3s cubic-bezier(.4,0,.2,1),box-shadow .4s cubic-bezier(.25,.8,.25,1);
+    box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2),
+      0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+    transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     background-color: var(--secondary-color);
     &:hover {
       z-index: 2;
-      box-shadow: 0 5px 5px -3px rgba(0,0,0,.2), 0 8px 10px 1px rgba(0,0,0,.14), 0 3px 14px 2px rgba(0,0,0,.12);
-      will-change: background-color,box-shadow;
+      box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+        0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+      will-change: background-color, box-shadow;
     }
     img {
       width: 100%;
@@ -62,5 +64,4 @@
       }
     }
   }
-
 }

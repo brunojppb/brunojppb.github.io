@@ -9,10 +9,10 @@
 @import "home/reading";
 
 :root {
-  --primary-color: #0F2438;
-  --secondary-color: #20364C;
-  --text-color: #CFD2D6;
-  --progress-bar-color: #CFD2D6;
+  --primary-color: #0f2438;
+  --secondary-color: #20364c;
+  --text-color: #cfd2d6;
+  --progress-bar-color: #cfd2d6;
   --code-bg: #333;
 }
 
@@ -26,7 +26,7 @@
 
 html,
 body {
-  font-family: 'Fira Sans', sans-serif;
+  font-family: "Fira Sans", sans-serif;
   background-color: var(--primary-color);
   color: var(--text-color);
   position: relative;
@@ -87,8 +87,8 @@ body {
 }
 
 .light-mode {
-  --primary-color: #FFFFFF;
-  --secondary-color: #F3EFEC;
+  --primary-color: #ffffff;
+  --secondary-color: #f3efec;
   --text-color: #222222;
   --progress-bar-color: #f0d2bd;
   --code-bg: #c4ab99;
@@ -106,7 +106,7 @@ body {
   width: 150px;
   height: 150px;
   border-radius: 50%;
-  box-shadow: rgba(0,0,0,0.22) 0 0 16px 1px;
+  box-shadow: rgba(0, 0, 0, 0.22) 0 0 16px 1px;
 }
 
 .work {

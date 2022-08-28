@@ -1,5 +1,4 @@
 .fullscreen-overlay {
-
   position: fixed;
   top: 0;
   left: 0;
@@ -21,17 +20,17 @@
     font-size: 0;
     background-color: unset;
     border: none;
-    
 
     &:hover {
       opacity: 1;
       cursor: pointer;
     }
 
-    &:before, &:after {
+    &:before,
+    &:after {
       position: absolute;
       left: 21px;
-      content: ' ';
+      content: " ";
       height: 33px;
       width: 2px;
       top: 6px;
@@ -56,5 +55,4 @@
       background-color: white;
     }
   }
-
 }

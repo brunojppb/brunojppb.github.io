@@ -13,7 +13,7 @@
     align-items: center;
 
     .subscribe-btn {
-      background-color: rgba(0,0,0,0);
+      background-color: rgba(0, 0, 0, 0);
       border: none;
       text-decoration: underline;
       &:hover {
@@ -29,10 +29,10 @@
       margin: auto;
     }
 
-    input[type=email] {
+    input[type="email"] {
       margin-top: 8px;
     }
-    input[type=submit] {
+    input[type="submit"] {
       margin-top: 4px;
     }
   }
@@ -77,5 +77,4 @@
   .hidden {
     display: none;
   }
-
 }

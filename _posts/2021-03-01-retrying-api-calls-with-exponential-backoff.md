@@ -8,19 +8,31 @@ meta_description: Making your application more robust with Exponential Backoff.
 meta_image: /assets/images/posts/2021-03-01-retrying-api-calls-with-exponential-backoff.jpg
 ---
 
-Have you ever implemented an integration with a third-party service where you have to call their API endpoints several times a day? Depending on the number of times you call this API, some of those calls will inevitably fail.
+Have you ever implemented an integration with a third-party service where you
+have to call their API endpoints several times a day? Depending on the number of
+times you call this API, some of those calls will inevitably fail.
 
-One solution to mitigate this problem is to implement a `retry` algorithm. Here is a sequence diagram showing how this algorithm could look like:
+One solution to mitigate this problem is to implement a `retry` algorithm. Here
+is a sequence diagram showing how this algorithm could look like:
 
 ![Exponential backoff diagram](/assets/images/posts/api-without-exponential-backoff-diagram.svg)
 
-Notice that once our API call fails, our app immediately tries to call it again. That could be extremely fast and there is nothing wrong with that, but that isn't very effective. Why?
+Notice that once our API call fails, our app immediately tries to call it again.
+That could be extremely fast and there is nothing wrong with that, but that
+isn't very effective. Why?
 
 ## Being polite with Exponential Backoff
 
-Lets assume the restaurants API we were trying to call on the diagram above is having some trouble. Maybe it's overloaded or is completely down. Retrying to call it immediately after a failed attempt will do no good. It will actually make the situation worse: The restaurants API will be hammered harder and won't have time to recover.
+Lets assume the restaurants API we were trying to call on the diagram above is
+having some trouble. Maybe it's overloaded or is completely down. Retrying to
+call it immediately after a failed attempt will do no good. It will actually
+make the situation worse: The restaurants API will be hammered harder and won't
+have time to recover.
 
-To countermeasure that, we can wait a little before retries. We can actually do better than that. What if on every failed attempt, we exponentially increase the waiting time for the next attempt? Bingo, This is what [Exponential Backoff](https://en.wikipedia.org/wiki/Exponential_backoff) is.
+To countermeasure that, we can wait a little before retries. We can actually do
+better than that. What if on every failed attempt, we exponentially increase the
+waiting time for the next attempt? Bingo, This is what
+[Exponential Backoff](https://en.wikipedia.org/wiki/Exponential_backoff) is.
 
 > - Our app tries to call the Restaurants API.
 > - The API call fails.
@@ -37,7 +49,9 @@ Here is how the diagram would look like when we implement Exponential Backoff:
 
 ## How can we do that in Javascript?
 
-The implementation of the algorithm above is actually quite straightforward in Javascript. The implementation below works in Node.js and also in modern browsers, with zero dependencies.
+The implementation of the algorithm above is actually quite straightforward in
+Javascript. The implementation below works in Node.js and also in modern
+browsers, with zero dependencies.
 
 ```js
 /**
@@ -83,7 +97,7 @@ function retry(promise, onRetry, maxRetries) {
         onRetry();
         return retryWithBackoff(retries + 1);
       } else {
-        console.warn('Max retries reached. Bubbling the error up')
+        console.warn("Max retries reached. Bubbling the error up");
         throw e;
       }
     }
@@ -122,10 +136,12 @@ async function test() {
     4
   );
 
-  assert(result.status === 'ok')
+  assert(result.status === "ok");
 }
 
 test();
 ```
 
-If you want to try this out, here is a [Codesanbox link](https://codesandbox.io/s/exponential-backoff-ziy8h?file=/src/index.js) where you can play with it.
+If you want to try this out, here is a
+[Codesanbox link](https://codesandbox.io/s/exponential-backoff-ziy8h?file=/src/index.js)
+where you can play with it.

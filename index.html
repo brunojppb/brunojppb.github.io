@@ -12,6 +12,9 @@ meta_image: /assets/images/home_cover.jpg
             <h2>
               <a href="{{ post.url }}">{{ post.title }}</a>
             </h2>
+            <p class="desc">
+                {{ post.meta_description }}
+            </p>
             <span class="publish-date">{{ post.date | date: "%B %-d, %Y" }}</span>
         </div>
         {% endfor %}

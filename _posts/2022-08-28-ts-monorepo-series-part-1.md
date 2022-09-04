@@ -191,7 +191,7 @@ independent packages nested under a top-level root package. You will see that
 applied in practice during this series, but this subtle difference has a huge
 difference:
 
-- **You team can now work together in the same repo**
+- **Your team can now work together in the same repo**
 
   - Which means that working across different apps and libraries is just
     transparent. No need to clone a different repo, check Node and package

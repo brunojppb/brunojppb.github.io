@@ -20,9 +20,9 @@ meta_image: /assets/images/about_cover.jpg
     </p>
     <div style="text-align: center; padding-bottom: 30px;">
         <h3>My profiles on the web</h3>
-        <a href="https://github.com/brunojppb" style="margin-right: 10px">github</a>
-        <a href="https://stackoverflow.com/users/2301092/bruno-paulino?tab=profile" style="margin-right: 10px">stack overflow</a>
-        <a href="https://twitter.com/bpaulino0" style="margin-right: 10px">twitter</a>
+        <a href="https://github.com/brunojppb" style="margin-right: 10px">GitHub</a>
+        <a href="https://stackoverflow.com/users/2301092/bruno-paulino?tab=profile" style="margin-right: 10px">Stack Overflow</a>
+        <a href="https://twitter.com/bpaulino0" style="margin-right: 10px">Twitter</a>
         <a href="https://www.linkedin.com/in/brunojppb/">LinkedIn</a>
     </div>
 </div>

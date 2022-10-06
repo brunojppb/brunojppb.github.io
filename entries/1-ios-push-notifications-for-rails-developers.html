@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    
+    
+    
+    
+    
+    
+    
+    <meta name="author" content="Bruno Paulino">
+    <meta name="description" content="While creating mobile applications, one of the the main features that we can explore is the Notification.">
+    <meta name="keywords" content="ios,swift,ruby,rails,dev,programming">
+    <meta name="theme-color" content="#21364B">
+    
+    <!-- Open Graph meta properties for beautifully rendering link previews on social -->
+    <!-- See: https://ogp.me/ -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://bpaulino.com/entries/1-ios-push-notifications-for-rails-developers" />
+    <meta property="og:title" content="iOS push notifications for Rails Developers" />
+    <meta property="og:description" content="While creating mobile applications, one of the the main features that we can explore is the Notification." />
+    <meta property="og:image" content="https://bpaulino.com/assets/images/bpaulino.jpg" />
+
+    <!-- twitter card tags additive to og: meta properties -->
+    <!-- See: https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/markup -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:domain" content="bpaulino.com" />
+    <meta name="twitter:title" content="iOS push notifications for Rails Developers" />
+    <meta name="twitter:description" content="While creating mobile applications, one of the the main features that we can explore is the Notification." />
+    <meta name="twitter:image" content="https://bpaulino.com/assets/images/bpaulino.jpg" />
+    <meta name="twitter:url" content="https://bpaulino.com/entries/1-ios-push-notifications-for-rails-developers" />
+    <meta name="twitter:creator" content="@bpaulino0" />
+    <meta name="twitter:label1" content="Created by" />
+    <meta name="twitter:data1" content="Bruno Paulino" />
+    <meta name="twitter:label2" content="Twitter" />
+    <meta name="twitter:data2" content="@bpaulino0" />
+    
+    
+    <link rel="shortcut icon" href="/assets/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+    <title>iOS push notifications for Rails Developers</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <!-- Timestamp from jekyll build to make sure the latest version is loaded correctly on our lovely readers' clients -->
+    <link rel="stylesheet" href="/assets/css/styles.css?v=1665087387">
+  </head>
+  <body>
+
+    <div role="main" class="main-container">
+
+        <div class="main-header">
+  <a href="/">
+    <h2>bpaulino.com</h2>
+  </a>
+  <p>
+    Hi, I am Bruno Paulino.<br />
+    Software is my craft.
+  </p>
+  <nav>
+    <a href="/">Blog</a>
+    <a href="/about">About</a>
+    <a href="/courses">Courses</a>
+    <!-- <a href="/speaking">Speaking</a> -->
+    <a href="/reading">Reading</a>
+  </nav>
+  <canvas class="particles-canvas"></canvas>
+</div>
+
+
+        <div class="flex-wrapper">
+            <div class="max-width-wrapper">
+                <div class="entry-container">
+    <div class="entry">
+        <h1 class="entry-title">iOS push notifications for Rails Developers</h1>
+        <div style="text-align: center; font-style: italic;">August 3, 2015</div>
+    	<p>While creating mobile applications, one of the the main features that we can
+explore is the Notification. Basically, there are two types of notification:</p>
+
+<ul>
+  <li>
+    <p>Local Notifications: Are stored on the phone and there is no need for internet
+connection.</p>
+  </li>
+  <li>
+    <p>Push Notifications: We need to implement a service in our backend to send
+those messages to the Apple Push Notification Service(APNS), which will send
+the notification to the client’s device.</p>
+  </li>
+</ul>
+
+<p>In my last iOS App, I needed this feature working well with my backend, a Rails
+application, and I feel like I will have to read those steps again in the future
+to refresh my memory. The focus here is just about Push Notifications. I will
+write a post about Local Notifications.</p>
+
+<h3 id="requirements">Requirements</h3>
+
+<ul>
+  <li>Xcode 6.4 or higher</li>
+  <li>Apple Developer Account</li>
+  <li>iPhone, iPad or iPod (The iOS Simulator does not allow Push Notifications)</li>
+  <li>iOS 8 or higher</li>
+</ul>
+
+<h3 id="walkthrough">Walkthrough</h3>
+
+<p>To reach our goal, we need to follow the following steps:</p>
+
+<ul>
+  <li>Send the device token to our backend(each device has a unique token for each
+application)</li>
+  <li>Setup our iOS app to receive Push Notifications</li>
+  <li>Setup SSL Certificates on the Apple Dev portal</li>
+  <li>Setup our backend application using the <a href="https://github.com/jpoz/APNS">APNS</a>
+gem.</li>
+  <li>Send notifications from our Backend to APNS</li>
+</ul>
+
+<h2 id="1-step-ios-app">#1 Step: iOS App</h2>
+
+<p>We need to ask user permission to send him notifications. We can do it with the
+following code:</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">func</span> <span class="nf">application</span><span class="p">(</span><span class="nv">application</span><span class="p">:</span> <span class="kt">UIApplication</span><span class="p">,</span> <span class="n">didFinishLaunchingWithOptions</span> <span class="nv">launchOptions</span><span class="p">:</span> <span class="p">[</span><span class="kt">NSObject</span><span class="p">:</span> <span class="kt">AnyObject</span><span class="p">]?)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span> <span class="p">{</span>
+
+   <span class="c1">// Register for push notifications</span>
+   <span class="k">let</span> <span class="nv">notificationTypes</span><span class="p">:</span> <span class="kt">UIUserNotificationType</span> <span class="o">=</span> <span class="o">.</span><span class="kt">Badge</span> <span class="o">|</span> <span class="o">.</span><span class="kt">Sound</span> <span class="o">|</span> <span class="o">.</span><span class="kt">Alert</span>
+   <span class="k">let</span> <span class="nv">notificationSettings</span> <span class="o">=</span> <span class="kt">UIUserNotificationSettings</span><span class="p">(</span><span class="nv">forTypes</span><span class="p">:</span> <span class="n">notificationTypes</span><span class="p">,</span> <span class="nv">categories</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
+   <span class="kt">UIApplication</span><span class="o">.</span><span class="nf">sharedApplication</span><span class="p">()</span><span class="o">.</span><span class="nf">registerUserNotificationSettings</span><span class="p">(</span><span class="n">notificationSettings</span><span class="p">)</span>
+   <span class="c1">// Ask user permission</span>
+   <span class="kt">UIApplication</span><span class="o">.</span><span class="nf">sharedApplication</span><span class="p">()</span><span class="o">.</span><span class="nf">registerForRemoteNotifications</span><span class="p">()</span>
+
+   <span class="k">return</span> <span class="kc">true</span>
+ <span class="p">}</span>
+</code></pre></div></div>
+
+<p>As soon as our application starts, it will popup an alert and ask the user if he
+allows us to send notifications. For now on, we need to get the device token and
+send it to out backend.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">func</span> <span class="nf">application</span><span class="p">(</span><span class="nv">application</span><span class="p">:</span> <span class="kt">UIApplication</span><span class="p">,</span> <span class="n">didRegisterForRemoteNotificationsWithDeviceToken</span> <span class="nv">deviceToken</span><span class="p">:</span> <span class="kt">NSData</span><span class="p">)</span> <span class="p">{</span>
+ <span class="c1">// Create and Store the device token on local database and send</span>
+ <span class="c1">// Token to backend API</span>
+ <span class="c1">// 1:</span>
+ <span class="c1">// remove "&lt;" and "&gt;" from the string</span>
+ <span class="k">let</span> <span class="nv">trimEnds</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="nf">stringByTrimmingCharactersInSet</span><span class="p">(</span><span class="kt">NSCharacterSet</span><span class="p">(</span><span class="nv">charactersInString</span><span class="p">:</span> <span class="s">"&lt;&gt;"</span><span class="p">))</span>
+ <span class="c1">// 2:</span>
+ <span class="c1">// remove spaces</span>
+ <span class="k">let</span> <span class="nv">cleanToken</span> <span class="o">=</span> <span class="n">trimEnds</span><span class="o">.</span><span class="nf">stringByReplacingOccurrencesOfString</span><span class="p">(</span><span class="s">" "</span><span class="p">,</span> <span class="nv">withString</span><span class="p">:</span> <span class="s">""</span><span class="p">,</span> <span class="nv">options</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
+
+ <span class="c1">//Send the cleanToken to your WebServer(network call)</span>
+<span class="p">}</span>
+
+<span class="c1">// If the user does not allow push notifications, this method will be called</span>
+<span class="kd">func</span> <span class="nf">application</span><span class="p">(</span><span class="nv">application</span><span class="p">:</span> <span class="kt">UIApplication</span><span class="p">,</span> <span class="n">didFailToRegisterForRemoteNotificationsWithError</span> <span class="nv">error</span><span class="p">:</span> <span class="kt">NSError</span><span class="p">)</span> <span class="p">{</span>
+ <span class="kt">NSLog</span><span class="p">(</span><span class="s">"Failed to get token. Error: %@"</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><strong>Caution</strong>: We have to notice that the device token can be changed at any time.
+Apple can assign a new token at any moment, so we should always check if the
+device token is updated in our backend. I will show you how to get this token,
+but how to update it in your backend is up to you.</p>
+
+<h2 id="2-step-request-ssl-certificates">#2 Step: Request SSL Certificates</h2>
+
+<p>We have to create a App ID for our iOS App. Go to the
+<a href="https://developer.apple.com/account/ios/identifiers/bundle/bundleList.action">Apple Dev Portal - Apple App ID Page</a></p>
+
+<ul>
+  <li>Alert: We have to create an “Explicit App ID” because anything different than
+that will not allow us to use the Push Notification Service</li>
+</ul>
+
+<p>When filling the and remember to check “Push Notifications” in the “App
+Services” area. Get done with the form, go to the App ID list and select the App
+ID that was just created and click <strong>edit</strong> to generate the SSL Certificates.</p>
+
+<p><img src="/assets/images/posts/certificate_generation.jpg" alt="Certificate generation" /></p>
+
+<p>Those SSL Certificates will be used in our Backend to authenticate with <em>Apple
+Push Notification Service(APNS)</em>. Click in <strong>create certificate</strong> for both
+<strong>Development SSL Certificate</strong> and <strong>Production SSL Certificate</strong> because we
+will need a certificate for each environment(Development and Production). Follow
+the creation instructions for each certificate and download both the
+<strong>Development SSL Certificate</strong> and <strong>Production SSL Certificate</strong>. After
+download it, double click each one to add them to the Keychain Access.</p>
+
+<h2 id="3-step-export-ssl-certificates-from-keychain">#3 Step: Export SSL Certificates from Keychain</h2>
+
+<p>Now that we have our certificates, we have to convert them in a format the is
+compatible with our backend. We ca do it following the steps bellow:</p>
+
+<ul>
+  <li>1: Open the Keychain;</li>
+  <li>2: Select “Certificates”</li>
+  <li>3: Right click over the certificate where you see something like this: <strong>Apple
+Development Push Services: com.yourname.appname</strong> and click on <strong>Export</strong></li>
+  <li>4: On the dialog box, make sure to select <strong>Personal Information
+Exchange(.p12)</strong> format before save.</li>
+</ul>
+
+<p><img src="/assets/images/posts/exporting_certificates.jpg" alt="Exporting Certificates" /></p>
+
+<p>Repeat the same steps for the <strong>production certificate</strong>.</p>
+
+<h1 id="4-step-convert-certificates-to-pem-format">#4 Step: Convert certificates to .pem format</h1>
+
+<p>Based on the <a href="https://github.com/jpoz/APNS">APNS</a> gem documentation, we open the
+terminal and execute the following commands inside the folder where the
+certificates are:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Development</span>
+<span class="nv">$ </span>openssl pkcs12 <span class="nt">-in</span> development.p12 <span class="nt">-out</span> development.pem <span class="nt">-nodes</span> <span class="nt">-clcerts</span>
+
+<span class="c"># Production</span>
+<span class="nv">$ </span>openssl pkcs12 <span class="nt">-in</span> production.p12 <span class="nt">-out</span> production.pem <span class="nt">-nodes</span> <span class="nt">-clcerts</span>
+</code></pre></div></div>
+
+<h2 id="5-step-install-the-apns-gem">#5 Step: Install the APNS gem</h2>
+
+<p>Assuming we already have our Rails backend with a Device model with the token
+string, we are going to send out our notifications from the server to the APNS
+in out controller. In this example, I will simulate the creating of a blog post
+that will send a notification to the users that are using the blog app for iOS.</p>
+
+<p>First, add the APNS gem in your Gemfile:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">gem</span> <span class="s2">"apns"</span>
+</code></pre></div></div>
+
+<p>Now, in the terminal, execute:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>bundle <span class="nb">install</span>
+</code></pre></div></div>
+
+<h2 id="6-step-setup-environment-development-and-production">#6 Step: Setup Environment (Development and Production)</h2>
+
+<p>While our iOS App is still in development, we need to send notifications to the
+APNS host: <em>gateway.sandbox.push.apple.com</em> using the <strong>development.pem</strong>
+certificate. However, after submitting the App to the App Store, we need to send
+push notifications to the APNS host: <em>gateway.push.apple.com</em> using the
+<strong>production.pem certificate</strong>.</p>
+
+<p>Copy and paste the <strong>development.pem</strong> and <strong>production.pem</strong> files in your
+Rails app folder. fell free to put it wherever you want, just make sure to know
+the path for those files. Create a file called <em>config/initializers/apns.rb</em> and
+put this code:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># config/initializers/apns.rb</span>
+<span class="c1"># Default value is 'gateway.sandbox.push.apple.com'</span>
+<span class="no">APNS</span><span class="p">.</span><span class="nf">host</span> <span class="o">=</span> <span class="s2">"gateway.sandbox.push.apple.com"</span>
+<span class="c1"># Path to your development.pem file</span>
+<span class="no">APNS</span><span class="p">.</span><span class="nf">pem</span> <span class="o">=</span> <span class="no">File</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="no">Rails</span><span class="p">.</span><span class="nf">root</span><span class="p">,</span> <span class="s2">"development.pem"</span><span class="p">)</span>
+
+<span class="c1"># if your iOS App is available on the App Store, Use the production.pem</span>
+<span class="c1"># and change the host</span>
+<span class="k">if</span> <span class="no">Rails</span><span class="p">.</span><span class="nf">env</span><span class="p">.</span><span class="nf">production?</span>
+  <span class="no">APNS</span><span class="p">.</span><span class="nf">host</span> <span class="o">=</span> <span class="s2">"gateway.push.apple.com"</span>
+  <span class="no">APNS</span><span class="p">.</span><span class="nf">pem</span> <span class="o">=</span> <span class="no">File</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="no">Rails</span><span class="p">.</span><span class="nf">root</span><span class="p">,</span> <span class="s2">"production.pem"</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<h2 id="7-step-send-push-notifications">#7 Step: Send Push Notifications</h2>
+
+<p>Now that we have our environment already set up, we can easily send out the
+notifications:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">PostsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="k">def</span> <span class="nf">create</span>
+    <span class="n">post</span> <span class="o">=</span> <span class="no">Post</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">post_params</span><span class="p">)</span>
+    <span class="c1"># Get all devices stored on your database</span>
+    <span class="c1"># or filter based on your criteria</span>
+    <span class="n">devices</span> <span class="o">=</span> <span class="no">Device</span><span class="p">.</span><span class="nf">all</span>
+    <span class="n">notifications</span> <span class="o">=</span> <span class="n">devices</span><span class="p">.</span><span class="nf">map</span> <span class="k">do</span> <span class="o">|</span><span class="n">d</span><span class="o">|</span>
+      <span class="no">APNS</span><span class="o">::</span><span class="no">Notification</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">d</span><span class="p">.</span><span class="nf">token</span><span class="p">,</span>
+      <span class="ss">alert: </span><span class="n">post</span><span class="p">.</span><span class="nf">title</span><span class="p">,</span>
+      <span class="ss">other: </span><span class="s1">'Here, you can pass custom info to your app'</span><span class="p">)</span>
+    <span class="k">end</span>
+    <span class="no">APNS</span><span class="p">.</span><span class="nf">send_notifications</span><span class="p">(</span><span class="n">notifications</span><span class="p">)</span> <span class="k">if</span> <span class="o">!</span><span class="n">notifications</span><span class="p">.</span><span class="nf">empty?</span>
+  <span class="k">end</span>
+
+  <span class="kp">protected</span>
+    <span class="k">def</span> <span class="nf">post_params</span>
+      <span class="n">params</span><span class="p">.</span><span class="nf">require</span><span class="p">(</span><span class="ss">:post</span><span class="p">).</span><span class="nf">permit</span><span class="p">(</span><span class="ss">:title</span><span class="p">,</span> <span class="ss">:content</span><span class="p">)</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>#@ Last Step: Receive the Notifications on the iOS App</p>
+
+<p>Remember that we need an Apple Device to test this feature. We just need to
+implement a delegate method in the AppDelegate.swift</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">func</span> <span class="nf">application</span><span class="p">(</span><span class="nv">application</span><span class="p">:</span> <span class="kt">UIApplication</span><span class="p">,</span> <span class="n">didReceiveRemoteNotification</span> <span class="nv">userInfo</span><span class="p">:</span> <span class="p">[</span><span class="kt">NSObject</span> <span class="p">:</span> <span class="kt">AnyObject</span><span class="p">])</span> <span class="p">{</span>
+  <span class="c1">// Do whatever you want with this notification</span>
+  <span class="c1">// Ex: Reload data from server</span>
+  <span class="kt">NSLog</span><span class="p">(</span><span class="s">"remote Notification: %@"</span><span class="p">,</span> <span class="n">userInfo</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h1 id="we-are-done">We are done!</h1>
+
+<p>Remember that the Apple Push Notification Service does not guarantee the
+delivery of those notifications, which means that you can not really on those
+notifications. the
+<a href="https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Introduction.html">Apple Docs</a>
+is pretty cool. You should give it a shot.</p>
+
+    </div>
+    <script src="/assets/js/prism.js"></script>
+    <script>
+    	Prism.highlightAll();
+    </script>
+</div>
+
+<div id="progress-bar"></div>
+            </div>
+        </div>
+
+        <footer class="main-footer fixed-bottom">
+    <div class="follow-container">
+        <p>
+            Get in touch via <a href="https://twitter.com/bpaulino0">Twitter</a>
+            / follow my <a href="/feed.xml">RSS Feed.</a>
+        </p>
+
+        <span>
+            © 2022 Bruno Paulino | <a style="font-size: 12px;" href="https://github.com/brunojppb/brunojppb.github.io">This website is open-source</a>
+        </span> 
+    </div>
+</footer>
+
+    </div>
+
+    <!-- Full-screen image presentation -->
+    <div class="fullscreen-overlay" style="display: none;">
+        <button class="close-overlay">close</button>
+    </div>
+
+    <!-- Night/Light mode switch -->
+    <button id="theme-switcher" 
+            aria-label="Toggle theme" 
+            title="Toggle theme" 
+            data-light-asset="/assets/images/sun.svg"
+            data-dark-asset="/assets/images/moon.svg">
+    </button>
+
+
+    <!-- Minimal Blog scripts -->
+    <script src="/assets/js/blog.js?v=1665087387"></script>
+
+    <!-- Privacy-first Analytics -->
+    <script data-goatcounter="https://bpaulino.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  </body>
+</html>

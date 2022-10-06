@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    
+    
+    
+    
+    
+    
+    
+    <meta name="author" content="Bruno Paulino">
+    <meta name="description" content="How to fine tune your Gitlab server to solve SSH connection issues.">
+    <meta name="keywords" content="gitlab,ssh,devops,server">
+    <meta name="theme-color" content="#21364B">
+    
+    <!-- Open Graph meta properties for beautifully rendering link previews on social -->
+    <!-- See: https://ogp.me/ -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://bpaulino.com/entries/allowing-more-connections-on-self-hosted-gitlab" />
+    <meta property="og:title" content="Fine tuning self-hosted Gitlab server to solve SSH scaling problems" />
+    <meta property="og:description" content="How to fine tune your Gitlab server to solve SSH connection issues." />
+    <meta property="og:image" content="https://bpaulino.com/assets/images/posts/fine_tuning_self_hosted_gitlab.jpg" />
+
+    <!-- twitter card tags additive to og: meta properties -->
+    <!-- See: https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/markup -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:domain" content="bpaulino.com" />
+    <meta name="twitter:title" content="Fine tuning self-hosted Gitlab server to solve SSH scaling problems" />
+    <meta name="twitter:description" content="How to fine tune your Gitlab server to solve SSH connection issues." />
+    <meta name="twitter:image" content="https://bpaulino.com/assets/images/posts/fine_tuning_self_hosted_gitlab.jpg" />
+    <meta name="twitter:url" content="https://bpaulino.com/entries/allowing-more-connections-on-self-hosted-gitlab" />
+    <meta name="twitter:creator" content="@bpaulino0" />
+    <meta name="twitter:label1" content="Created by" />
+    <meta name="twitter:data1" content="Bruno Paulino" />
+    <meta name="twitter:label2" content="Twitter" />
+    <meta name="twitter:data2" content="@bpaulino0" />
+    
+    
+    <link rel="shortcut icon" href="/assets/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+    <title>Fine tuning self-hosted Gitlab server to solve SSH scaling problems</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <!-- Timestamp from jekyll build to make sure the latest version is loaded correctly on our lovely readers' clients -->
+    <link rel="stylesheet" href="/assets/css/styles.css?v=1665087387">
+  </head>
+  <body>
+
+    <div role="main" class="main-container">
+
+        <div class="main-header">
+  <a href="/">
+    <h2>bpaulino.com</h2>
+  </a>
+  <p>
+    Hi, I am Bruno Paulino.<br />
+    Software is my craft.
+  </p>
+  <nav>
+    <a href="/">Blog</a>
+    <a href="/about">About</a>
+    <a href="/courses">Courses</a>
+    <!-- <a href="/speaking">Speaking</a> -->
+    <a href="/reading">Reading</a>
+  </nav>
+  <canvas class="particles-canvas"></canvas>
+</div>
+
+
+        <div class="flex-wrapper">
+            <div class="max-width-wrapper">
+                <div class="entry-container">
+    <div class="entry">
+        <h1 class="entry-title">Fine tuning self-hosted Gitlab server to solve SSH scaling problems</h1>
+        <div style="text-align: center; font-style: italic;">July 5, 2020</div>
+    	<p>At my current job, we have a self-hosted <a href="https://gitlab.com/">Giltab</a> instance
+to control our codebases and run automation jobs. If you don’t know what Gitlab
+is, you probably know <a href="https://github.com/">Github</a> which is a platform to work
+in collaboration with software teams using <a href="https://git-scm.com/">Git</a> for
+version control.</p>
+
+<p>We recently onboarded a new partner to support us with our
+<a href="https://github.com/odoo/odoo">ERP system</a>. We are working together to improve
+our current deployment pipeline and make it more resilient and robust. We use
+<a href="https://docs.gitlab.com/ee/ci/">Gitlab CI</a> to automate our workflows and make
+our codebase more reliable.</p>
+
+<p>After setting up <a href="https://docs.gitlab.com/runner/">more runners</a>, we noticed
+something strange happening randomly and quite frequently during our CI builds.
+While fetching more repositories, some builds were failing with the following
+message:</p>
+
+<pre><code class="language-txt">fatal: Could not read from remote repository.
+Please make sure you have the correct access rights
+and the repository exists.
+</code></pre>
+
+<p>Humm, that seems strange. Our runners have the correct access rights to the
+repositories. Also, this error was happening randomly for different repositories
+that was clearly working during other exact same builds.</p>
+
+<p>With this information at hand, we started off the debugging journey. We started
+monitoring the system and checking the server logs. Everything seemed normal.
+There was nothing draining our resources to the point where our server would
+start dropping connections.</p>
+
+<h2 id="ssh-load-balancing-and-maxstartups">SSH Load Balancing and MaxStartups</h2>
+
+<p>Discussing the issue among my smart teammates, we couldn’t see a reason for
+Gitlab itself to be dropping connections with the amount of workload. There
+could be some configuration with our <a href="https://www.openssh.com/">OpenSSH</a>
+defaults that might be responsible for that. And we indeed found one.</p>
+
+<p>OpenSSH has this neat setting called <code class="language-plaintext highlighter-rouge">MaxStartups</code> which is composed by 3 values
+separated by columns represented as <code class="language-plaintext highlighter-rouge">start:rate:full</code>. They mean:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">start</code>: The max number of unauthenticated connections</li>
+  <li><code class="language-plaintext highlighter-rouge">rate</code>: The percentage of connections that will be dropped once our total of
+unauthenticated connections reaches the number specified at <strong>start</strong>.</li>
+  <li><code class="language-plaintext highlighter-rouge">full</code>: By the time the queue of pending connections reaches the number
+specified at <strong>full</strong>, all connections will be dropped.</li>
+</ul>
+
+<p>If you look at <code class="language-plaintext highlighter-rouge">/etc/ssh/sshd_config</code>, the SSH configuration file, you will see:</p>
+
+<div class="language-toml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">MaxStartups</span> <span class="mi">10</span><span class="err">:</span><span class="mi">30</span><span class="err">:</span><span class="mi">100</span>
+</code></pre></div></div>
+
+<p>This configuration means: starting with <code class="language-plaintext highlighter-rouge">10</code> pending to authenticate
+connections, our server will start dropping <code class="language-plaintext highlighter-rouge">30%</code> of new connection attempts.
+Once our queue of pending connections reaches <code class="language-plaintext highlighter-rouge">100</code>, all new connections will be
+dropped with no mercy.</p>
+
+<p>After understanding how MaxStartups works, we looked again at our runners and we
+noticed that some jobs were fetching 10 different repositories in parallel
+during the build and aggregating them to build a
+<a href="https://en.wikipedia.org/wiki/Docker_(software)">Docker image</a>. We were
+really playing the dice when running those builds 😅.</p>
+
+<p>With that in mind, we tweaked MaxStartups with the following values:</p>
+
+<div class="language-toml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">MaxStartups</span> <span class="mi">60</span><span class="err">:</span><span class="mi">60</span><span class="err">:</span><span class="mi">300</span>
+</code></pre></div></div>
+
+<p>After that, just restart our SSH daemon with:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl restart ssh.service
+</code></pre></div></div>
+
+<p>We could see that the MaxStartups change instantly fixed the issue. Our builds
+were flying again with zero connection drops. The new settings allowed us
+greater leeway to connect to our server simultaneously, reducing the risk of
+dropped connections.</p>
+
+<h2 id="defaults-can-only-take-you-so-far">Defaults can only take you so far</h2>
+
+<p>The default settings were more than enough for us to start using
+<a href="https://docs.gitlab.com/omnibus/">Gitlab with its Omnibus package</a>. I didn’t
+even know about those SSH settings to begin with, but once you start hitting
+scaling problems, there is usually a escape hatch that can help you to leverage
+the same resources to a much greater usage scenario.</p>
+
+<p>Only after fixing the issue that I found Gitlab themselves had the exact same
+issue.
+<a href="https://about.gitlab.com/blog/2019/08/27/tyranny-of-the-clock/">They wrote a great blog post about it.</a></p>
+
+    </div>
+    <script src="/assets/js/prism.js"></script>
+    <script>
+    	Prism.highlightAll();
+    </script>
+</div>
+
+<div id="progress-bar"></div>
+            </div>
+        </div>
+
+        <footer class="main-footer fixed-bottom">
+    <div class="follow-container">
+        <p>
+            Get in touch via <a href="https://twitter.com/bpaulino0">Twitter</a>
+            / follow my <a href="/feed.xml">RSS Feed.</a>
+        </p>
+
+        <span>
+            © 2022 Bruno Paulino | <a style="font-size: 12px;" href="https://github.com/brunojppb/brunojppb.github.io">This website is open-source</a>
+        </span> 
+    </div>
+</footer>
+
+    </div>
+
+    <!-- Full-screen image presentation -->
+    <div class="fullscreen-overlay" style="display: none;">
+        <button class="close-overlay">close</button>
+    </div>
+
+    <!-- Night/Light mode switch -->
+    <button id="theme-switcher" 
+            aria-label="Toggle theme" 
+            title="Toggle theme" 
+            data-light-asset="/assets/images/sun.svg"
+            data-dark-asset="/assets/images/moon.svg">
+    </button>
+
+
+    <!-- Minimal Blog scripts -->
+    <script src="/assets/js/blog.js?v=1665087387"></script>
+
+    <!-- Privacy-first Analytics -->
+    <script data-goatcounter="https://bpaulino.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  </body>
+</html>

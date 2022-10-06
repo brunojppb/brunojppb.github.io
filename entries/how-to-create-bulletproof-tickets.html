@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    
+    
+    
+    
+    
+    
+    
+    <meta name="author" content="Bruno Paulino">
+    <meta name="description" content="A step-by-step guide on how to create meaningful tickets that save time for you and your team.">
+    <meta name="keywords" content="ticket,agile,productivity,web,dev">
+    <meta name="theme-color" content="#21364B">
+    
+    <!-- Open Graph meta properties for beautifully rendering link previews on social -->
+    <!-- See: https://ogp.me/ -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://bpaulino.com/entries/how-to-create-bulletproof-tickets" />
+    <meta property="og:title" content="How to Create Bulletproof Tickets" />
+    <meta property="og:description" content="A step-by-step guide on how to create meaningful tickets that save time for you and your team." />
+    <meta property="og:image" content="https://bpaulino.com/assets/images/posts/2020-12-08-how-to-create-bulletproof-tickets.jpg" />
+
+    <!-- twitter card tags additive to og: meta properties -->
+    <!-- See: https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/markup -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:domain" content="bpaulino.com" />
+    <meta name="twitter:title" content="How to Create Bulletproof Tickets" />
+    <meta name="twitter:description" content="A step-by-step guide on how to create meaningful tickets that save time for you and your team." />
+    <meta name="twitter:image" content="https://bpaulino.com/assets/images/posts/2020-12-08-how-to-create-bulletproof-tickets.jpg" />
+    <meta name="twitter:url" content="https://bpaulino.com/entries/how-to-create-bulletproof-tickets" />
+    <meta name="twitter:creator" content="@bpaulino0" />
+    <meta name="twitter:label1" content="Created by" />
+    <meta name="twitter:data1" content="Bruno Paulino" />
+    <meta name="twitter:label2" content="Twitter" />
+    <meta name="twitter:data2" content="@bpaulino0" />
+    
+    
+    <link rel="shortcut icon" href="/assets/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+    <title>How to Create Bulletproof Tickets</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <!-- Timestamp from jekyll build to make sure the latest version is loaded correctly on our lovely readers' clients -->
+    <link rel="stylesheet" href="/assets/css/styles.css?v=1665087387">
+  </head>
+  <body>
+
+    <div role="main" class="main-container">
+
+        <div class="main-header">
+  <a href="/">
+    <h2>bpaulino.com</h2>
+  </a>
+  <p>
+    Hi, I am Bruno Paulino.<br />
+    Software is my craft.
+  </p>
+  <nav>
+    <a href="/">Blog</a>
+    <a href="/about">About</a>
+    <a href="/courses">Courses</a>
+    <!-- <a href="/speaking">Speaking</a> -->
+    <a href="/reading">Reading</a>
+  </nav>
+  <canvas class="particles-canvas"></canvas>
+</div>
+
+
+        <div class="flex-wrapper">
+            <div class="max-width-wrapper">
+                <div class="entry-container">
+    <div class="entry">
+        <h1 class="entry-title">How to Create Bulletproof Tickets</h1>
+        <div style="text-align: center; font-style: italic;">December 8, 2020</div>
+    	<p>It’s Monday morning, you just had your first coffee in front of the computer and
+you open your project management app to start planning your week with your team.
+You start reading your backlog of tasks and then you see a ticket with the
+title:</p>
+
+<blockquote>
+  <p>[BUG] Button doesn’t respond</p>
+</blockquote>
+
+<p>You open the ticket and for your astonishment, the description is empty, there
+are no screenshots, no urls, <em>nada</em>. You can only see that this ticket was
+created by Joe. You immediately start to think <em>“Ho dear Joe, what did you see?
+on which page did you see this button? Which button specifically doesn’t
+respond? Was it happening constantly, was it intermittent, was it you who found
+this issue? Can you reproduce?”</em> So many questions you want to ask Joe, but so
+little time.</p>
+
+<p>If you have never had a similar situation like I mentioned before while working
+on a project with multiple people, you can consider yourself the luckiest person
+on the planet. The truth is, you have to put a good deal of thought and time
+into creating a great ticket. Reporting a bug or defining a requirement well is
+a kind of art.</p>
+
+<p>Whenever you are in a position of reporting something in written form, in this
+case creating a ticket, you have to put yourself in the shoes of the other
+person that will read and work on it.</p>
+
+<h2 id="why-is-creating-good-tickets-so-important">Why is creating good tickets so important?</h2>
+
+<p>At first sight, it seems like a time consuming task, and to be completely
+honest, it does take time to create a good ticket. But what we often miss is the
+time we save by avoiding roundtrips of questions that could have been answered
+during the ticket creation in the first place. Here are some reasons why
+creating a meaningful ticket is important:</p>
+
+<ul>
+  <li><strong>It saves time:</strong> People don’t have to run around to gather the information
+that is already there.</li>
+  <li><strong>More understanding:</strong> A well written ticket helps to give more understanding
+about the problem that might be hard to track down.</li>
+  <li><strong>Solid solutions:</strong> The more you understand the problem, the better and more
+reliable the solution will be. And the understanding usually starts by reading
+the ticket.</li>
+  <li><strong>Less frustration:</strong> Once the context is well detailed and understood, the
+people that will work on the problem will have less ambiguous questions to ask
+which will reduce the cognitive load while reasoning about a solution.</li>
+</ul>
+
+<p>You might be thinking <em>“Okay Bruno, but how the heck do I know whether a ticket
+is good or not?”</em>. I’m Glad you asked and this is a super valid question by the
+way. After dealing with hundreds of tickets along the years, I have got an
+interesting method that I want to share with you in the next section.</p>
+
+<h2 id="the-method">The Method</h2>
+
+<p>There is zero scientific evidence to back me up here, but what I noticed was
+that I could use some small principles to have a well defined method to create
+good tickets. So based on what we have seen up until this point, here are the
+steps we can take to create good tickets:</p>
+
+<ul>
+  <li><strong>Set the stage</strong>: Explain the context and the impact the problem has.</li>
+  <li><strong>How to reproduce</strong>: If the ticket is related to a bug, here you provide
+detailed information on how to recreate the problem in a consistent way.</li>
+  <li><strong>Offer Solutions</strong>: If you are able to, offer potential solutions for the
+problem you just found.</li>
+</ul>
+
+<p>In the following sections, I will construct a fictional ticket (but based on
+real world examples of web projects) so you can have a decent example on how you
+could apply those steps.</p>
+
+<h2 id="set-the-stage">Set the stage</h2>
+
+<p>Let’s imagine you have just found a bug on the website from the company you work
+with. Now you need to report the problem and hopefully someone will fix it as
+quickly as possible. How do you start explaining the problem to someone that you
+might not even know?</p>
+
+<p>To start things off, you need to give as much information as possible about the
+context of the bug. And what do I mean by context? Here the important thing is
+to explain in detail what you expect in a normal case and what the bug
+introduces. But don’t be too verbose on it otherwise you leave a lot of room for
+ambiguity. Here is an example:</p>
+
+<blockquote>
+  <p>With the introduction of the new product versions, we changed the URLs our
+customers see on our public website. This causes several problems with
+external tools that rely on the previous URLs (e.g. Marketing Campaigns).</p>
+
+  <p>The basic premises of existing product URLs are:</p>
+
+  <ul>
+    <li>The customer must have a stable URL for any published product</li>
+    <li>It should never change for the same product in the eyes of the customer</li>
+    <li>With an immutable URL none of our marketing campaigns running on our Ad
+platforms would stop working.</li>
+  </ul>
+</blockquote>
+
+<p>In the example above, we have given a good overview of the problem and also a
+good reason for the problem to be solved. This is a good starting point for a
+discussion about the ticket and also helps to prioritize it during planning.</p>
+
+<h2 id="how-to-reproduce">How to Reproduce</h2>
+
+<p>Now that we have set up a good context by explaining the problem in detail and
+why it is important to fix it, it’s time to write down the steps to reproduce
+it. In software development, debugging can be a challenging task and the more
+clues you have, the easier it gets to find and fix the problem. One part of the
+puzzle is to consistently reproduce the problem in a safe environment so it can
+be monitored, tracked down and fixed. For that to happen, you usually have to
+define a set of steps that lead to the problem you found. Here is an example
+following our fictional problem above:</p>
+
+<blockquote>
+  <p>To reproduce the problem, please follow the steps below:</p>
+
+  <ul>
+    <li>Open an existing product in the admin interface</li>
+    <li>Open the product preview and write down the current URL</li>
+    <li>Go back to the admin interface and update the product reference for a new
+version of the same product</li>
+    <li>save the changes</li>
+    <li>Open the product preview again on the website</li>
+    <li>Compare the new URL with the previous URL you saved</li>
+  </ul>
+
+  <p>The comparison will result in an URL mismatch.</p>
+</blockquote>
+
+<p>With the clear steps mentioned above, anyone who gets assigned to work on this
+ticket will quickly manage to verify the problem and test it as many times as
+they need.</p>
+
+<p>Sometimes you won’t be able to have a consistent way of reproducing the problem
+and that is fine too, but try to find as many reproducible steps as possible.
+This will save a good chunk of time for the development team which leads to a
+faster bug-fix being deployed.</p>
+
+<h2 id="offer-solutions">Offer Solutions</h2>
+
+<p>The cherry on top, if you have more understanding of the systems you are
+reporting the bug, is to offer potential solutions for the problem you just
+found. Developers like challenges, but nobody has infinite time and at the end
+of the day, we have to produce value for the business, so the quicker a problem
+can be solved, the better.</p>
+
+<p>in some cases, you might even know exactly what the problem is and how to fix
+it, so don’t spare words into giving a more detailed and technical suggestion at
+this stage. Here is how I would suggest a solution for our fictional URL problem
+we have been creating:</p>
+
+<blockquote>
+  <p>It looks like this problem happens at the e-commerce platform level. Since
+this is a third-party application which we don’t have access to the source
+code, we have to fix this problem on another layer of our system.</p>
+
+  <p>A potential solution could be to set rules on our reverse proxy so we keep
+accepting requests from old URLs and map them to the new ones. In the
+meantime, I will also report this problem to our e-commerce provider.</p>
+</blockquote>
+
+<p>It is clear that in the example above, the author has a deeper understanding of
+what is happening in the internal systems and that is a big advantage. But if
+you don’t have this level of insight, you can still provide good feedback on how
+to solve the problem. Any potential solution should be considered, especially if
+that is coming from someone that understands the problem.</p>
+
+<h2 id="wrapping-up">Wrapping up</h2>
+
+<p>I have been following those principles for a long time and it actually became
+quite natural for me while creating a ticket, but I understand that it takes
+time to build up this understanding.</p>
+
+<p>Sometimes your ticket will still leave room for questions and clarifications,
+and that is fine too. As long as your ticket was well prepared, even those
+follow-up questions will be more meaningful and complete, leading to less
+frustration and a more fluid communication path with your team.</p>
+
+<p>I believe by now you have the superpowers to create bulletproof tickets 🦸🏼‍♀️. Here
+is the complete ticket we created during this blogpost:</p>
+
+<blockquote>
+  <p><strong>Subject</strong></p>
+
+  <p>Product URL breaks after updating product version reference.</p>
+
+  <p><strong>Problem</strong></p>
+
+  <p>With the introduction of the new Product versions, we changed the URLs our
+customers see on our public website. This causes several problems with
+external tools that rely on the previous URLs (e.g. Marketing Campaigns).</p>
+
+  <p>The basic premises of existing product URLs are:</p>
+
+  <ul>
+    <li>The customer must have a stable URL for any published product</li>
+    <li>It should never change for the same product in the eyes of the customer</li>
+    <li>With an immutable URL, none of our marketing campaigns running on our Ad
+platforms would stop working.</li>
+  </ul>
+
+  <p><strong>How to Reproduce</strong></p>
+
+  <p>To reproduce the problem, please follow the steps below:</p>
+
+  <ul>
+    <li>Open an existing product in the admin interface</li>
+    <li>Open the product preview and write down the current URL</li>
+    <li>Go back to the admin interface and update the product reference for a new
+model</li>
+    <li>Save the changes</li>
+    <li>Open the product preview on the website</li>
+    <li>Compare the new URL with the previous URL you saved</li>
+  </ul>
+
+  <p>The comparison will result in an URL mismatch.</p>
+
+  <p><strong>Potential Solution</strong></p>
+
+  <p>It looks like this problem happens at the e-commerce platform level. Since
+this is a third-party application which we don’t have access to the source
+code, we have to fix this problem on another layer of our system.</p>
+
+  <p>A potential solution could be to set rules on our reverse proxy so we keep
+accepting requests from old URLs and map them to the new ones. In the
+meantime, I will also report this problem to our e-commerce provider.</p>
+</blockquote>
+
+    </div>
+    <script src="/assets/js/prism.js"></script>
+    <script>
+    	Prism.highlightAll();
+    </script>
+</div>
+
+<div id="progress-bar"></div>
+            </div>
+        </div>
+
+        <footer class="main-footer fixed-bottom">
+    <div class="follow-container">
+        <p>
+            Get in touch via <a href="https://twitter.com/bpaulino0">Twitter</a>
+            / follow my <a href="/feed.xml">RSS Feed.</a>
+        </p>
+
+        <span>
+            © 2022 Bruno Paulino | <a style="font-size: 12px;" href="https://github.com/brunojppb/brunojppb.github.io">This website is open-source</a>
+        </span> 
+    </div>
+</footer>
+
+    </div>
+
+    <!-- Full-screen image presentation -->
+    <div class="fullscreen-overlay" style="display: none;">
+        <button class="close-overlay">close</button>
+    </div>
+
+    <!-- Night/Light mode switch -->
+    <button id="theme-switcher" 
+            aria-label="Toggle theme" 
+            title="Toggle theme" 
+            data-light-asset="/assets/images/sun.svg"
+            data-dark-asset="/assets/images/moon.svg">
+    </button>
+
+
+    <!-- Minimal Blog scripts -->
+    <script src="/assets/js/blog.js?v=1665087387"></script>
+
+    <!-- Privacy-first Analytics -->
+    <script data-goatcounter="https://bpaulino.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  </body>
+</html>

@@ -1,0 +1,793 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    
+    
+    
+    
+    
+    
+    
+    <meta name="author" content="Bruno Paulino">
+    <meta name="description" content="How to create a modern Phoenix app with React and TypeScript">
+    <meta name="keywords" content="elixir,phoenix,typescript,react,webapp">
+    <meta name="theme-color" content="#21364B">
+    
+    <!-- Open Graph meta properties for beautifully rendering link previews on social -->
+    <!-- See: https://ogp.me/ -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://bpaulino.com/entries/modern-webapps-with-elixir-phoenix-typescript-react" />
+    <meta property="og:title" content="Modern Webapps with React, Phoenix, Elixir and TypeScript" />
+    <meta property="og:description" content="How to create a modern Phoenix app with React and TypeScript" />
+    <meta property="og:image" content="https://bpaulino.com/assets/images/posts/elixir-phoenix-typescript-react.jpg" />
+
+    <!-- twitter card tags additive to og: meta properties -->
+    <!-- See: https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/markup -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:domain" content="bpaulino.com" />
+    <meta name="twitter:title" content="Modern Webapps with React, Phoenix, Elixir and TypeScript" />
+    <meta name="twitter:description" content="How to create a modern Phoenix app with React and TypeScript" />
+    <meta name="twitter:image" content="https://bpaulino.com/assets/images/posts/elixir-phoenix-typescript-react.jpg" />
+    <meta name="twitter:url" content="https://bpaulino.com/entries/modern-webapps-with-elixir-phoenix-typescript-react" />
+    <meta name="twitter:creator" content="@bpaulino0" />
+    <meta name="twitter:label1" content="Created by" />
+    <meta name="twitter:data1" content="Bruno Paulino" />
+    <meta name="twitter:label2" content="Twitter" />
+    <meta name="twitter:data2" content="@bpaulino0" />
+    
+    
+    <link rel="shortcut icon" href="/assets/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+    <title>Modern Webapps with React, Phoenix, Elixir and TypeScript</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <!-- Timestamp from jekyll build to make sure the latest version is loaded correctly on our lovely readers' clients -->
+    <link rel="stylesheet" href="/assets/css/styles.css?v=1665087387">
+  </head>
+  <body>
+
+    <div role="main" class="main-container">
+
+        <div class="main-header">
+  <a href="/">
+    <h2>bpaulino.com</h2>
+  </a>
+  <p>
+    Hi, I am Bruno Paulino.<br />
+    Software is my craft.
+  </p>
+  <nav>
+    <a href="/">Blog</a>
+    <a href="/about">About</a>
+    <a href="/courses">Courses</a>
+    <!-- <a href="/speaking">Speaking</a> -->
+    <a href="/reading">Reading</a>
+  </nav>
+  <canvas class="particles-canvas"></canvas>
+</div>
+
+
+        <div class="flex-wrapper">
+            <div class="max-width-wrapper">
+                <div class="entry-container">
+    <div class="entry">
+        <h1 class="entry-title">Modern Webapps with React, Phoenix, Elixir and TypeScript</h1>
+        <div style="text-align: center; font-style: italic;">January 19, 2022</div>
+    	<p>I’ve started working on a side project this year and the tech stack I have
+chosen was the <a href="https://elixir-lang.org/">Elixir lang</a> due to its functional
+design and fault tolerance (Thanks to the <a href="https://www.erlang.org/">Erlang VM</a>)
+so the <a href="https://www.phoenixframework.org/">Phoenix framework</a> was a natural
+choice for me.</p>
+
+<p>While Phoenix provides a very interesting programming model called
+<a href="https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.html">LiveView</a>, I wanted
+to stick with the frontend stack I’m most familiar with which is
+<a href="https://reactjs.org/">React</a>. Besides using it heavily in my day job, I also
+really appreciate the ecosystem around it.</p>
+
+<blockquote>
+  <p>If you are a savvy Elixir engineer and just want to see the code,
+<a href="https://github.com/brunojppb/React-Phoenix-TS">here is the Github repo ready for you.</a>
+Feel free to leave a Github star so folks can find this template more easily.</p>
+</blockquote>
+
+<p>I wanted to come up with a solid Phoenix project where I can get all the
+benefits from Elixir and Phoenix itself, but also be flexible enough by not
+coupling my React frontend with Phoenix. My requirements were:</p>
+
+<ul>
+  <li>Be able to use
+<a href="https://webpack.js.org/concepts/hot-module-replacement/">Hot Module Replacement</a>
+during frontend development.</li>
+  <li>Run the React frontend in a separate process from the Phoenix app</li>
+  <li>During development, changes on the React frontend do not trigger the elixir
+compiler</li>
+  <li>During development, changes on the Phoenix app do not trigger frontend
+recompilation</li>
+  <li><a href="https://developer.mozilla.org/pt-BR/docs/Web/HTTP/CORS">CORS</a>. I don’t want
+to think about it. It’s a no-brainer if we bundle all our apps together under
+the same domain.</li>
+  <li>In production, serve the React frontend under the <code class="language-plaintext highlighter-rouge">/app/*</code> path from Phoenix</li>
+  <li>In production, all other routes should be server-rendered, so we can still
+benefit from serve-side rendering for specific cases like better SEO and
+dynamic landing pages with a smart
+<a href="https://developers.cloudflare.com/cache/about/cache-control">caching strategy via Cloudflare</a>
+using <code class="language-plaintext highlighter-rouge">stale-while-revalidate</code> headers.</li>
+</ul>
+
+<p>With the clear requirements defined above, I managed to make them all work by
+combining Phoenix and <a href="https://vitejs.dev/">Vite</a>. So let’s get our hands dirty,
+write some code and make this project work!</p>
+
+<blockquote>
+  <p>This guide assumes that you are already familiar with Elixir, Phoenix and a
+frontend framework like React, so we skip a few basic concepts and jump
+straight in. Although, I will be linking some important resources to guide you
+in case you are just starting with this stack.</p>
+</blockquote>
+
+<h2 id="creating-our-phoenix-project">Creating our Phoenix project</h2>
+
+<p>First of, make sure you have the following dependencies installed:</p>
+
+<ol>
+  <li>Elixir: <a href="https://elixir-lang.org/install.html">installation guide here</a></li>
+  <li>Phoenix:
+<a href="https://hexdocs.pm/phoenix/installation.html">installation guide here</a></li>
+  <li>NodeJS 16 or above:
+<a href="https://github.com/nvm-sh/nvm#installing-and-updating">installation guide here using NVM</a></li>
+  <li>PostgreSQL: <a href="https://www.postgresql.org/download/">Download here</a></li>
+</ol>
+
+<p>Now let’s head to our terminal and create our Phoenix app:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mix phx.new phoenix_react
+</code></pre></div></div>
+
+<p>Once your project is react, <code class="language-plaintext highlighter-rouge">cd</code> into it and fire up the Phoenix server:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd </span>phoenix_react
+<span class="c"># Make sure the Postgres database is available for Ecto</span>
+mix ecto.create
+<span class="c"># Start the dev server</span>
+mix phx.server
+</code></pre></div></div>
+
+<p>Now you should be able to access your Phoenix app at <code class="language-plaintext highlighter-rouge">localhost:4000</code> and see a
+page like the following:</p>
+
+<p><img src="/assets/images/posts/phoenix_web_app.png" alt="Phoenix App" /></p>
+
+<p>Awesome! We have got our Phoenix app up and running. Let’s bootstrap our React
+app in an independent directory.</p>
+
+<h2 id="creating-our-react-with-typescript-project">Creating our React with TypeScript project</h2>
+
+<p>For our React frontend, I’ve chosen <a href="https://vitejs.dev/">Vite</a> to handle all
+the tooling for me. It has got all the sane defaults I need for a TypeScript
+project with React, plus it uses <a href="https://esbuild.github.io/">ESBuild</a> which
+gives us blazing fast feedback during development.</p>
+
+<p>To kick things off, leave the Phoenix server running and open up a new terminal
+window. Still within the Phoenix directory in your terminal, let’s use the Vite
+CLI to create our React project:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm init vite@latest frontend <span class="nt">--</span> <span class="nt">--template</span> react-ts
+</code></pre></div></div>
+
+<p>This should create our React project under the <code class="language-plaintext highlighter-rouge">frontend</code> directory. Let’s
+install all dependencies and start our Vite dev server:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd </span>frontend
+npm <span class="nb">install
+</span>npm run dev
+</code></pre></div></div>
+
+<p>Now head to your browser at <code class="language-plaintext highlighter-rouge">localhost:3000</code>, you should see our React app up
+and running!</p>
+
+<p><img src="/assets/images/posts/react_ts_vite_app.png" alt="React App" /></p>
+
+<h2 id="adding-routes-to-our-react-app">Adding routes to our React app</h2>
+
+<p>There is a major difference between Phoenix routes and React routes:</p>
+
+<ul>
+  <li>Phoenix routes are mapped to a request to the server, which results in a new
+template rendering which results in the whole browser to reload.</li>
+  <li>React routes are client-side only, which means that navigating from
+<code class="language-plaintext highlighter-rouge">/app/settings</code> to <code class="language-plaintext highlighter-rouge">/app/profile</code> in our React app doesn’t mean a new request
+to the server. It might just mount a new component instantly which might not
+need server data at all.</li>
+</ul>
+
+<p>So the strategy here is to leverage <a href="https://reactrouter.com/">React Router</a> on
+our React app for any route that is under <code class="language-plaintext highlighter-rouge">/app</code> and whenever the client makes
+the first request to our app, let’s say they are visiting <code class="language-plaintext highlighter-rouge">example.com/app</code> for
+the first time, Phoenix will handle this initial request and serve the initial
+HTML together with our React app payload, so the React app can be mounted and
+take care of the routing from there.</p>
+
+<p>To make sure that client-side route changes are working, let’s add a very basic
+routing component so we can test if our react app is working. Let’s start by
+installing React Router in our React app. Stop the dev server and execute the
+following:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm <span class="nb">install </span>react-router-dom@6
+</code></pre></div></div>
+
+<p>Now open up your favorite text editor and edit our React app file at
+<code class="language-plaintext highlighter-rouge">phoenix_react/frontend/src/App.tsx</code> with the following components:</p>
+
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">useEffect</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">BrowserRouter</span><span class="p">,</span> <span class="nx">Link</span><span class="p">,</span> <span class="nx">Routes</span><span class="p">,</span> <span class="nx">Route</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react-router-dom</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">style</span> <span class="o">=</span> <span class="p">{</span> <span class="na">display</span><span class="p">:</span> <span class="dl">"</span><span class="s2">flex</span><span class="dl">"</span><span class="p">,</span> <span class="na">gap</span><span class="p">:</span> <span class="dl">"</span><span class="s2">8px</span><span class="dl">"</span><span class="p">,</span> <span class="na">padding</span><span class="p">:</span> <span class="dl">"</span><span class="s2">8px</span><span class="dl">"</span> <span class="p">};</span>
+
+<span class="kd">function</span> <span class="nx">App</span><span class="p">()</span> <span class="p">{</span>
+  <span class="cm">/**
+   * During development we can still access the base path at `/`
+   * And this hook will make sure that we land on the base `/app`
+   * path which will mount our App as usual.
+   * In production, Phoenix makes sure that the `/app` route is
+   * always mounted within the first request.
+   * */</span>
+  <span class="nx">useEffect</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">pathname</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">/</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="dl">"</span><span class="s2">/app</span><span class="dl">"</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">},</span> <span class="p">[]);</span>
+
+  <span class="k">return</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">BrowserRouter</span> <span class="na">basename</span><span class="p">=</span><span class="s">"app"</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">nav</span> <span class="na">style</span><span class="p">=</span><span class="si">{</span><span class="nx">style</span><span class="si">}</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">Link</span> <span class="na">to</span><span class="p">=</span><span class="s">"/"</span><span class="p">&gt;</span>Home<span class="p">&lt;/</span><span class="nc">Link</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">Link</span> <span class="na">to</span><span class="p">=</span><span class="s">"/settings"</span><span class="p">&gt;</span>Settings Page<span class="p">&lt;/</span><span class="nc">Link</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">nav</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nc">Routes</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">Route</span> <span class="na">path</span><span class="p">=</span><span class="s">"/"</span> <span class="na">element</span><span class="p">=</span><span class="si">{</span><span class="p">&lt;</span><span class="nc">HomePage</span> <span class="p">/&gt;</span><span class="si">}</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nc">Route</span> <span class="na">path</span><span class="p">=</span><span class="s">"settings"</span> <span class="na">element</span><span class="p">=</span><span class="si">{</span><span class="p">&lt;</span><span class="nc">SettingsPage</span> <span class="p">/&gt;</span><span class="si">}</span> <span class="p">/&gt;</span>
+      <span class="p">&lt;/</span><span class="nc">Routes</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">BrowserRouter</span><span class="p">&gt;</span>
+  <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">SettingsPage</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Settings Page<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>My profile<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Music<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>About<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+  <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">HomePage</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">style</span> <span class="o">=</span> <span class="p">{</span> <span class="na">padding</span><span class="p">:</span> <span class="dl">"</span><span class="s2">8px</span><span class="dl">"</span> <span class="p">};</span>
+  <span class="k">return</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">style</span><span class="p">=</span><span class="si">{</span><span class="nx">style</span><span class="si">}</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>React TS Home<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Welcome to the homepage<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+  <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Now you should be able to visit <code class="language-plaintext highlighter-rouge">localhost:3000/app</code> and see a screen similar to
+the following:</p>
+
+<p><img src="/assets/images/posts/react_router_app.png" alt="React app with routes" /></p>
+
+<p>Try to click around the <code class="language-plaintext highlighter-rouge">Home</code> and <code class="language-plaintext highlighter-rouge">Settings Page</code> links at the top. Notice that
+it transitions between pages instantly. If you check your Phoenix console, you
+notice that no requests have been fired to your backend. So far so good.</p>
+
+<p>Also notice that we now access our React app via the <code class="language-plaintext highlighter-rouge">/app</code> route. This is
+important and plays a major role when we bundle our application for production
+and serve it from Phoenix. We are using a small hook to check whether our app
+was mounted to the <code class="language-plaintext highlighter-rouge">/</code> path and redirect to the base path. This is only relevant
+for development. In production, Phoenix will make sure that the user is always
+in the <code class="language-plaintext highlighter-rouge">/app</code> when using our React app.</p>
+
+<h2 id="serving-our-react-frontend-from-phoenix">Serving our React frontend from Phoenix</h2>
+
+<p>So far, Phoenix has no clue about our React app. We need to come up with a way
+to tell Phoenix how to serve our React app once it’s bundled and ready to be
+served as a SPA. For that to work, we can do the following:</p>
+
+<ol>
+  <li>Build our React app for production with Vite</li>
+  <li>Copy our production build to the <code class="language-plaintext highlighter-rouge">priv/static</code> folder so we can use
+<a href="https://hexdocs.pm/plug/Plug.Static.html">Plug.Static</a> to serve our static
+assets</li>
+  <li>Make Phoenix aware about the <code class="language-plaintext highlighter-rouge">/app</code> route so our generated <code class="language-plaintext highlighter-rouge">index.html</code> from
+Vite can be statically served, which will trigger our React resources to be
+loaded.</li>
+</ol>
+
+<h3 id="creating-a-custom-mix-task-to-do-the-job">Creating a custom mix task to do the job</h3>
+
+<p>To manage point 1 and 2 from the previous section, we can create a custom
+<a href="https://hexdocs.pm/mix/1.12/Mix.Task.html">mix task</a> that can execute all the
+TypeScript bundling via NPM and coping files around to make our React app ready
+to be served by Phoenix.</p>
+
+<p>Our custom mix task will make sure that:</p>
+
+<ul>
+  <li>All of our frontend dependencies are installed</li>
+  <li>build our frontend for production distribution</li>
+  <li>Move the production files to <code class="language-plaintext highlighter-rouge">priv/static/webapp</code></li>
+</ul>
+
+<blockquote>
+  <p>The <code class="language-plaintext highlighter-rouge">/priv/static/webapp</code> path will be picked up by Phoenix later on, but make
+sure that you add it to your <code class="language-plaintext highlighter-rouge">.gitignore</code> file. We don’t want to commit our
+frontend production bundles.</p>
+</blockquote>
+
+<p>Let’s go ahead and create <code class="language-plaintext highlighter-rouge">lib/mix/tasks/webapp.ex</code> with the following Elixir
+code:</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">defmodule</span> <span class="no">Mix</span><span class="o">.</span><span class="no">Tasks</span><span class="o">.</span><span class="no">Webapp</span> <span class="k">do</span>
+  <span class="nv">@moduledoc</span> <span class="sd">"""
+    React frontend compilation and bundling for production.
+  """</span>
+  <span class="kn">use</span> <span class="no">Mix</span><span class="o">.</span><span class="no">Task</span>
+  <span class="kn">require</span> <span class="no">Logger</span>
+  <span class="c1"># Path for the frontend static assets that are being served</span>
+  <span class="c1"># from our Phoenix router when accessing /app/* for the first time</span>
+  <span class="nv">@public_path</span> <span class="s2">"./priv/static/webapp"</span>
+
+  <span class="nv">@shortdoc</span> <span class="s2">"Compile and bundle React frontend for production"</span>
+  <span class="k">def</span> <span class="n">run</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="k">do</span>
+    <span class="no">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"📦 - Installing NPM packages"</span><span class="p">)</span>
+    <span class="no">System</span><span class="o">.</span><span class="n">cmd</span><span class="p">(</span><span class="s2">"npm"</span><span class="p">,</span> <span class="p">[</span><span class="s2">"install"</span><span class="p">,</span> <span class="s2">"--quiet"</span><span class="p">],</span> <span class="ss">cd:</span> <span class="s2">"./frontend"</span><span class="p">)</span>
+
+    <span class="no">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"⚙️  - Compiling React frontend"</span><span class="p">)</span>
+    <span class="no">System</span><span class="o">.</span><span class="n">cmd</span><span class="p">(</span><span class="s2">"npm"</span><span class="p">,</span> <span class="p">[</span><span class="s2">"run"</span><span class="p">,</span> <span class="s2">"build"</span><span class="p">],</span> <span class="ss">cd:</span> <span class="s2">"./frontend"</span><span class="p">)</span>
+
+    <span class="no">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"🚛 - Moving dist folder to Phoenix at </span><span class="si">#{</span><span class="nv">@public_path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="c1"># First clean up any stale files from previous builds if any</span>
+    <span class="no">System</span><span class="o">.</span><span class="n">cmd</span><span class="p">(</span><span class="s2">"rm"</span><span class="p">,</span> <span class="p">[</span><span class="s2">"-rf"</span><span class="p">,</span> <span class="nv">@public_path</span><span class="p">])</span>
+    <span class="no">System</span><span class="o">.</span><span class="n">cmd</span><span class="p">(</span><span class="s2">"cp"</span><span class="p">,</span> <span class="p">[</span><span class="s2">"-R"</span><span class="p">,</span> <span class="s2">"./frontend/dist"</span><span class="p">,</span> <span class="nv">@public_path</span><span class="p">])</span>
+
+    <span class="no">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"⚛️  - React frontend ready."</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Using the <a href="https://hexdocs.pm/elixir/1.12/System.html">System</a> module, we can
+interact directly with our host system, so we can issue shell commands when
+invoking our custom mix task.</p>
+
+<p>Let’s try it out. Stop your Phoenix server and execute the following command:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mix webapp
+
+<span class="c"># You should see an outout similar to the following:</span>
+15:48:13.605 <span class="o">[</span>info]  📦 - Installing NPM packages
+15:48:15.034 <span class="o">[</span>info]  ⚙️  - Compiling React frontend
+15:48:19.611 <span class="o">[</span>info]  🚛 - Moving dist folder to ./priv/static/webapp
+15:48:19.618 <span class="o">[</span>info]  ⚛️  - React frontend ready.
+</code></pre></div></div>
+
+<p>Our frontend is ready to be served by Phoenix now. But there is one little
+change we have to make to our Vite configuration so our Frontend static assets
+can be delivered.</p>
+
+<h2 id="making-the-webapp-base-path-discoverable">Making the webapp base path discoverable</h2>
+
+<p>By default, Phoenix serves static content from the <code class="language-plaintext highlighter-rouge">priv/static</code> directory using
+the base route <code class="language-plaintext highlighter-rouge">/</code>. For instance, if we have a JPG file at
+<code class="language-plaintext highlighter-rouge">priv/static/assets/picture.jpg</code>, Phoenix will make this resource available at
+<code class="language-plaintext highlighter-rouge">/assets/picture.jpg</code> to the public.</p>
+
+<p>We want that to happen, but for our web app, static resources will be under the
+<code class="language-plaintext highlighter-rouge">/webapp/</code> path. Luckily, this is extremely simple.</p>
+
+<h3 id="vite-base-path-for-production">Vite base path for production</h3>
+
+<p>Since we want to serve our Web app from <code class="language-plaintext highlighter-rouge">priv/static/webapp</code>, we have to make
+sure that during our production build, Vite should append the <code class="language-plaintext highlighter-rouge">/webapp/</code> base
+path to all our resources. This is paramount for our app to work.</p>
+
+<p>Vite provides a specific configuration entry for that. Let’s go ahead and edit
+our <code class="language-plaintext highlighter-rouge">frontend/vite.config.ts</code> file with the following:</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">defineConfig</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">vite</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">react</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">@vitejs/plugin-react</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="c1">// https://vitejs.dev/config/</span>
+<span class="k">export</span> <span class="k">default</span> <span class="nx">defineConfig</span><span class="p">({</span>
+  <span class="na">plugins</span><span class="p">:</span> <span class="p">[</span><span class="nx">react</span><span class="p">()],</span>
+  <span class="c1">// using the `webapp` base path for production builds</span>
+  <span class="c1">// So we can leverage Phoenix static assets plug to deliver</span>
+  <span class="c1">// our React app directly from our final Elixir app,</span>
+  <span class="c1">// Serving all files from the `priv/static/webapp` folder.</span>
+  <span class="c1">// NOTE: Remember to move the frontend build files to the</span>
+  <span class="c1">// `priv` folder during the application build process in CI</span>
+  <span class="c1">// @ts-ignore</span>
+  <span class="na">base</span><span class="p">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">production</span><span class="dl">"</span> <span class="p">?</span> <span class="dl">"</span><span class="s2">/webapp/</span><span class="dl">"</span> <span class="p">:</span> <span class="dl">"</span><span class="s2">/</span><span class="dl">"</span><span class="p">,</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>Now execute our custom mix task again from within our Phoenix project:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mix webapp
+</code></pre></div></div>
+
+<p>Once this is done, take a look at the <code class="language-plaintext highlighter-rouge">priv/static/webapp/index.html</code> contents.
+We should see an HTML similar to the following:</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">"en"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">"UTF-8"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;link</span>
+      <span class="na">rel=</span><span class="s">"icon"</span>
+      <span class="na">type=</span><span class="s">"image/svg+xml"</span>
+      <span class="na">href=</span><span class="s">"/webapp/assets/favicon.17e50649.svg"</span>
+    <span class="nt">/&gt;</span>
+    <span class="nt">&lt;meta</span> <span class="na">name=</span><span class="s">"viewport"</span> <span class="na">content=</span><span class="s">"width=device-width, initial-scale=1.0"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;title&gt;</span>Vite App<span class="nt">&lt;/title&gt;</span>
+    <span class="nt">&lt;script
+      </span><span class="na">type=</span><span class="s">"module"</span>
+      <span class="na">crossorigin</span>
+      <span class="na">src=</span><span class="s">"/webapp/assets/index.fb986a90.js"</span>
+    <span class="nt">&gt;&lt;/script&gt;</span>
+    <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"modulepreload"</span> <span class="na">href=</span><span class="s">"/webapp/assets/vendor.6b432119.js"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"/webapp/assets/index.458f9883.css"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/head&gt;</span>
+  <span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"root"</span><span class="nt">&gt;&lt;/div&gt;</span>
+  <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div></div>
+
+<p>Notice that all URLs there have the <code class="language-plaintext highlighter-rouge">/webapp/</code> base path prepended. That is very
+neat. Our Frontend is ready to be served by Phoenix.</p>
+
+<h3 id="serving-static-assets-via-plug">Serving static assets via Plug</h3>
+
+<p>Phoenix is still unaware of our <code class="language-plaintext highlighter-rouge">webapp</code> static folder. We must add that to our
+endpoint configuration so our <code class="language-plaintext highlighter-rouge">Plug.Static</code> can serve it. Head to
+<code class="language-plaintext highlighter-rouge">lib/phoenix_react_web/endpoint.ex</code> at line 23. Add the <code class="language-plaintext highlighter-rouge">webapp</code> to the string
+list:</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plug</span> <span class="no">Plug</span><span class="o">.</span><span class="no">Static</span><span class="p">,</span>
+    <span class="ss">at:</span> <span class="s2">"/"</span><span class="p">,</span>
+    <span class="ss">from:</span> <span class="ss">:phoenix_react</span><span class="p">,</span>
+    <span class="ss">gzip:</span> <span class="no">false</span><span class="p">,</span>
+    <span class="ss">only:</span> <span class="sx">~w(assets fonts images webapp favicon.ico robots.txt)</span>
+</code></pre></div></div>
+
+<p>With that tiny change, Phoenix is now able to serve the static assets generated
+by Vite.</p>
+
+<h3 id="serving-the-initial-html-page-via-phoenix">Serving the initial HTML page via Phoenix</h3>
+
+<p>We now have a fully functional frontend and our Phoenix backend is able to
+deliver its static assets like JavaScript and CSS files. But to make it really
+feel native to our platform, we must be able to visit <code class="language-plaintext highlighter-rouge">example.com/app</code> or any
+other route under <code class="language-plaintext highlighter-rouge">/app</code> and our React app must be able to mount all its
+components based on the given route.</p>
+
+<p>For that to work, we must deliver the initial <code class="language-plaintext highlighter-rouge">index.html</code> that was generated by
+Vite whenever someone visits <code class="language-plaintext highlighter-rouge">/app/*</code>. We need a custom Phoenix controller.
+Let’s build that now.</p>
+
+<p>Create a new controller at
+<code class="language-plaintext highlighter-rouge">lib/phoenix_react_web/controllers/webapp_controller.ex</code> with the following
+module:</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">defmodule</span> <span class="no">PhoenixReactWeb</span><span class="o">.</span><span class="no">WebappController</span> <span class="k">do</span>
+  <span class="kn">use</span> <span class="no">PhoenixReactWeb</span><span class="p">,</span> <span class="ss">:controller</span>
+
+  <span class="k">def</span> <span class="n">index</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">_params</span><span class="p">)</span> <span class="k">do</span>
+    <span class="n">conn</span>
+    <span class="o">|&gt;</span> <span class="n">send_resp</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="n">render_react_app</span><span class="p">())</span>
+  <span class="k">end</span>
+
+  <span class="c1"># Serve the index.html file as-is and let React</span>
+  <span class="c1"># take care of the rendering and client-side rounting.</span>
+  <span class="c1">#</span>
+  <span class="c1"># Potential improvement: Cache the file contents here</span>
+  <span class="c1"># in an ETS table so we don't read from the disk for every request.</span>
+  <span class="k">defp</span> <span class="n">render_react_app</span><span class="p">()</span> <span class="k">do</span>
+    <span class="no">Application</span><span class="o">.</span><span class="n">app_dir</span><span class="p">(</span><span class="ss">:phoenix_react</span><span class="p">,</span> <span class="s2">"priv/static/webapp/index.html"</span><span class="p">)</span>
+    <span class="o">|&gt;</span> <span class="no">File</span><span class="o">.</span><span class="n">read!</span><span class="p">()</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>We now have a controller that can serve our <code class="language-plaintext highlighter-rouge">index.html</code> file, but we need to
+configure a route that will hit this newly created <code class="language-plaintext highlighter-rouge">index</code> function. Let’s add
+the following scope to our Phoenix router:</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">scope</span> <span class="s2">"/app"</span><span class="p">,</span> <span class="no">PhoenixReactWeb</span> <span class="k">do</span>
+  <span class="n">get</span> <span class="s2">"/"</span><span class="p">,</span> <span class="no">WebappController</span><span class="p">,</span> <span class="ss">:index</span>
+  <span class="n">get</span> <span class="s2">"/*path"</span><span class="p">,</span> <span class="no">WebappController</span><span class="p">,</span> <span class="ss">:index</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Awesome! Let’s try this out. Make sure that your Vite dev server is stopped and
+start your Phoenix server with <code class="language-plaintext highlighter-rouge">mix phx.server</code> and go to <code class="language-plaintext highlighter-rouge">localhost:4000/app</code>.
+You should see the exact same result that we had when our Vite dev server was
+running!</p>
+
+<p>Try to click through the header links. It should be all client-side routing. The
+ultimate test is to type in the url <code class="language-plaintext highlighter-rouge">localhost:4000/app/settings</code>, hit enter and
+see what happens.</p>
+
+<p>Notice that the <code class="language-plaintext highlighter-rouge">/app/settings</code> page will be displayed as we expected. Behind
+the scenes, Phoenix kept delivering the <code class="language-plaintext highlighter-rouge">index.html</code> file and the React Router
+made sure that the right components were mounted. Sweet! Our Phoenix and React
+apps are ready to roll!</p>
+
+<h3 id="api-requests-and-cors">API requests and CORS</h3>
+
+<p>If you have been developing frontend apps that talk to an external API, I’m
+quite confident that you have faced a bunch of CORS issues. For those that are
+not familiar with, whenever you open up an app at <code class="language-plaintext highlighter-rouge">myapp.com</code> and that same app
+needs to call an API at <code class="language-plaintext highlighter-rouge">myapi.com</code> the browser prevents that by default.</p>
+
+<p>Actually, the browser will issue an <code class="language-plaintext highlighter-rouge">OPTIONS</code> request to check if <code class="language-plaintext highlighter-rouge">myapi.com</code>
+allows requests coming from <code class="language-plaintext highlighter-rouge">myapp.com</code> to be answered. This is a very
+interesting security mechanism and I’m glad it’s there. If you want to learn
+more about it, <a href="https://twitter.com/jaffathecake">Jake Archibald</a> wrote
+<a href="https://jakearchibald.com/2021/cors/">an awesome blogpost</a> about it with all
+the information you need to know.</p>
+
+<h4 id="skipping-the-whole-cors-trouble">Skipping the whole CORS trouble</h4>
+
+<p>Whenever we are developing an app that it’s all hosted under the same domain,
+things are way easier and simpler. If our <code class="language-plaintext highlighter-rouge">myapp.com</code> makes a request to
+<code class="language-plaintext highlighter-rouge">myapp.com/api/users</code> the browser won’t even think about checking that because
+it knows that <code class="language-plaintext highlighter-rouge">myapp.com</code> is under the same domain, so it’s pretty sure that you
+allow requests to come and go from your own domain.</p>
+
+<p>During development, we are running our Phoenix app at port <code class="language-plaintext highlighter-rouge">4000</code> and our React
+app at port <code class="language-plaintext highlighter-rouge">3000</code>, we need to find a way for requests made by our React app to
+<code class="language-plaintext highlighter-rouge">localhost:3000/api/users</code> to be captured by some sort of proxy and forwarded to
+our Phoenix backend at port <code class="language-plaintext highlighter-rouge">4000</code>.</p>
+
+<p>Luckily, Vite saves the day again by providing us with the server proxy
+configuration. Head over to the <code class="language-plaintext highlighter-rouge">frontend/vite.config.ts</code> and add the <code class="language-plaintext highlighter-rouge">server</code>
+entry to your config:</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">defineConfig</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">vite</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">react</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">@vitejs/plugin-react</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="c1">// https://vitejs.dev/config/</span>
+<span class="k">export</span> <span class="k">default</span> <span class="nx">defineConfig</span><span class="p">({</span>
+  <span class="na">plugins</span><span class="p">:</span> <span class="p">[</span><span class="nx">react</span><span class="p">()],</span>
+  <span class="c1">// Forward all requests made by our React frontend to `localhost:3000/api`</span>
+  <span class="c1">// to our Phoenix backend running at `localhost:4000`.</span>
+  <span class="c1">// This is only necessary during development.</span>
+  <span class="c1">// In production, our Phoenix and React apps are served from the same</span>
+  <span class="c1">// domain and port, which makes this configuration unecessary.</span>
+  <span class="na">server</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">proxy</span><span class="p">:</span> <span class="p">{</span>
+      <span class="dl">"</span><span class="s2">/api</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">target</span><span class="p">:</span> <span class="dl">"</span><span class="s2">http://localhost:4000</span><span class="dl">"</span><span class="p">,</span>
+        <span class="na">secure</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+        <span class="na">ws</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+      <span class="p">},</span>
+    <span class="p">},</span>
+  <span class="p">},</span>
+  <span class="c1">// using the `webapp` base path for production builds</span>
+  <span class="c1">// So we can leverage Phoenix static assets plug to deliver</span>
+  <span class="c1">// our React app directly from our final Elixir app,</span>
+  <span class="c1">// Serving all files from the `priv/static/webapp` folder.</span>
+  <span class="c1">// NOTE: Remember to move the frontend build files to the</span>
+  <span class="c1">// `priv` folder during the application build process in CI</span>
+  <span class="c1">// @ts-ignore</span>
+  <span class="na">base</span><span class="p">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">production</span><span class="dl">"</span> <span class="p">?</span> <span class="dl">"</span><span class="s2">/webapp/</span><span class="dl">"</span> <span class="p">:</span> <span class="dl">"</span><span class="s2">/</span><span class="dl">"</span><span class="p">,</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>From now on, if you are making requests with
+<a href="https://github.com/axios/axios">axios</a> for instance, you can safely make a
+request in your React component like this:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">useState</span><span class="p">,</span> <span class="nx">useEffect</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">axios</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">axios</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="kd">function</span> <span class="nx">RequestComponent</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="p">[</span><span class="nx">todos</span><span class="p">,</span> <span class="nx">setTodos</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">([]);</span>
+
+  <span class="nx">useEffect</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">axios</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">"</span><span class="s2">/api/todos</span><span class="dl">"</span><span class="p">).</span><span class="nx">then</span><span class="p">((</span><span class="nx">response</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="kd">const</span> <span class="p">{</span> <span class="nx">todos</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
+      <span class="nx">setTodos</span><span class="p">(</span><span class="nx">todos</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="p">},</span> <span class="p">[]);</span>
+
+  <span class="k">return</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+      <span class="si">{</span><span class="nx">todos</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">t</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">(</span>
+        <span class="p">&lt;</span><span class="nt">span</span> <span class="na">key</span><span class="p">=</span><span class="si">{</span><span class="nx">t</span><span class="p">.</span><span class="nx">id</span><span class="si">}</span><span class="p">&gt;</span><span class="si">{</span><span class="nx">t</span><span class="p">.</span><span class="nx">content</span><span class="si">}</span><span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+      <span class="p">))</span><span class="si">}</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+  <span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The request to <code class="language-plaintext highlighter-rouge">/api/todos</code> should be forwarded to your Phoenix backend and as
+long as you have a route and a controller to respond to that, API requests will
+be served just fine.</p>
+
+<p>Authentication via http-only Cookies will also just work without any extra setup
+since everything is under the same domain. (<code class="language-plaintext highlighter-rouge">localhost</code> during development and
+<code class="language-plaintext highlighter-rouge">myapp.com</code> in production)</p>
+
+<h2 id="creating-an-elixir-release">Creating an Elixir Release</h2>
+
+<p>We have got everything setup now and the cherry on top is to generate the Elixir
+release with our production Phoenix app.</p>
+
+<p>The major advantage of an Elixir Release is that it creates a single package
+including the Erlang VM, Elixir and all of your code and dependencies. The
+generated package can be placed into any machine without any preconfigured
+dependency. It works similarly like Go binaries that you just download and
+execute.</p>
+
+<p>But before we generate our release, since we are testing the build locally, we
+need to change the port configuration since our runtime configuration is binding
+to <strong>443</strong> by default. Let’s quickly change that at <code class="language-plaintext highlighter-rouge">config/runtime.exs</code>:</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">config</span> <span class="ss">:phoenix_react</span><span class="p">,</span> <span class="no">PhoenixReactWeb</span><span class="o">.</span><span class="no">Endpoint</span><span class="p">,</span>
+  <span class="c1"># here use the `port` variable so we can control that with environment variables</span>
+  <span class="ss">url:</span> <span class="p">[</span><span class="ss">host:</span> <span class="n">host</span><span class="p">,</span> <span class="ss">port:</span> <span class="n">port</span><span class="p">],</span>
+  <span class="c1"># Enable the web server</span>
+  <span class="ss">server:</span> <span class="no">true</span><span class="p">,</span>
+  <span class="ss">http:</span> <span class="p">[</span>
+    <span class="ss">ip:</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">},</span>
+    <span class="ss">port:</span> <span class="n">port</span>
+  <span class="p">],</span>
+  <span class="ss">secret_key_base:</span> <span class="n">secret_key_base</span>
+</code></pre></div></div>
+
+<p>With that out of the way, execute the following commands to generate the
+release:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Generate a secret for our Phoenix app</span>
+mix phx.gen.secret
+<span class="c"># It will output a very long string. Something like this:</span>
+B41pUFgfTJeEUpt+6TwSkbrxlAb9uibgIemaYbm1Oq+XdZ3Q96LcaW9sarbGfMhy
+
+<span class="c"># Now export this secret as a environment variable:</span>
+<span class="nb">export </span><span class="nv">SECRET_KEY_BASE</span><span class="o">=</span>B41pUFgfTJeEUpt+6TwSkbrxlAb9uibgIemaYbm1Oq+XdZ3Q96LcaW9sarbGfMhy
+
+<span class="c"># Export the database URL</span>
+<span class="c"># Probably very different in production for you.</span>
+<span class="c"># I'm just using the local postgreSQL dev instance for this demo</span>
+<span class="nb">export </span><span class="nv">DATABASE_URL</span><span class="o">=</span>ecto://postgres:postgres@localhost/phoenix_react_dev
+
+<span class="c"># Get production dependencies</span>
+mix deps.get <span class="nt">--only</span> prod
+
+<span class="c"># Compile the project for production</span>
+<span class="nv">MIX_ENV</span><span class="o">=</span>prod mix compile
+
+<span class="c"># Generate static assets in case you</span>
+<span class="c"># are using Phoenix default assets pipelines</span>
+<span class="c"># For serve-side rendered pages</span>
+<span class="nv">MIX_ENV</span><span class="o">=</span>prod mix assets.deploy
+
+<span class="c"># Generate our React frontend using</span>
+<span class="c"># our custom mix task</span>
+mix webapp
+
+<span class="c"># Genereate the convenience scripts to assist</span>
+<span class="c"># Phoenix applicaiton deployments like running ecto migrations</span>
+mix phx.gen.release
+
+<span class="c"># Now we are ready to generate the Elixir Release</span>
+<span class="nv">MIX_ENV</span><span class="o">=</span>prod mix release
+</code></pre></div></div>
+
+<p>We now have our production release ready. Let’s fire it up with the following
+command:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">PHX_HOST</span><span class="o">=</span>localhost _build/prod/rel/phoenix_react/bin/phoenix_react start
+
+<span class="c"># You should an output similar to the following</span>
+19:52:53.813 <span class="o">[</span>info] Running PhoenixReactWeb.Endpoint with cowboy 2.9.0 at :::4000 <span class="o">(</span>http<span class="o">)</span>
+19:52:53.814 <span class="o">[</span>info] Access PhoenixReactWeb.Endpoint at http://localhost:4000
+</code></pre></div></div>
+
+<p>Great! Now our Phoenix app is running in production mode. Now head to your
+browser and open <code class="language-plaintext highlighter-rouge">localhost:4000/app</code>. You should see our React app being
+rendered!</p>
+
+<p>We have finally succeeded with our Phoenix + React + TypeScript setup. It
+provides us with a great developer experience while simplifying our production
+builds by bundling our Phoenix app together with our React app.</p>
+
+<h2 id="wrapping-up">Wrapping up</h2>
+
+<p>While that might have been a tiny bit complex to setup, I believe it is still
+worth it to keep your SPA decoupled from your backend. Here is a list with a few
+bonus point of this setup:</p>
+
+<ul>
+  <li>A single repo to work with which simplifies development, specially with a
+bigger team</li>
+  <li>Simpler CI/CD pipelines on the same repository</li>
+  <li>Free to swap out Vite in the future in case we decide to go with a different
+build tool</li>
+  <li>In the extreme case of changing our backend from Phoenix to something else,
+our React frontend is still fully independent and can basically be copy-pasted
+into a new setup.</li>
+</ul>
+
+<p>I personally believe that the development and deployment of our applications
+should be simple and while having React as a dependency does increase complexity
+into our app, the trade-off of building web apps with it pays off in my case.
+Although, if you have simple CRUD apps, sticking with vanilla Phoenix templates
+and LiveView might be more than enough.</p>
+
+<blockquote>
+  <p>You can find the repo with all the changes we made on this post
+<a href="https://github.com/brunojppb/React-Phoenix-TS">here.</a></p>
+</blockquote>
+
+    </div>
+    <script src="/assets/js/prism.js"></script>
+    <script>
+    	Prism.highlightAll();
+    </script>
+</div>
+
+<div id="progress-bar"></div>
+            </div>
+        </div>
+
+        <footer class="main-footer fixed-bottom">
+    <div class="follow-container">
+        <p>
+            Get in touch via <a href="https://twitter.com/bpaulino0">Twitter</a>
+            / follow my <a href="/feed.xml">RSS Feed.</a>
+        </p>
+
+        <span>
+            © 2022 Bruno Paulino | <a style="font-size: 12px;" href="https://github.com/brunojppb/brunojppb.github.io">This website is open-source</a>
+        </span> 
+    </div>
+</footer>
+
+    </div>
+
+    <!-- Full-screen image presentation -->
+    <div class="fullscreen-overlay" style="display: none;">
+        <button class="close-overlay">close</button>
+    </div>
+
+    <!-- Night/Light mode switch -->
+    <button id="theme-switcher" 
+            aria-label="Toggle theme" 
+            title="Toggle theme" 
+            data-light-asset="/assets/images/sun.svg"
+            data-dark-asset="/assets/images/moon.svg">
+    </button>
+
+
+    <!-- Minimal Blog scripts -->
+    <script src="/assets/js/blog.js?v=1665087387"></script>
+
+    <!-- Privacy-first Analytics -->
+    <script data-goatcounter="https://bpaulino.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  </body>
+</html>

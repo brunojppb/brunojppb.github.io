@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    
+    
+    
+    
+    
+    
+    
+    <meta name="author" content="Bruno Paulino">
+    <meta name="description" content="Continuando meus estudos em Scala explorando os conceitos básicos da linguagem.">
+    <meta name="keywords" content="scala,funcional,programação,computação">
+    <meta name="theme-color" content="#21364B">
+    
+    <!-- Open Graph meta properties for beautifully rendering link previews on social -->
+    <!-- See: https://ogp.me/ -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://bpaulino.com/entries/7-scala-101-funcoes" />
+    <meta property="og:title" content="Scala 101: Funções" />
+    <meta property="og:description" content="Continuando meus estudos em Scala explorando os conceitos básicos da linguagem." />
+    <meta property="og:image" content="https://bpaulino.com/assets/images/bpaulino.jpg" />
+
+    <!-- twitter card tags additive to og: meta properties -->
+    <!-- See: https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/markup -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:domain" content="bpaulino.com" />
+    <meta name="twitter:title" content="Scala 101: Funções" />
+    <meta name="twitter:description" content="Continuando meus estudos em Scala explorando os conceitos básicos da linguagem." />
+    <meta name="twitter:image" content="https://bpaulino.com/assets/images/bpaulino.jpg" />
+    <meta name="twitter:url" content="https://bpaulino.com/entries/7-scala-101-funcoes" />
+    <meta name="twitter:creator" content="@bpaulino0" />
+    <meta name="twitter:label1" content="Created by" />
+    <meta name="twitter:data1" content="Bruno Paulino" />
+    <meta name="twitter:label2" content="Twitter" />
+    <meta name="twitter:data2" content="@bpaulino0" />
+    
+    
+    <link rel="shortcut icon" href="/assets/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+    <title>Scala 101: Funções</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <!-- Timestamp from jekyll build to make sure the latest version is loaded correctly on our lovely readers' clients -->
+    <link rel="stylesheet" href="/assets/css/styles.css?v=1665087387">
+  </head>
+  <body>
+
+    <div role="main" class="main-container">
+
+        <div class="main-header">
+  <a href="/">
+    <h2>bpaulino.com</h2>
+  </a>
+  <p>
+    Hi, I am Bruno Paulino.<br />
+    Software is my craft.
+  </p>
+  <nav>
+    <a href="/">Blog</a>
+    <a href="/about">About</a>
+    <a href="/courses">Courses</a>
+    <!-- <a href="/speaking">Speaking</a> -->
+    <a href="/reading">Reading</a>
+  </nav>
+  <canvas class="particles-canvas"></canvas>
+</div>
+
+
+        <div class="flex-wrapper">
+            <div class="max-width-wrapper">
+                <div class="entry-container">
+    <div class="entry">
+        <h1 class="entry-title">Scala 101: Funções</h1>
+        <div style="text-align: center; font-style: italic;">July 27, 2017</div>
+    	<p>Continuando meus estudos em Scala, temos que falar de um conceito muito
+importante da linguagem: Funções. Em Scala, funções são tratados como valores
+normais como Int e String, ou seja, podemos declarar funções, armazená-las em
+variáveis e até passá-las como parâmetro para outras funções. Aqui utilizarei os
+exemplos do livro Scala in Action, mostrando como utilizar funções, desde o
+básico até casos mais avançados. Abaixo temos o exemplo clássico de como
+utilizar funções:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">UseResource</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="nf">use</span><span class="o">(</span><span class="n">r</span><span class="k">:</span> <span class="kt">Resource</span><span class="o">)</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="o">{</span> <span class="o">...</span> <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>A função <strong><em>use</em></strong> definida a cima é chamada de método, pois é definida dentro
+da classe <strong><em>UseResource</em></strong> e pode causar efeitos colaterais no estado do
+objeto. Essa é uma das desvantagens de utilizar métodos ao invés de funções
+puras. Vejamos um próximo exemplo:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="nv">addOne</span> <span class="k">=</span> <span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="nf">addOne</span><span class="o">(</span><span class="mi">2</span><span class="o">)</span>
+<span class="c1">// output: 3</span>
+</code></pre></div></div>
+
+<p>A grande diferença entre os exemplos citados a cima é que a segunda não modifica
+estado, sendo considerada uma função pura.</p>
+
+<h2 id="higher-order-functions">Higher-order functions</h2>
+
+<p>São as funções que recebem funções como parâmetro e que podem retornar funções
+como retorno. Um exemplo disso é a função <strong><em>filter</em></strong> em listas. Ela recebe uma
+função literal e retorna uma lista como os elementos que passaram pelo “filtro”.</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="nv">list</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">4</span><span class="o">,</span><span class="mi">5</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">7</span><span class="o">,</span><span class="mi">8</span><span class="o">,</span><span class="mi">10</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="nv">result</span> <span class="k">=</span> <span class="nv">list</span><span class="o">.</span><span class="py">filter</span><span class="o">(</span><span class="k">_</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="c1">// _ representa o o primeiro elemento da tupla passada pela função filter</span>
+<span class="c1">// output: List(2, 4, 6, 8, 10)</span>
+
+<span class="c1">// Também poderiamos escrever dessa forma:</span>
+<span class="k">val</span> <span class="nv">result</span> <span class="k">=</span> <span class="nv">list</span><span class="o">.</span><span class="py">filter</span><span class="o">(</span><span class="n">element</span> <span class="k">=&gt;</span> <span class="n">element</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span>
+<span class="c1">// ou dessa forma</span>
+<span class="k">val</span> <span class="nv">filterFunc</span> <span class="k">=</span> <span class="o">(</span><span class="n">el</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">el</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span>
+<span class="k">val</span> <span class="nv">result</span> <span class="k">=</span> <span class="nv">list</span><span class="o">.</span><span class="py">filter</span><span class="o">(</span><span class="n">filterFunc</span><span class="o">)</span>
+</code></pre></div></div>
+
+<h2 id="problemas-da-vida-real">Problemas da Vida Real</h2>
+
+<p>Agora aplicando esses conceitos no dia-a-dia, é comum termos o cenário onde
+precisamos utilizar um *<strong>*Resource**</strong>, seja ele um arquivo ou um socket na
+rede. Sempre que finalizamos a utilização, precisamos fechar esse recurso, de
+forma que ele possa ser retomado pelo SO e que seja usado por outra aplicação.
+Se não fechamos o recurso, podemos der um caso de memory leak, onde teremos esse
+recurso na memória por tempo indeterminado e outros vários problemas. Geralmente
+temos o seguinte código ao utilizar um recurso:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="nv">resource</span> <span class="k">=</span> <span class="nf">getResource</span><span class="o">()</span>
+<span class="k">try</span> <span class="o">{</span>
+  <span class="nf">doSomeCrazyStuff</span><span class="o">(</span><span class="n">resource</span><span class="o">)</span>
+<span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+  <span class="nv">resource</span><span class="o">.</span><span class="py">dispose</span><span class="o">()</span>
+<span class="o">}</span>
+<span class="c1">// Perceba que a utilização do catch é opicional em Scala. Veremos Error Handling em outro post</span>
+</code></pre></div></div>
+
+<p>Perceba que sempre que você precisar utilizar um recurso, você terá essa
+repetição de código para ter certeza que seu recurso seja utilizado
+corretamente. Porém e se esquecermos de adicionar o bloco try-finally? Para
+evitar repetição, podemos escrever uma função que receba um Resource e uma
+função como parâmetros e todo esse boilerplate será evitado:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">use</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">B</span> <span class="k">&lt;:</span> <span class="kt">Resource</span><span class="o">](</span><span class="n">resource</span><span class="k">:</span> <span class="kt">Resource</span><span class="o">)(</span><span class="n">fn</span><span class="k">:</span> <span class="kt">Resource</span> <span class="o">=&gt;</span> <span class="n">A</span><span class="o">)</span><span class="k">:</span> <span class="kt">A</span> <span class="o">=</span> <span class="o">{</span>
+  <span class="k">try</span> <span class="o">{</span>
+    <span class="nf">fn</span><span class="o">(</span><span class="n">resource</span><span class="o">)</span>
+  <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+    <span class="nv">resource</span><span class="o">.</span><span class="py">dispose</span><span class="o">()</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// Agora podemos usar a função 'use' sem o bloco try-finally</span>
+<span class="k">val</span> <span class="nv">resource</span> <span class="k">=</span> <span class="nf">getResource</span><span class="o">()</span>
+<span class="nf">use</span><span class="o">(</span><span class="n">resource</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">resourceToUse</span> <span class="k">=&gt;</span>
+  <span class="nf">doSomeCrazyStuff</span><span class="o">(</span><span class="n">resourceToUse</span><span class="o">)</span>
+<span class="o">}</span>
+<span class="c1">// o recurso será fechado automaticamente.</span>
+</code></pre></div></div>
+
+<h2 id="currying">Currying</h2>
+
+<p>Currying é a técnica de transformar uma função que recebe vários parâmetros em
+outra função que recebe apenas um. Um bom exemplo da vida real onde podemos ver
+o benefício do currying é a injeção de dependência. Onde não nos preocupamos em
+como o objeto foi criado, apenas nos preocupamos em utilizar a instância já
+provida pelo injetor.</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="k">trait</span> <span class="nc">TaxService</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="nf">taxIt</span><span class="o">(</span><span class="n">productPrice</span><span class="k">:</span> <span class="kt">Double</span><span class="o">)</span><span class="k">:</span> <span class="kt">Double</span>
+<span class="o">}</span>
+
+<span class="k">class</span> <span class="nc">IOFTaxService</span> <span class="k">extends</span> <span class="nc">TaxService</span> <span class="o">{</span>
+  <span class="c1">// retorna 10% do valor do produto</span>
+  <span class="k">def</span> <span class="nf">taxIt</span><span class="o">(</span><span class="n">productPrice</span><span class="k">:</span> <span class="kt">Double</span><span class="o">)</span><span class="k">:</span> <span class="kt">Double</span> <span class="o">=</span> <span class="n">productPrice</span> <span class="o">*</span> <span class="mf">0.1</span>
+<span class="o">}</span>
+
+<span class="c1">// taxIt recebe um TaxService o preço de produto.</span>
+<span class="c1">// Retorna o valor aplicado pelo TaxService injetado.</span>
+<span class="k">val</span> <span class="nv">taxIt</span><span class="k">:</span> <span class="o">(</span><span class="kt">TaxService</span><span class="o">,</span> <span class="kt">Double</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="nc">Double</span> <span class="k">=</span> <span class="o">(</span><span class="n">taxService</span><span class="o">,</span> <span class="n">price</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="nv">taxService</span><span class="o">.</span><span class="py">taxIt</span><span class="o">(</span><span class="n">price</span><span class="o">)</span>
+
+<span class="c1">// utilizando .curried, podemos injetar uma instancia do IOFTaxService.</span>
+<span class="k">val</span> <span class="nv">taxService</span> <span class="k">=</span> <span class="nv">taxIt</span><span class="o">.</span><span class="py">curried</span><span class="o">(</span><span class="k">new</span> <span class="nc">IOFTaxService</span><span class="o">)</span>
+
+<span class="c1">// Agora podemos apenas utilizar a função taxIt sem se preocupar qual o tipo de serviço</span>
+<span class="c1">// de aplicação de imposto que está sendo utilizado.</span>
+<span class="k">val</span> <span class="nv">taxToPay</span> <span class="k">=</span> <span class="nf">taxService</span><span class="o">(</span><span class="mi">100</span><span class="o">)</span>
+<span class="c1">// output: Double = 10.0</span>
+</code></pre></div></div>
+
+    </div>
+    <script src="/assets/js/prism.js"></script>
+    <script>
+    	Prism.highlightAll();
+    </script>
+</div>
+
+<div id="progress-bar"></div>
+            </div>
+        </div>
+
+        <footer class="main-footer fixed-bottom">
+    <div class="follow-container">
+        <p>
+            Get in touch via <a href="https://twitter.com/bpaulino0">Twitter</a>
+            / follow my <a href="/feed.xml">RSS Feed.</a>
+        </p>
+
+        <span>
+            © 2022 Bruno Paulino | <a style="font-size: 12px;" href="https://github.com/brunojppb/brunojppb.github.io">This website is open-source</a>
+        </span> 
+    </div>
+</footer>
+
+    </div>
+
+    <!-- Full-screen image presentation -->
+    <div class="fullscreen-overlay" style="display: none;">
+        <button class="close-overlay">close</button>
+    </div>
+
+    <!-- Night/Light mode switch -->
+    <button id="theme-switcher" 
+            aria-label="Toggle theme" 
+            title="Toggle theme" 
+            data-light-asset="/assets/images/sun.svg"
+            data-dark-asset="/assets/images/moon.svg">
+    </button>
+
+
+    <!-- Minimal Blog scripts -->
+    <script src="/assets/js/blog.js?v=1665087387"></script>
+
+    <!-- Privacy-first Analytics -->
+    <script data-goatcounter="https://bpaulino.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  </body>
+</html>

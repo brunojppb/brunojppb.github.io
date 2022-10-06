@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    
+    
+    
+    
+    
+    
+    
+    <meta name="author" content="Bruno Paulino">
+    <meta name="description" content="How to create a docker container with a ReactJS Application">
+    <meta name="keywords" content="react,reactjs,docker,website,dev,programming">
+    <meta name="theme-color" content="#21364B">
+    
+    <!-- Open Graph meta properties for beautifully rendering link previews on social -->
+    <!-- See: https://ogp.me/ -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://bpaulino.com/entries/12-dockerizing-react-apps" />
+    <meta property="og:title" content="Dockerizing React Apps" />
+    <meta property="og:description" content="How to create a docker container with a ReactJS Application" />
+    <meta property="og:image" content="https://bpaulino.com/assets/images/posts/dockerizing_react_apps.jpg" />
+
+    <!-- twitter card tags additive to og: meta properties -->
+    <!-- See: https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/markup -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:domain" content="bpaulino.com" />
+    <meta name="twitter:title" content="Dockerizing React Apps" />
+    <meta name="twitter:description" content="How to create a docker container with a ReactJS Application" />
+    <meta name="twitter:image" content="https://bpaulino.com/assets/images/posts/dockerizing_react_apps.jpg" />
+    <meta name="twitter:url" content="https://bpaulino.com/entries/12-dockerizing-react-apps" />
+    <meta name="twitter:creator" content="@bpaulino0" />
+    <meta name="twitter:label1" content="Created by" />
+    <meta name="twitter:data1" content="Bruno Paulino" />
+    <meta name="twitter:label2" content="Twitter" />
+    <meta name="twitter:data2" content="@bpaulino0" />
+    
+    
+    <link rel="shortcut icon" href="/assets/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+    <title>Dockerizing React Apps</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <!-- Timestamp from jekyll build to make sure the latest version is loaded correctly on our lovely readers' clients -->
+    <link rel="stylesheet" href="/assets/css/styles.css?v=1665087387">
+  </head>
+  <body>
+
+    <div role="main" class="main-container">
+
+        <div class="main-header">
+  <a href="/">
+    <h2>bpaulino.com</h2>
+  </a>
+  <p>
+    Hi, I am Bruno Paulino.<br />
+    Software is my craft.
+  </p>
+  <nav>
+    <a href="/">Blog</a>
+    <a href="/about">About</a>
+    <a href="/courses">Courses</a>
+    <!-- <a href="/speaking">Speaking</a> -->
+    <a href="/reading">Reading</a>
+  </nav>
+  <canvas class="particles-canvas"></canvas>
+</div>
+
+
+        <div class="flex-wrapper">
+            <div class="max-width-wrapper">
+                <div class="entry-container">
+    <div class="entry">
+        <h1 class="entry-title">Dockerizing React Apps</h1>
+        <div style="text-align: center; font-style: italic;">March 2, 2020</div>
+    	<p>While creating ReactJS apps, you probably don’t have to think too much about how
+to deploy them. ReactJS applications can be easily bundled in a folder,
+consisting of plain HTML, CSS and Javascript files. That should be simple enough
+to upload it to a S3 Bucket, host it on
+<a href="https://pages.github.com/">Github Pages</a> or even integrating great services
+like <a href="https://www.netlify.com/">Netlify</a> or <a href="https://zeit.co/">Zeit</a> for fast
+and automated deployments.</p>
+
+<p>But this week, I had the task of deploying a React app created with
+<a href="https://github.com/facebook/create-react-app">create-react-app</a> on a VPS under
+a subdomain. I didn’t want to use stone-age FTP, I wanted to have an automated
+docker container with my app where I could deploy anywhere without much
+configuration.</p>
+
+<p>I created a demo app with all the configurations detailed on this post. The
+<a href="https://github.com/brunojppb/dockerized-react-app">code is available here</a></p>
+
+<h2 id="preparing-our-dockerfile">Preparing our Dockerfile</h2>
+
+<p>We start out by creating a <code class="language-plaintext highlighter-rouge">Dockerfile</code> on our project root folder with the
+following content:</p>
+
+<div class="language-dockerfile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># This image won't be shipped with our final container</span>
+<span class="c"># we only use it to compile our app.</span>
+<span class="k">FROM</span><span class="s"> node:12.2.0-alpine as build</span>
+<span class="k">ENV</span><span class="s"> PATH /app/node_modules/.bin:$PATH</span>
+<span class="k">WORKDIR</span><span class="s"> /app</span>
+<span class="k">COPY</span><span class="s"> . /app</span>
+<span class="k">RUN </span>npm <span class="nb">install</span>
+<span class="k">RUN </span>npm run build
+
+<span class="c"># production image using nginx and including our</span>
+<span class="c"># compiled app only. This is called multi-stage builds</span>
+<span class="k">FROM</span><span class="s"> nginx:1.16.0-alpine</span>
+<span class="k">COPY</span><span class="s"> --from=build /app/build /usr/share/nginx/html</span>
+<span class="k">RUN </span><span class="nb">rm</span> /etc/nginx/conf.d/default.conf
+<span class="k">COPY</span><span class="s"> nginx/nginx.conf /etc/nginx/conf.d</span>
+<span class="k">EXPOSE</span><span class="s"> 80</span>
+<span class="k">CMD</span><span class="s"> ["nginx", "-g", "daemon off;"]</span>
+</code></pre></div></div>
+
+<p>On the snippet of code above, we are using a feature called
+<a href="https://docs.docker.com/develop/develop-images/multistage-build/">multi-stage builds</a>.
+It requires Docker 17.05 or higher, but the benefit of this feature is enormous,
+which I will explain next. On the first half of the script, we are building a
+Docker image based on <code class="language-plaintext highlighter-rouge">node:12.2.0-alpine</code> which is a very tiny linux image with
+node included. Now notice the <code class="language-plaintext highlighter-rouge">as build</code> at the end of the first line. This
+creates an intermediary image with our dependencies that can be thrown away
+after build. Soon after that, we install all the dependencies from my React app
+with <code class="language-plaintext highlighter-rouge">npm install</code> and later we execute <code class="language-plaintext highlighter-rouge">npm run build</code> to compile the React app
+optimized for production.</p>
+
+<p>On the second half of the code, we create a new Docker image based on
+<code class="language-plaintext highlighter-rouge">nginx:1.16.0-alpine</code> which is also a tiny linux including
+<a href="https://www.nginx.com/">nginx</a>, a high performance web server to serve our
+React app. We use the command <code class="language-plaintext highlighter-rouge">COPY</code> to extract the content from our previous
+image called <code class="language-plaintext highlighter-rouge">build</code> and copy it into <code class="language-plaintext highlighter-rouge">/usr/share/nginx/html</code>. Next, we remove
+the default nginx configuration file and add our custom configuration under
+<code class="language-plaintext highlighter-rouge">nginx/nginx.conf</code> with the following content:</p>
+
+<div class="language-nginx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># To support react-router, we must configure nginx</span>
+<span class="c1"># to route the user to the index.html file for all initial requests</span>
+<span class="c1"># e.g. landing on /users/1 should render index.html</span>
+<span class="c1"># then React takes care of mounting the correct routes</span>
+<span class="k">server</span> <span class="p">{</span>
+
+  <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
+
+  <span class="kn">location</span> <span class="n">/</span> <span class="p">{</span>
+    <span class="kn">root</span>   <span class="n">/usr/share/nginx/html</span><span class="p">;</span>
+    <span class="kn">index</span>  <span class="s">index.html</span> <span class="s">index.htm</span><span class="p">;</span>
+    <span class="kn">try_files</span> <span class="nv">$uri</span> <span class="nv">$uri</span><span class="n">/</span> <span class="n">/index.html</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="kn">error_page</span>   <span class="mi">500</span> <span class="mi">502</span> <span class="mi">503</span> <span class="mi">504</span>  <span class="n">/50x.html</span><span class="p">;</span>
+
+  <span class="kn">location</span> <span class="p">=</span> <span class="n">/50x.html</span> <span class="p">{</span>
+    <span class="kn">root</span>   <span class="n">/usr/share/nginx/html</span><span class="p">;</span>
+  <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This configuration is very important for apps using
+<a href="https://reacttraining.com/react-router/web/guides/quick-start">React Router</a>.
+Whenever you share a link to your React app, lets say, a link to
+<code class="language-plaintext highlighter-rouge">/users/1/profile</code>, this link tells the browser to request this path from the
+web server. If the web server is not configured properly, our React app won’t be
+able to render the initial <strong>index.html</strong> file containing our React
+application.<br />
+Using our custom configuration, we tell nginx to route all requests to the root
+folder <code class="language-plaintext highlighter-rouge">/usr/share/nginx/html</code> which is the directory we previously copied our
+React app during image build. We should not forget that React apps are Single
+Page Applications, which means that there is only one page to be rendered on the
+first request, the rest of the job is taken care by React on the browser.</p>
+
+<h2 id="building-our-docker-image">Building our Docker Image</h2>
+
+<p>We already have all the required code to build our Docker image. Lets execute
+the Docker command to build it:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Make sure to be on the same folder of your React app</span>
+<span class="c"># replace 'my-react-app' with whatever name you find appropriate</span>
+<span class="c"># this is the image tag you will push to your Docker registry</span>
+docker build <span class="nt">-t</span> my-react-app <span class="nb">.</span>
+</code></pre></div></div>
+
+<p>When the image is built, lets check the size of the image we just generated with
+the following command:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># List all the images on your machine</span>
+docker images
+<span class="c"># You should see something like this:</span>
+REPOSITORY     TAG       IMAGE ID        CREATED          SIZE
+my-react-app   latest    c35c322d4c37    20 seconds ago   22.5MB
+</code></pre></div></div>
+
+<p>Alright, our Docker image is ready to go on to a Docker Registry somewhere. One
+interesting thing about this image is that the size is only 22.5MB. This is
+really great for deployment because small images make automated pipelines run
+much faster during download, image building and upload.</p>
+
+<h2 id="running-our-react-app-with-docker-compose">Running our React app with docker-compose</h2>
+
+<p>What we need now is a way to run this Docker image. For testing it locally, lets
+create a file called <code class="language-plaintext highlighter-rouge">docker-compose.yml</code> with the following content:</p>
+
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">version</span><span class="pi">:</span> <span class="s2">"</span><span class="s">3.7"</span>
+
+<span class="na">services</span><span class="pi">:</span>
+  <span class="na">my_react_app</span><span class="pi">:</span>
+    <span class="na">build</span><span class="pi">:</span>
+      <span class="na">context</span><span class="pi">:</span> <span class="s">.</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">8000:80"</span>
+</code></pre></div></div>
+
+<p><a href="https://docs.docker.com/compose/">Docker Compose</a> will take care of building
+the image in case it doesn’t exist and also bind the port <code class="language-plaintext highlighter-rouge">8000</code> from our local
+machine to the port <code class="language-plaintext highlighter-rouge">80</code> on the container. Now open your browser on
+<code class="language-plaintext highlighter-rouge">localhost:8000</code> and check if our React app is running there. You should see
+something like this:</p>
+
+<p><img src="/assets/images/posts/react_js_app_docker.png" alt="React JS App running on Docker" /></p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Running a React app with Docker might not be the best deployment, but if you
+need to run docker like in my case, it can be very simple and effective. This
+opens the door for a lot of automation pipelines you can hook up on the project
+like <a href="https://github.com/features/actions">Github Actions</a> or
+<a href="https://docs.gitlab.com/ee/ci/">Gitlab CI/CD</a> to automate your deployment
+process. You can find
+<a href="https://github.com/brunojppb/dockerized-react-app">the code of this post here.</a></p>
+
+    </div>
+    <script src="/assets/js/prism.js"></script>
+    <script>
+    	Prism.highlightAll();
+    </script>
+</div>
+
+<div id="progress-bar"></div>
+            </div>
+        </div>
+
+        <footer class="main-footer fixed-bottom">
+    <div class="follow-container">
+        <p>
+            Get in touch via <a href="https://twitter.com/bpaulino0">Twitter</a>
+            / follow my <a href="/feed.xml">RSS Feed.</a>
+        </p>
+
+        <span>
+            © 2022 Bruno Paulino | <a style="font-size: 12px;" href="https://github.com/brunojppb/brunojppb.github.io">This website is open-source</a>
+        </span> 
+    </div>
+</footer>
+
+    </div>
+
+    <!-- Full-screen image presentation -->
+    <div class="fullscreen-overlay" style="display: none;">
+        <button class="close-overlay">close</button>
+    </div>
+
+    <!-- Night/Light mode switch -->
+    <button id="theme-switcher" 
+            aria-label="Toggle theme" 
+            title="Toggle theme" 
+            data-light-asset="/assets/images/sun.svg"
+            data-dark-asset="/assets/images/moon.svg">
+    </button>
+
+
+    <!-- Minimal Blog scripts -->
+    <script src="/assets/js/blog.js?v=1665087387"></script>
+
+    <!-- Privacy-first Analytics -->
+    <script data-goatcounter="https://bpaulino.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  </body>
+</html>

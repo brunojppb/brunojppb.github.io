@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    
+    
+    
+    
+    
+    
+    
+    <meta name="author" content="Bruno Paulino">
+    <meta name="description" content="Como usar o gitflow em seus projects Git">
+    <meta name="keywords" content="git,gitflow,branch,workflow,desenvolvimento,programação">
+    <meta name="theme-color" content="#21364B">
+    
+    <!-- Open Graph meta properties for beautifully rendering link previews on social -->
+    <!-- See: https://ogp.me/ -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://bpaulino.com/entries/2-arquitetura-de-branching-para-desenvolvimento-com-git" />
+    <meta property="og:title" content="Arquitetura de branching para desenvolvimento com Git" />
+    <meta property="og:description" content="Como usar o gitflow em seus projects Git" />
+    <meta property="og:image" content="https://bpaulino.com/assets/images/bpaulino.jpg" />
+
+    <!-- twitter card tags additive to og: meta properties -->
+    <!-- See: https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/markup -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:domain" content="bpaulino.com" />
+    <meta name="twitter:title" content="Arquitetura de branching para desenvolvimento com Git" />
+    <meta name="twitter:description" content="Como usar o gitflow em seus projects Git" />
+    <meta name="twitter:image" content="https://bpaulino.com/assets/images/bpaulino.jpg" />
+    <meta name="twitter:url" content="https://bpaulino.com/entries/2-arquitetura-de-branching-para-desenvolvimento-com-git" />
+    <meta name="twitter:creator" content="@bpaulino0" />
+    <meta name="twitter:label1" content="Created by" />
+    <meta name="twitter:data1" content="Bruno Paulino" />
+    <meta name="twitter:label2" content="Twitter" />
+    <meta name="twitter:data2" content="@bpaulino0" />
+    
+    
+    <link rel="shortcut icon" href="/assets/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+    <title>Arquitetura de branching para desenvolvimento com Git</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <!-- Timestamp from jekyll build to make sure the latest version is loaded correctly on our lovely readers' clients -->
+    <link rel="stylesheet" href="/assets/css/styles.css?v=1665087387">
+  </head>
+  <body>
+
+    <div role="main" class="main-container">
+
+        <div class="main-header">
+  <a href="/">
+    <h2>bpaulino.com</h2>
+  </a>
+  <p>
+    Hi, I am Bruno Paulino.<br />
+    Software is my craft.
+  </p>
+  <nav>
+    <a href="/">Blog</a>
+    <a href="/about">About</a>
+    <a href="/courses">Courses</a>
+    <!-- <a href="/speaking">Speaking</a> -->
+    <a href="/reading">Reading</a>
+  </nav>
+  <canvas class="particles-canvas"></canvas>
+</div>
+
+
+        <div class="flex-wrapper">
+            <div class="max-width-wrapper">
+                <div class="entry-container">
+    <div class="entry">
+        <h1 class="entry-title">Arquitetura de branching para desenvolvimento com Git</h1>
+        <div style="text-align: center; font-style: italic;">March 10, 2016</div>
+    	<p>Visando implementar um padrão mais sólido e fácil de gerenciar nossos
+repositórios na <a href="http://www.pm.pb.gov.br">Policia Militar da Paraíba</a>,
+resolvemos adotar uma arquitetura de branching baseada no artigo de
+<a href="http://nvie.com/posts/a-successful-git-branching-model/">Vincent Driessen</a> o
+qual já foi testado e aprovado em diversas empresas mundo a fora. Esse artigo
+será, praticamente, uma tradução da nossa fonte, com o objetivo de facilitar o
+aprendizado e a integração de novos membros em nossa equipe. Esse artigo exige
+que o leitor possua conhecimentos sobre Git. Se ainda não conhece Git, recomento
+a leitura do livro de
+<a href="https://www.learnenough.com/git-tutorial">Learn Enough Git to Be Dangerous</a>
+escrito por <a href="http://www.michaelhartl.com/">Michael Hartl</a> o qual possui uma
+didática incrível para iniciantes. O livro é gratuito o pode ser lido no próprio
+navegador. Se preferir um livro em Português, o leitor pode adquirir o livro
+<a href="https://www.casadocodigo.com.br/pages/sumario-git-github">Controlando versões com Git e Github</a>
+disponível na Casa do Código. Não li esse livro, porém recebi boas
+recomendações.</p>
+
+<h3 id="repositório-central">Repositório Central</h3>
+
+<p>Em nosso repositório central(origin), temos duas branches que sempre existirão
+no ciclo de vida de nossas aplicações. Elas são:</p>
+
+<ul>
+  <li><strong>master</strong></li>
+  <li><strong>develop</strong></li>
+</ul>
+
+<p>A branch <strong>origin/master</strong> será sempre nosso código-fonte que está em produção.</p>
+
+<p>em paralelo a <strong>master</strong> branch, teremos a branch <strong>origin/develop</strong> que sempre
+refletirá todas as novas funcionalidades implementadas para o proximo release.
+Sempre que tivermos uma versão estável em origin/develop, estamos prontos para
+realizar um merge em <strong>origin/master</strong> colocando uma tag com o número do
+release.</p>
+
+<p><span style="text-align: center; display: block; font-weight: bold">
+   Ilustração da arquitetura de branching
+</span></p>
+
+<p><img src="/assets/images/posts/git_branch_architecture.jpg" alt="Ilustração da arquitetura de branching" />
+Fonte:
+<a href="http://nvie.com/posts/a-successful-git-branching-model/">A successful Git branching model</a></p>
+
+<h3 id="branches-de-suporte">Branches de suporte</h3>
+
+<p>enquanto as branches <strong>origin/master</strong> e <strong>origin/develop</strong> são as principais e
+sempre estarão presentes, nós usaremos as branches de suporte para implementar
+novas funcionalidades, corrigir eventuais problemas que surgirem em produção e
+criar novos releases. Essas branches sempre terão um tempo de vida limitado,
+pois iremos removê-las assim que não forem mais necessárias. As branches que
+podemos usar serão:</p>
+
+<ul>
+  <li><strong>Features branches</strong> (branches de implementação de novas funcionalidades)</li>
+  <li><strong>Release branches</strong> (branches criadas para novos releases(entregas) para
+produção)</li>
+  <li><strong>Hotfix branches</strong> (branches criadas para correções de bugs existentes em
+produção)</li>
+</ul>
+
+<p>Cada branch dessa tem um propósito específico e seguem regras que informam de
+onde devem ser criadas e para onde devem ser mergidas(target branches). Iremos
+descrever um pouco sobre qual o papel de cada tipo de branch e como elas devem
+se comportar.</p>
+
+<h3 id="feature-branches">Feature Branches</h3>
+
+<ol>
+  <li>Podem ser criadas a partir de:</li>
+</ol>
+
+<ul>
+  <li><strong>develop</strong></li>
+</ul>
+
+<ol>
+  <li>Devem ser mergidas em:</li>
+</ol>
+
+<ul>
+  <li><strong>develop</strong></li>
+</ul>
+
+<ol>
+  <li>Convenção para nomeação das branches</li>
+</ol>
+
+<ul>
+  <li><strong>QUALQUER NOME</strong>, exceto <strong>master</strong>, <strong>develop</strong>, <strong>release-*</strong> ou
+<strong>hotfix-*</strong>.</li>
+</ul>
+
+<p>Feature branches são utilizadas para desenvolvimento de novas funcionalidades
+para um futuro release(entrega). O objetivo principal é que essa branch exista
+enquanto essa nova funcionalidade estiver em desenvolvimento onde, no futuro,
+será mergiada na branch <strong>origin/develop</strong> para que essa nova funcionalidade
+esteja disponível em um novo release o será descartada em caso dessa nova
+funcionalidade não seja mais necessária. <strong>Features Branches</strong> geralmente não
+estarão disponíveis no repositório central(origin) e sim no repositório local do
+desenvolvedor.</p>
+
+<h5 id="criação-de-uma-feature-branch">Criação de uma Feature Branch</h5>
+
+<p>quando iniciarmos nosso trabalho em uma nova funcionalidade, iremos criar essa
+nova branch a partir de <strong>develop</strong> com o seguinte comando:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nv">$ </span>git checkout <span class="nt">-b</span> feature-name develop
+  <span class="c"># criação da branch 'feature-name'</span>
+  <span class="c"># e checkout para 'feature-branch'</span>
+</code></pre></div></div>
+
+<p>Agora estamos aptos a criar nossa funcionalidade nessa nova branch. Ao termino
+da implementação da nova funcionalidade, devemos mergear nossas modificações em
+<strong>develop</strong> para um futuro release. podemos seguir os seguintes comandos:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nv">$ </span>git add <span class="nt">-A</span>
+  <span class="nv">$ </span>git commit <span class="nt">-m</span> <span class="s2">"Mensagem objetiva e direta sobre a funcionalidade"</span>
+  <span class="nv">$ </span>git checkout develop
+  <span class="c"># checkout na branch develop</span>
+  <span class="nv">$ </span>git pull
+  <span class="c"># Recuperando novas atualizações que estão em origin/develop(repositório central) e mergindo em nossa branch develop local</span>
+  <span class="nv">$ </span>git merge <span class="nt">--no-ff</span> feature-name
+  <span class="c"># mergindo nossa feature branch em develop usando o parametro --no-ff para não perdermos informações sobre o histórico de commits da nossa feature branch. O histórico não é perdido, mas sim mergido na branch develop onde, em uma futura consulta, irá sugerir que trabalhamos diretamente em develop, onde não estaria correto.</span>
+  <span class="nv">$ </span>git branch <span class="nt">-d</span> feature-name
+  <span class="c"># excluindo a nossa feature-branch localmente</span>
+  git push origin develop
+  <span class="c"># enviando nossas modificações que incluimos em develop para o repositório central(origin/develop)</span>
+</code></pre></div></div>
+
+<p>Usando o parâmetro <strong>–no-ff</strong> nos ajudará a visualizar o histórico de commits
+que foram implementados nessa nova funcionalidade. mantendo o histórico dessa
+branch separado de <strong>develop</strong>, facilitando uma futura consulta.</p>
+
+<h3 id="release-branches">Release Branches</h3>
+
+<ol>
+  <li>Podem ser criadas a partir de:</li>
+</ol>
+
+<ul>
+  <li><strong>develop</strong></li>
+</ul>
+
+<ol>
+  <li>Devem ser mergidas em:</li>
+</ol>
+
+<ul>
+  <li><strong>develop</strong> e <strong>master</strong></li>
+</ul>
+
+<ol>
+  <li>Convenção para nomeação das branches</li>
+</ol>
+
+<ul>
+  <li><strong>release-*.</strong></li>
+</ul>
+
+<p>Release branches serão nossas pontes entre <strong>develop</strong> e <strong>master</strong>, onde iremos
+corrigir os pequenos detalhes que passaram despercebidos. Essas branches serão a
+nossa preparação para o próximo release de produção.</p>
+
+<p>Realizando essas correções na <strong>release branch</strong>, nossa <strong>develop branch</strong>
+ficará livre para receber novas funcionalidades(feature branches) para próximas
+releases.</p>
+
+<p>Para determinarmos o momento de criação de uma release branch, podemos adotar o
+seguinte parâmetro:</p>
+
+<ul>
+  <li><em>Quando a branch develop estiver preparada para um novo release;</em></li>
+</ul>
+
+<p>No momento em que criamos a nossa <strong>Release Branch</strong>, devemos criar um versão
+que será usada para próxima release.</p>
+
+<p>Release Branches são criadas a partir de develop. Por exemplo, se nossa versão
+atual em produção for <strong>1.1.5</strong> e a nossa branch <strong>develop</strong> está pronta para um
+próximo release, nós decidimos que a próxima verão será a <strong>1.2</strong>. Então,
+criaremos a <strong>release branch</strong> que refletirá essa nova versão.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nv">$ </span>git checkout <span class="nt">-b</span> release-1.2 develop
+  <span class="c"># criação da branch 'release-1.2' apartir de develop</span>
+  <span class="c"># e checkout para 'release-1.2'</span>
+  <span class="c"># Apartir de agora, podemos fazer as correções necessárias e trabalhando na release branch</span>
+  <span class="nv">$ </span>git commit <span class="nt">-a</span> <span class="nt">-m</span> <span class="s2">"messagem objetiva"</span>
+</code></pre></div></div>
+
+<p>É proibido adicionar grandes funcionalidades nessa branch, onde só é permitido a
+correção de erros e pequenos ajustes. Se precisamos adicionar novas
+funcionalidades, devemos criar uma <strong>feature branch</strong> e mergear em develop ao
+termino, onde essa nova funcionalidade precisará esperar o próximo release.</p>
+
+<h5 id="finalizando-trabalhos-na-release-branch">Finalizando trabalhos na Release Branch</h5>
+
+<p>Quando finalizarmos todo o nosso trabalho de correções e ajustes na Release
+Branch, precisamos mergear essa branch na <strong>master</strong>(branch de produção). Como
+todo commit na <strong>master</strong> é um novo release por padrão, precisamos criar uma
+<a href="https://git-scm.com/book/en/v2/Git-Basics-Tagging">Tag</a> para uma futura
+referencia em nosso histórico de versões. Uma tag nada mais é que um numero de
+versão que facilitará nosso controle em produção. Após a criação da <strong>tag</strong> em
+<strong>master</strong>, precisamos mergear nossas modificações feitas na release branch em
+<strong>develop</strong>. Assim, teremos todas essas correções ja implementadas em futuros
+releases. Para realizar esse processo, podemos executar os seguintes comandos:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>git checkout master
+<span class="c"># checkout na branch master</span>
+<span class="nv">$ </span>git pull
+<span class="c"># recuperando atualizações da master que estão no repo central</span>
+<span class="nv">$ </span>git merge <span class="nt">--no-ff</span> release-1.2
+<span class="c"># mergindo nova release branch em master</span>
+<span class="nv">$ </span>git tag <span class="nt">-a</span> 1.2
+<span class="c"># criação da tag para esse novo release em produção</span>
+<span class="nv">$ </span>git push origin master
+<span class="c"># Atualizando a branch master no repositorio central</span>
+<span class="c"># Onde refletirá o novo release para produção</span>
+
+<span class="c"># Agora precisamos atualizar a branch develop com as</span>
+<span class="c"># correções feitas na release branch</span>
+<span class="nv">$ </span>git checkout develop
+<span class="c"># chechout na branch develop</span>
+<span class="nv">$ </span>git pull
+<span class="c"># recuperando atualizações de develop que estão no repo central</span>
+<span class="nv">$ </span>git merge <span class="nt">--no-ff</span> release-1.2
+<span class="c"># mergindo nossas modificações da branch release-1.2 em develop</span>
+<span class="c"># pode ser que ocorram conflitos nesse merge. Caso ocorra,</span>
+<span class="c"># resolva os conflitos e faça um commit</span>
+<span class="nv">$ </span>git push origin develop
+<span class="c"># atualizando branch develop no repositorio central(origin)</span>
+<span class="c"># Agora podemos deletar a branch release-1.2</span>
+<span class="nv">$ </span>git branch <span class="nt">-d</span> release-1.2
+</code></pre></div></div>
+
+<h5 id="hotfix-branches">Hotfix Branches</h5>
+
+<ol>
+  <li>Podem ser criadas a partir de:</li>
+</ol>
+
+<ul>
+  <li><strong>master</strong></li>
+</ul>
+
+<ol>
+  <li>Devem ser mergidas em:</li>
+</ol>
+
+<ul>
+  <li><strong>develop</strong> e <strong>master</strong></li>
+</ul>
+
+<ol>
+  <li>Convenção para nomeação das branches</li>
+</ol>
+
+<ul>
+  <li><strong>hotfix-*</strong>.</li>
+</ul>
+
+<p><strong>Hotfix Branches</strong> são bem parecidas com <strong>Release Branches</strong>, pois são criadas
+para serem devolvidas para produção(<strong>master</strong>), porém são branches criadas sem
+planejamento, provenientes de bugs encontrados em produção. Basicamente, são
+criadas quando temos um bug severo em produção e precisa ser corrigido de
+<strong>imediato</strong>. O trabalho na Hotfix Branch não impede a continuação do trabalho
+de outros desenvolvedores que estão utilizando develop como base, sendo assim,
+develop continua livre.</p>
+
+<h5 id="criando-hotfix-branches">Criando Hotfix Branches</h5>
+
+<p>Hotfix Branches são criados a partir da <strong>master</strong>. Pegando como exemplo a
+versão <strong>1.2</strong> como atual em produção na <strong>master</strong>, teremos os seguintes
+comandos:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>git checkout <span class="nt">-b</span> hotfix-1.2.1 master
+<span class="c"># criando hotfix branch apartir da master, criando um nova versão para essa correção</span>
+<span class="c"># Agora podemos trabalhar na correção do bug encontrado em produção</span>
+<span class="nv">$ </span>git commit <span class="nt">-m</span> <span class="s2">"Mensagem objetiva"</span>
+</code></pre></div></div>
+
+<h5 id="finalizando-correções-na-hotfix-branch">Finalizando correções na Hotfix Branch</h5>
+
+<p>Ao termino da correção do <strong>bug</strong>, precisamos mergear essas alterações na
+<strong>master</strong>, porém precisamos mergear essas novas correções em <strong>develop</strong> para
+inclusão em novos releases. podemos executar os seguintes comandos:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>git checkout master
+<span class="nv">$ </span>git pull
+<span class="nv">$ </span>git merge <span class="nt">--no-ff</span> hotfix-1.2.1
+<span class="c"># mergindo alterações da hotfix branch na master</span>
+<span class="nv">$ </span>git tag <span class="nt">-a</span> 1.2.1
+<span class="c"># Criando nova tag para refletir a nova versão com as correções</span>
+
+<span class="c"># Agora precisamos adicionar essas correções em develop</span>
+<span class="nv">$ </span>git checkout develop
+<span class="nv">$ </span>git pull
+<span class="nv">$ </span>git merge <span class="nt">--no-ff</span> hotfix-1.2.1
+
+<span class="c"># pro fim, remova a hotfix branch</span>
+<span class="nv">$ </span>git branch <span class="nt">-d</span> hotfix-1.2.1
+</code></pre></div></div>
+
+<p><strong>ATENÇÃO</strong>: Se existir uma <strong>RELEASE BRANCH</strong> na hora de mergear a <strong>hotfix
+branch</strong> na <strong>master</strong>, devemos mergear essa <strong>hotfix branch</strong> na <strong>atual
+release branch</strong>, ao invés de <strong>develop</strong>. Como ao termino do merge da <strong>release
+branch</strong> na <strong>master</strong>, temos que mergear a <strong>release branch</strong> em <strong>develop</strong>,
+<strong>develop</strong> receberá essas atualizações. Se por acaso nossa <strong>develop</strong> branch
+precisar dessas correções <strong>IMEDIATAMENTE</strong>, podemos mergear a hotfix branch
+diretamente em develop sem problemas.</p>
+
+    </div>
+    <script src="/assets/js/prism.js"></script>
+    <script>
+    	Prism.highlightAll();
+    </script>
+</div>
+
+<div id="progress-bar"></div>
+            </div>
+        </div>
+
+        <footer class="main-footer fixed-bottom">
+    <div class="follow-container">
+        <p>
+            Get in touch via <a href="https://twitter.com/bpaulino0">Twitter</a>
+            / follow my <a href="/feed.xml">RSS Feed.</a>
+        </p>
+
+        <span>
+            © 2022 Bruno Paulino | <a style="font-size: 12px;" href="https://github.com/brunojppb/brunojppb.github.io">This website is open-source</a>
+        </span> 
+    </div>
+</footer>
+
+    </div>
+
+    <!-- Full-screen image presentation -->
+    <div class="fullscreen-overlay" style="display: none;">
+        <button class="close-overlay">close</button>
+    </div>
+
+    <!-- Night/Light mode switch -->
+    <button id="theme-switcher" 
+            aria-label="Toggle theme" 
+            title="Toggle theme" 
+            data-light-asset="/assets/images/sun.svg"
+            data-dark-asset="/assets/images/moon.svg">
+    </button>
+
+
+    <!-- Minimal Blog scripts -->
+    <script src="/assets/js/blog.js?v=1665087387"></script>
+
+    <!-- Privacy-first Analytics -->
+    <script data-goatcounter="https://bpaulino.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  </body>
+</html>

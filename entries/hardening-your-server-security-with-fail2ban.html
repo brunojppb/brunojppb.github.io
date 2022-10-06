@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    
+    
+    
+    
+    
+    
+    
+    <meta name="author" content="Bruno Paulino">
+    <meta name="description" content="How to protect your server from brute-force attacks and intruders">
+    <meta name="keywords" content="fail2ban,security,linux,server,devops">
+    <meta name="theme-color" content="#21364B">
+    
+    <!-- Open Graph meta properties for beautifully rendering link previews on social -->
+    <!-- See: https://ogp.me/ -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://bpaulino.com/entries/hardening-your-server-security-with-fail2ban" />
+    <meta property="og:title" content="Hardening your server security with Fail2Ban" />
+    <meta property="og:description" content="How to protect your server from brute-force attacks and intruders" />
+    <meta property="og:image" content="https://bpaulino.com/assets/images/posts/hardening_your_server_security.jpg" />
+
+    <!-- twitter card tags additive to og: meta properties -->
+    <!-- See: https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/markup -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:domain" content="bpaulino.com" />
+    <meta name="twitter:title" content="Hardening your server security with Fail2Ban" />
+    <meta name="twitter:description" content="How to protect your server from brute-force attacks and intruders" />
+    <meta name="twitter:image" content="https://bpaulino.com/assets/images/posts/hardening_your_server_security.jpg" />
+    <meta name="twitter:url" content="https://bpaulino.com/entries/hardening-your-server-security-with-fail2ban" />
+    <meta name="twitter:creator" content="@bpaulino0" />
+    <meta name="twitter:label1" content="Created by" />
+    <meta name="twitter:data1" content="Bruno Paulino" />
+    <meta name="twitter:label2" content="Twitter" />
+    <meta name="twitter:data2" content="@bpaulino0" />
+    
+    
+    <link rel="shortcut icon" href="/assets/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+    <title>Hardening your server security with Fail2Ban</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <!-- Timestamp from jekyll build to make sure the latest version is loaded correctly on our lovely readers' clients -->
+    <link rel="stylesheet" href="/assets/css/styles.css?v=1665087387">
+  </head>
+  <body>
+
+    <div role="main" class="main-container">
+
+        <div class="main-header">
+  <a href="/">
+    <h2>bpaulino.com</h2>
+  </a>
+  <p>
+    Hi, I am Bruno Paulino.<br />
+    Software is my craft.
+  </p>
+  <nav>
+    <a href="/">Blog</a>
+    <a href="/about">About</a>
+    <a href="/courses">Courses</a>
+    <!-- <a href="/speaking">Speaking</a> -->
+    <a href="/reading">Reading</a>
+  </nav>
+  <canvas class="particles-canvas"></canvas>
+</div>
+
+
+        <div class="flex-wrapper">
+            <div class="max-width-wrapper">
+                <div class="entry-container">
+    <div class="entry">
+        <h1 class="entry-title">Hardening your server security with Fail2Ban</h1>
+        <div style="text-align: center; font-style: italic;">July 1, 2020</div>
+    	<p>I was recently checking the access logs from some linux servers I maintain and I
+was very surprised by the ssh login attempts those servers were facing. My
+servers have password access disabled by default, so only previously registered
+ssh keys are allowed to login. But even then, the amount of login attempts was
+disturbing. Around 500 attempts a day. I had to do something about it.</p>
+
+<p>Talking to my coworkers about it, one of them suggested a tool called
+<a href="https://www.fail2ban.org/wiki/index.php/Main_Page">Fail2Ban</a>. It runs a
+background service that monitors the log files on your server and based on
+suspicious activities, like unsuccessful login attempts, it blocks access from
+those bad actors by updating firewall rules to reject any connection for their
+IP addresses.</p>
+
+<p>My first thought was <em>“I should be careful because I could ban myself and lose
+access to my server permanently”</em>. So I started the installation process very
+carefully. Fortunately, the default configuration only blocks the IP access for
+10 minutes, so worst case I would have a few minutes to have coffee. I also
+started the process in a “trash-able” server, so if something goes wrong, I
+could just throw it away and start anew.</p>
+
+<p>We will customize those settings for a more robust strategy later on here on
+this post.</p>
+
+<h2 id="installing-fail2ban">Installing Fail2Ban</h2>
+
+<p>Let’s get started. The first step is to install Fail2Ban on your server
+(Ubuntu):</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Update dependencies</span>
+apt update <span class="o">&amp;&amp;</span> apt upgrade <span class="nt">-y</span>
+
+<span class="c"># install fail2ban</span>
+apt <span class="nb">install </span>fail2ban
+</code></pre></div></div>
+
+<p>Fail2Ban comes with a pretty solid default configuration, but since our goal is
+to customize it to our needs, they recommend us to copy the default
+configuration file with the <code class="language-plaintext highlighter-rouge">.local</code> extension. The reason for this is that if
+we update Fail2Ban, the original configuration file will get changed and we will
+lose our custom configuration.</p>
+
+<h2 id="put-those-bad-actors-in-jail">Put those bad actors in jail</h2>
+
+<p>The configuration files are located at <code class="language-plaintext highlighter-rouge">/etc/fail2ban</code>, so lets go ahead and
+create a local copy of those files:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Copy fail2ban default configuration</span>
+<span class="nb">cp</span> /etc/fail2ban/fail2ban.conf /etc/fail2ban/fail2ban.local
+<span class="c"># Copy fail2ban jail configuration</span>
+<span class="nb">cp</span> /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+</code></pre></div></div>
+
+<p>Fail2Ban uses the concept of <code class="language-plaintext highlighter-rouge">jails</code> to monitor specific services like nginx,
+ssh, apache and even your custom application logs like Node.js or Java apps.
+Each jail specifies a configuration for a specific application or service
+running on your server. By default, the <code class="language-plaintext highlighter-rouge">sshd</code> jail is active.</p>
+
+<h2 id="avoid-banning-specific-ip-addresses">Avoid banning specific IP Addresses</h2>
+
+<p>To prevent specific IP addresses of being banned, you can create an allow-list
+in the <code class="language-plaintext highlighter-rouge">fail2ban.local</code> file. Go ahead and edit the following line with your IP
+Addresses using space (and/or comma) as a separator:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># allow IP addresses from your VPN or other servers here</span>
+ignoreip <span class="o">=</span> 127.0.0.1/8 ::1 YOU_IP_ADDRESS_HERE
+</code></pre></div></div>
+
+<h2 id="activating-fail2ban">Activating Fail2Ban</h2>
+
+<p>Now that we have Fail2Ban installed and pre-configured by default, lets start
+the service:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl start fail2ban
+</code></pre></div></div>
+
+<p>As soon as you start Fail2Ban, you might already see some bad actors blocked.
+First lets check which jails are active with the following command:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fail2ban-client status
+<span class="c"># You should see something like this as output:</span>
+Status
+|- Number of jail:	1
+<span class="sb">`</span>- Jail list: sshd
+</code></pre></div></div>
+
+<p>Ok, so we have Fail2Ban up and running, lets check the <code class="language-plaintext highlighter-rouge">sshd</code> jail with the
+following command:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fail2ban-client status sshd
+<span class="c"># You should see something like this as output</span>
+Status <span class="k">for </span>the jail: sshd
+|- Filter
+|  |- Currently failed:	10
+|  |- Total failed:	511
+|  <span class="sb">`</span>- File list:	/var/log/auth.log
+<span class="sb">`</span>- Actions
+   |- Currently banned:	9
+   |- Total banned:	77
+   <span class="sb">`</span>- Banned IP list:	218.255.86.106 222.186.31.83 85.209.48.228 180.166.184.66 218.92.0.220 109.255.185.65 150.158.178.137 111.231.132.94 66.70.130.149
+</code></pre></div></div>
+
+<p>In my case, I could immediately see the benefit of Fail2Ban. after a few
+minutes, I had already several IP addresses banned.</p>
+
+<p>Lets lookup our IP table to see if those IP addresses match with the following
+command:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>iptables <span class="nt">-n</span> <span class="nt">-L</span>
+<span class="c"># You should see something like this as output</span>
+Chain f2b-sshd <span class="o">(</span>1 references<span class="o">)</span>
+target     prot opt <span class="nb">source               </span>destination
+REJECT     all  <span class="nt">--</span>  103.100.211.72       0.0.0.0/0            reject-with icmp-port-unreachable
+REJECT     all  <span class="nt">--</span>  66.70.130.149        0.0.0.0/0            reject-with icmp-port-unreachable
+REJECT     all  <span class="nt">--</span>  111.231.132.94       0.0.0.0/0            reject-with icmp-port-unreachable
+REJECT     all  <span class="nt">--</span>  150.158.178.137      0.0.0.0/0            reject-with icmp-port-unreachable
+REJECT     all  <span class="nt">--</span>  109.255.185.65       0.0.0.0/0            reject-with icmp-port-unreachable
+</code></pre></div></div>
+
+<p>That is great. Fail2Ban is updating our IP filter rules which will prevent
+connections from those bad actors.</p>
+
+<h2 id="changing-the-defaults">Changing the defaults</h2>
+
+<p>The default configuration blocks those IP addresses for 600 seconds (10
+minutes). This is a pretty good start, but we can do better. Ideally, if some of
+those IP addresses are attempting to connect every 10 minutes, we could block
+them for a greater timespan or even permanently.</p>
+
+<p>One thing to consider is that if we block IPs permanently, we can potentially
+increase our IP table lookup time, which means that connecting to our server can
+become very slow since this list of blocked IPs can grow indefinitely.</p>
+
+<p>To help us with that, Fail2Ban comes with <code class="language-plaintext highlighter-rouge">recidive</code> which is a jail for its own
+logs. It works like that:</p>
+
+<ul>
+  <li>It looks into Fail2Ban own logs for banned IP addresses from other jails.</li>
+  <li>If those IP addresses are found in the logs more than 5 times in the current
+day, it blocks them for 1 week.</li>
+</ul>
+
+<p>That sounds like a good strategy. Our IP table won’t grow very large (in theory)
+because in 1 week it will rollback and allow those IP addresses to connect
+again. If they act in bad faith again, they will be blocked and the cycle
+repeats.</p>
+
+<p>So let’s go ahead and activate <code class="language-plaintext highlighter-rouge">recidive</code>. Edit the file
+<code class="language-plaintext highlighter-rouge">/etc/fail2ban/jail.local</code> (I am using nano, but feel free to use a different
+text editor). Look for the following code:</p>
+
+<div class="language-conf highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Jail for more extended banning of persistent abusers
+# !!! WARNINGS !!!
+# 1. Make sure that your loglevel specified in fail2ban.conf/.local
+#    is not at DEBUG level -- which might then cause fail2ban to fall into
+#    an infinite loop constantly feeding itself with non-informative lines
+# 2. Increase dbpurgeage defined in fail2ban.conf to e.g. 648000 (7.5 days)
+#    to maintain entries for failed logins for sufficient amount of time
+</span>[<span class="n">recidive</span>]
+
+<span class="n">logpath</span>  = /<span class="n">var</span>/<span class="n">log</span>/<span class="n">fail2ban</span>.<span class="n">log</span>
+<span class="n">banaction</span> = %(<span class="n">banaction_allports</span>)<span class="n">s</span>
+<span class="n">bantime</span>  = <span class="m">1</span><span class="n">w</span>
+<span class="n">findtime</span> = <span class="m">1</span><span class="n">d</span>
+</code></pre></div></div>
+
+<p>Notice that the configuration is already in place. We only need to activate it:</p>
+
+<div class="language-conf highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># ... comments
+</span>[<span class="n">recidive</span>]
+<span class="c"># Include the next line to enable recidive
+</span><span class="n">enabled</span> = <span class="n">true</span>
+<span class="n">logpath</span>  = /<span class="n">var</span>/<span class="n">log</span>/<span class="n">fail2ban</span>.<span class="n">log</span>
+<span class="n">banaction</span> = %(<span class="n">banaction_allports</span>)<span class="n">s</span>
+<span class="n">bantime</span>  = <span class="m">1</span><span class="n">w</span>
+<span class="n">findtime</span> = <span class="m">1</span><span class="n">d</span>
+</code></pre></div></div>
+
+<p>Now we only need to restart the Fail2Ban service with:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl restart fail2ban
+</code></pre></div></div>
+
+<p>Let’s check our <strong>fail2ban</strong> status to see which jails are running after our
+update:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fail2ban-client status
+<span class="c"># You should see something like this as output</span>
+Status
+|- Number of jail:	2
+<span class="sb">`</span>- Jail list:	recidive, sshd
+</code></pre></div></div>
+
+<p>Now that <code class="language-plaintext highlighter-rouge">recidive</code> is active, you can check if some IP addresses were banned
+for the whole week:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fail2ban-client status recidive
+<span class="c"># You should see something like this as output</span>
+Status <span class="k">for </span>the jail: recidive
+|- Filter
+|  |- Currently failed:	25
+|  |- Total failed:	90
+|  <span class="sb">`</span>- File list:	/var/log/fail2ban.log
+<span class="sb">`</span>- Actions
+   |- Currently banned:	10
+   |- Total banned:	10
+   <span class="sb">`</span>- Banned IP list:	129.226.114.97 103.246.240.26 142.93.60.53 167.172.163.162 109.255.185.65 150.158.178.137 66.70.130.149 180.166.184.66 64.225.35.135 218.255.86.106
+</code></pre></div></div>
+
+<p>Now we have Fail2Ban monitoring our SSH access and fully configured.</p>
+
+<h2 id="what-to-do-if-i-block-myself">What to do if I block myself</h2>
+
+<p>You should be very careful with your server access from now on. Make sure that
+you have access from your computer and I highly recommend
+<a href="https://www.cyberciti.biz/faq/how-to-disable-ssh-password-login-on-linux/">disabling password access</a>.</p>
+
+<p>You can wait the default 10 minutes or you can access from a different IP
+address (like routing your mobile phone) and remove your IP address from the
+blocklist with the following command:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fail2ban-client <span class="nb">set </span>jailname unbanip <span class="o">[</span>IP_ADDRESS_HERE]
+<span class="c"># Here is how it could look like</span>
+<span class="c"># if you want to unban an IP address from the sshd jail</span>
+fail2ban-client <span class="nb">set </span>sshd unbanip 1.1.1.1
+<span class="c"># from the recidive jail</span>
+fail2ban-client <span class="nb">set </span>recidive unbanip 1.1.1.1
+</code></pre></div></div>
+
+<h2 id="where-to-go-from-here">Where to go from here</h2>
+
+<p>Fail2Ban is quite extensive and supports many different kinds of extensions like
+your own custom jails. The good thing is that amazing people around the world
+like to share their experience as well, so if you want to setup Fail2Ban for a
+different service like nginx,
+<a href="https://www.digitalocean.com/community/tutorials/how-to-protect-an-nginx-server-with-fail2ban-on-ubuntu-14-04">Digital Ocean has a great tutorial about it</a>
+with a step-by-step guide.</p>
+
+<p>You can also read more about it on the
+<a href="https://www.fail2ban.org/wiki/index.php/Main_Page">Fail2Ban official page</a></p>
+
+    </div>
+    <script src="/assets/js/prism.js"></script>
+    <script>
+    	Prism.highlightAll();
+    </script>
+</div>
+
+<div id="progress-bar"></div>
+            </div>
+        </div>
+
+        <footer class="main-footer fixed-bottom">
+    <div class="follow-container">
+        <p>
+            Get in touch via <a href="https://twitter.com/bpaulino0">Twitter</a>
+            / follow my <a href="/feed.xml">RSS Feed.</a>
+        </p>
+
+        <span>
+            © 2022 Bruno Paulino | <a style="font-size: 12px;" href="https://github.com/brunojppb/brunojppb.github.io">This website is open-source</a>
+        </span> 
+    </div>
+</footer>
+
+    </div>
+
+    <!-- Full-screen image presentation -->
+    <div class="fullscreen-overlay" style="display: none;">
+        <button class="close-overlay">close</button>
+    </div>
+
+    <!-- Night/Light mode switch -->
+    <button id="theme-switcher" 
+            aria-label="Toggle theme" 
+            title="Toggle theme" 
+            data-light-asset="/assets/images/sun.svg"
+            data-dark-asset="/assets/images/moon.svg">
+    </button>
+
+
+    <!-- Minimal Blog scripts -->
+    <script src="/assets/js/blog.js?v=1665087387"></script>
+
+    <!-- Privacy-first Analytics -->
+    <script data-goatcounter="https://bpaulino.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  </body>
+</html>

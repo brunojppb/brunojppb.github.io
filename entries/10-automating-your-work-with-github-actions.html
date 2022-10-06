@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    
+    
+    
+    
+    
+    
+    
+    <meta name="author" content="Bruno Paulino">
+    <meta name="description" content="How to automate your workflow using Github Actions. In this case, my blog deployment.">
+    <meta name="keywords" content="github,actions,automation,workflow,jekyll,git,blog,programming">
+    <meta name="theme-color" content="#21364B">
+    
+    <!-- Open Graph meta properties for beautifully rendering link previews on social -->
+    <!-- See: https://ogp.me/ -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://bpaulino.com/entries/10-automating-your-work-with-github-actions" />
+    <meta property="og:title" content="Automating your work with Github Actions" />
+    <meta property="og:description" content="How to automate your workflow using Github Actions. In this case, my blog deployment." />
+    <meta property="og:image" content="https://bpaulino.com/assets/images/posts/2019-09-06-automating-your-work-with-github-actions.jpg" />
+
+    <!-- twitter card tags additive to og: meta properties -->
+    <!-- See: https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/markup -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:domain" content="bpaulino.com" />
+    <meta name="twitter:title" content="Automating your work with Github Actions" />
+    <meta name="twitter:description" content="How to automate your workflow using Github Actions. In this case, my blog deployment." />
+    <meta name="twitter:image" content="https://bpaulino.com/assets/images/posts/2019-09-06-automating-your-work-with-github-actions.jpg" />
+    <meta name="twitter:url" content="https://bpaulino.com/entries/10-automating-your-work-with-github-actions" />
+    <meta name="twitter:creator" content="@bpaulino0" />
+    <meta name="twitter:label1" content="Created by" />
+    <meta name="twitter:data1" content="Bruno Paulino" />
+    <meta name="twitter:label2" content="Twitter" />
+    <meta name="twitter:data2" content="@bpaulino0" />
+    
+    
+    <link rel="shortcut icon" href="/assets/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+    <title>Automating your work with Github Actions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <!-- Timestamp from jekyll build to make sure the latest version is loaded correctly on our lovely readers' clients -->
+    <link rel="stylesheet" href="/assets/css/styles.css?v=1665087387">
+  </head>
+  <body>
+
+    <div role="main" class="main-container">
+
+        <div class="main-header">
+  <a href="/">
+    <h2>bpaulino.com</h2>
+  </a>
+  <p>
+    Hi, I am Bruno Paulino.<br />
+    Software is my craft.
+  </p>
+  <nav>
+    <a href="/">Blog</a>
+    <a href="/about">About</a>
+    <a href="/courses">Courses</a>
+    <!-- <a href="/speaking">Speaking</a> -->
+    <a href="/reading">Reading</a>
+  </nav>
+  <canvas class="particles-canvas"></canvas>
+</div>
+
+
+        <div class="flex-wrapper">
+            <div class="max-width-wrapper">
+                <div class="entry-container">
+    <div class="entry">
+        <h1 class="entry-title">Automating your work with Github Actions</h1>
+        <div style="text-align: center; font-style: italic;">September 6, 2019</div>
+    	<p>I have finally joined the <a href="https://github.com/features/actions">Github Actions</a>
+beta program this week and figured why not play with it for a bit and see what I
+can do. So my first idea was to automate the deployment process of my blog, this
+one you are currently reading. I am currently using
+<a href="https://jekyllrb.com/">Jekyll</a> as my static site generator. It works flawless
+for what I need. I just write whatever I want using
+<a href="https://daringfireball.net/projects/markdown/">Markdown</a> and Jekyll digests
+everything inside my source folder and spits out HTML, CSS and JS files in a
+<strong>“ready-to-publish”</strong> folder where I can just upload to the cloud.</p>
+
+<p>I am currently using <a href="https://pages.github.com/">Github Pages</a> to host my blog
+and it has been working perfectly fine for the past couple years.</p>
+
+<h2 id="but-how-does-a-github-action-work-anyway">But how does a Github Action work anyway?</h2>
+
+<p>Github Actions is a way to perform tasks automatically for you. To give you an
+example, I will use my blog workflow.<br />
+It all starts when I want to write a new post. I just create a new markdown
+file, write down whatever is on my head and save it. After this whole process, I
+need a way to transform my text in a website. Jekyll is doing the heavy-lifting
+for me, so I just go to my terminal and type:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># This command will generate my entire website and all its dependencies</span>
+jekyll build
+</code></pre></div></div>
+
+<p>After generating all the necessary files, I need to upload it somewhere. In this
+case, I just have to commit my changes to a specific branch called <strong>gh-pages</strong>
+and Github will serve my site on the web. For doing that, I usually perform the
+following commands in a bash script:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># This is the folder Jekyll generates with my website. Lets just open it</span>
+<span class="nb">cd </span>_site
+<span class="c"># Now we need a new git repository here,</span>
+<span class="c"># so I can commit only the generated files and skip the source files</span>
+git init
+git config user.name <span class="s2">"Bruno Paulino"</span>
+git config user.email <span class="s2">"bruno@bpaulino.com"</span>
+git add <span class="nb">.</span>
+<span class="c"># That will create a nice commit message with something like:</span>
+<span class="c"># New Build - Fri Sep 6 12:32:22 UTC 2019</span>
+git commit <span class="nt">-m</span> <span class="s2">"New Build - </span><span class="si">$(</span><span class="nb">date</span><span class="si">)</span><span class="s2">"</span>
+<span class="c"># Now lets push my commit to the gh-pages branch and replace everything there</span>
+<span class="nv">REPO</span><span class="o">=</span>https://brunojppb@github.com/brunojppb.github.io.git
+git push <span class="nt">--force</span> <span class="nv">$REPO</span> master:gh-pages
+<span class="c"># Lets do some cleanup here since we don't need the generated files anymore</span>
+<span class="nb">rm</span> <span class="nt">-fr</span> .git
+<span class="nb">cd</span> ..
+<span class="nb">rm</span> <span class="nt">-rf</span> _site
+</code></pre></div></div>
+
+<p>That is pretty simple right? It is indeed, but how cool would that be if Github
+could do that for me instead? That is where Github Actions come to give us a
+hand.</p>
+
+<p>It all starts with a folder on your repository called <code class="language-plaintext highlighter-rouge">.github/workflows</code>.<br />
+inside of this folder, create a file called <code class="language-plaintext highlighter-rouge">deploy-workflow.yml</code> with the
+content below. Each line will be explained with a comment:</p>
+
+<h3 id="deploy-workflowyml">deploy-workflow.yml</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># This is the name of our workflow.</span>
+<span class="c1"># Github will show it on its Website UI</span>
+<span class="na">name</span><span class="pi">:</span> <span class="s">deploy</span>
+<span class="c1"># This configures our workflow to be triggered</span>
+<span class="c1"># only when we push to the master branch</span>
+<span class="na">on</span><span class="pi">:</span>
+  <span class="na">push</span><span class="pi">:</span>
+    <span class="na">branches</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">master</span>
+
+<span class="c1"># Here is where we define our jobs.</span>
+<span class="c1"># Which means the tasks we want Github to execute</span>
+<span class="na">jobs</span><span class="pi">:</span>
+  <span class="na">build</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">deploy</span>
+    <span class="c1"># Here we specify in whith OS we want it to run</span>
+    <span class="na">runs-on</span><span class="pi">:</span> <span class="s">ubuntu-18.04</span>
+    <span class="c1"># Now we define which actions will take place.</span>
+    <span class="c1"># One after another</span>
+    <span class="na">steps</span><span class="pi">:</span>
+      <span class="c1"># This is the first action. It will make sure that we have</span>
+      <span class="c1"># all the necessary files from our repo, including our custom actions</span>
+      <span class="c1"># This action here is actually from a remote repo available from Githup itself</span>
+      <span class="pi">-</span> <span class="na">uses</span><span class="pi">:</span> <span class="s">actions/checkout@v1</span>
+      <span class="c1"># This is our custom action. Here is where we will define our git commands</span>
+      <span class="c1"># to push our website updates to the `gh-pages` branch.</span>
+      <span class="c1"># Notice that we are specifying the path to the action here.</span>
+      <span class="c1"># We will create those files in a sec</span>
+      <span class="pi">-</span> <span class="na">uses</span><span class="pi">:</span> <span class="s">./.github/actions/build-dist-site</span>
+        <span class="na">env</span><span class="pi">:</span>
+          <span class="c1"># Now make sure you add this environment variable.</span>
+          <span class="c1"># This token will allow us to push to github directly</span>
+          <span class="c1"># without having to type in our password.</span>
+          <span class="c1"># The GITHUB_TOKEN is available by default</span>
+          <span class="na">GITHUB_TOKEN</span><span class="pi">:</span> <span class="s">${{ secrets.GITHUB_TOKEN }}</span>
+</code></pre></div></div>
+
+<p>Now lets create our custom action.
+<a href="https://help.github.com/en/articles/about-actions#types-of-github-actions">Github Actions are divided in 2 types</a>:</p>
+
+<ul>
+  <li>Docker container</li>
+  <li>Javascript</li>
+</ul>
+
+<p>We are running our action using a Docker Container. Using Docker, we make sure
+the environment where our scripts are running will be the same, no matter what
+happens to the Github environment. So, lets dig deeper and create our <code class="language-plaintext highlighter-rouge">actions</code>
+folder under <code class="language-plaintext highlighter-rouge">.github</code>.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># build-dist-site will be the folder for holding</span>
+<span class="c"># our action configuration (Dockerfile, scripts and Metadata)</span>
+<span class="nb">mkdir</span> <span class="nt">-p</span> .github/actions/build-dist-site
+</code></pre></div></div>
+
+<p>Under <code class="language-plaintext highlighter-rouge">.github/actions/build-dist-site</code> lets create 3 files:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">action.yml</code>: It will hold the metadata of our action</li>
+  <li><code class="language-plaintext highlighter-rouge">Dockerfile:</code> Will specify our Docker image to run Jekyll in a container</li>
+  <li><code class="language-plaintext highlighter-rouge">entrypoint.sh:</code> Will have our custom scripts to generate and deploy our
+website update</li>
+</ul>
+
+<h3 id="dockerfile">Dockerfile</h3>
+
+<div class="language-dockerfile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Our Docker image will be based on ruby:2-slim</span>
+<span class="c"># it is a very light docker image.</span>
+<span class="k">FROM</span><span class="s"> ruby:2-slim</span>
+<span class="k">LABEL</span><span class="s"> author="Bruno Paulino"</span>
+<span class="k">LABEL</span><span class="s"> version="1.0.0"</span>
+
+<span class="c"># Lets install all dependencies</span>
+<span class="c"># including git and Bundler 2.0.2</span>
+<span class="k">ENV</span><span class="s"> BUNDLER_VERSION 2.0.2</span>
+<span class="k">RUN </span>apt-get update <span class="o">&amp;&amp;</span> <span class="se">\
+</span>    apt-get <span class="nb">install</span> <span class="nt">--no-install-recommends</span> <span class="nt">-y</span> <span class="se">\
+</span>        bats <span class="se">\
+</span>        build-essential <span class="se">\
+</span>        ca-certificates <span class="se">\
+</span>        curl <span class="se">\
+</span>        libffi6 <span class="se">\
+</span>        make <span class="se">\
+</span>        shellcheck <span class="se">\
+</span>        libffi6 <span class="se">\
+</span>        git-all <span class="se">\
+</span>    <span class="o">&amp;&amp;</span> gem <span class="nb">install </span>bundler:2.0.2 <span class="se">\
+</span>    <span class="o">&amp;&amp;</span> bundle config <span class="nt">--global</span> silence_root_warning 1
+
+<span class="c"># This is our entrypoint to our custom scripts</span>
+<span class="c"># more about that in a sec</span>
+<span class="k">COPY</span><span class="s"> entrypoint.sh /</span>
+
+<span class="c"># Use the entrypoint.sh file as the container entrypoint</span>
+<span class="c"># when Github executes our Docker container</span>
+<span class="k">ENTRYPOINT</span><span class="s"> ["sh", "/entrypoint.sh"]</span>
+</code></pre></div></div>
+
+<p>Now that we have our Dockerfile ready, we need to tell Github to use it. That is
+why we need the <code class="language-plaintext highlighter-rouge">action.yml</code> file.</p>
+
+<h3 id="actionyml">action.yml</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Ok, here the keys are pretty much self explanatory :)</span>
+<span class="na">name</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Deploy</span><span class="nv"> </span><span class="s">new</span><span class="nv"> </span><span class="s">version"</span>
+<span class="na">description</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Setup</span><span class="nv"> </span><span class="s">Ruby</span><span class="nv"> </span><span class="s">env</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">build</span><span class="nv"> </span><span class="s">new</span><span class="nv"> </span><span class="s">site</span><span class="nv"> </span><span class="s">version"</span>
+<span class="na">author</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Bruno</span><span class="nv"> </span><span class="s">Paulino"</span>
+<span class="na">runs</span><span class="pi">:</span>
+  <span class="na">using</span><span class="pi">:</span> <span class="s2">"</span><span class="s">docker"</span>
+  <span class="na">image</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Dockerfile"</span>
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">action.yml</code> file tells Github what to do. In this case, just tell it to use
+Docker and use our <code class="language-plaintext highlighter-rouge">Dockerfile</code> to build the container with it.</p>
+
+<p>Now we just need our <code class="language-plaintext highlighter-rouge">entrypoint.sh</code> script to execute our website generation
+and deployment. Lets get our hands dirty with a bit of bash script:</p>
+
+<h3 id="entrypointsh">entrypoint.sh</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># Exit immediately if a pipeline returns a non-zero status.</span>
+<span class="nb">set</span> <span class="nt">-e</span>
+
+<span class="nb">echo</span> <span class="s2">"🚀 Starting deployment action"</span>
+
+<span class="c"># Here we are using the variables</span>
+<span class="c"># - GITHUB_ACTOR: It is already made available for us by Github. It is the username of whom triggered the action</span>
+<span class="c"># - GITHUB_TOKEN: That one was intentionally injected by us in our workflow file.</span>
+<span class="c"># Creating the repository URL in this way will allow us to `git push` without providing a password</span>
+<span class="c"># All thanks to the GITHUB_TOKEN that will grant us access to the repository</span>
+<span class="nv">REMOTE_REPO</span><span class="o">=</span><span class="s2">"https://</span><span class="k">${</span><span class="nv">GITHUB_ACTOR</span><span class="k">}</span><span class="s2">:</span><span class="k">${</span><span class="nv">GITHUB_TOKEN</span><span class="k">}</span><span class="s2">@github.com/</span><span class="k">${</span><span class="nv">GITHUB_REPOSITORY</span><span class="k">}</span><span class="s2">.git"</span>
+
+<span class="c"># We need to clone the repo here.</span>
+<span class="c"># Remember, our Docker container is practically pristine at this point</span>
+git clone <span class="nv">$REMOTE_REPO</span> repo
+<span class="nb">cd </span>repo
+
+<span class="c"># Install all of our dependencies inside the container</span>
+<span class="c"># based on the git repository Gemfile</span>
+<span class="nb">echo</span> <span class="s2">"⚡️ Installing project dependencies..."</span>
+bundle <span class="nb">install</span>
+
+<span class="c"># Build the website using Jekyll</span>
+<span class="nb">echo</span> <span class="s2">"🏋️ Building website..."</span>
+<span class="nv">JEKYLL_ENV</span><span class="o">=</span>production bundle <span class="nb">exec </span>jekyll build
+<span class="nb">echo</span> <span class="s2">"Jekyll build done"</span>
+
+<span class="c"># Now lets go to the generated folder by Jekyll</span>
+<span class="c"># and perform everything else from there</span>
+<span class="nb">cd </span>_site
+
+<span class="nb">echo</span> <span class="s2">"☁️ Publishing website"</span>
+
+<span class="c"># We don't need the README.md file on this branch</span>
+<span class="nb">rm</span> <span class="nt">-f</span> README.md
+
+<span class="c"># Now we init a new git repository inside _site</span>
+<span class="c"># So we can perform a commit</span>
+git init
+git config user.name <span class="s2">"</span><span class="k">${</span><span class="nv">GITHUB_ACTOR</span><span class="k">}</span><span class="s2">"</span>
+git config user.email <span class="s2">"</span><span class="k">${</span><span class="nv">GITHUB_ACTOR</span><span class="k">}</span><span class="s2">@users.noreply.github.com"</span>
+git add <span class="nb">.</span>
+<span class="c"># That will create a nice commit message with something like:</span>
+<span class="c"># Github Actions - Fri Sep 6 12:32:22 UTC 2019</span>
+git commit <span class="nt">-m</span> <span class="s2">"Github Actions - </span><span class="si">$(</span><span class="nb">date</span><span class="si">)</span><span class="s2">"</span>
+<span class="nb">echo</span> <span class="s2">"Build branch ready to go. Pushing to Github..."</span>
+<span class="c"># Force push this update to our gh-pages</span>
+git push <span class="nt">--force</span> <span class="nv">$REMOTE_REPO</span> master:gh-pages
+<span class="c"># Now everything is ready.</span>
+<span class="c"># Lets just be a good citizen and clean-up after ourselves</span>
+<span class="nb">rm</span> <span class="nt">-fr</span> .git
+<span class="nb">cd</span> ..
+<span class="nb">rm</span> <span class="nt">-rf</span> repo
+<span class="nb">echo</span> <span class="s2">"🎉 New version deployed 🎊"</span>
+</code></pre></div></div>
+
+<p>🤯 That was a lot different from what I started with right? Ok, the reason for
+that is just Docker. Now we have a more robust implementation of our deployment
+pipeline where we could even move away from Github to Gitlab and reuse the
+Dockerfile and entrypoint.sh (with minor changes).</p>
+
+<p>Now that we are armed with those files, lets commit our changes and push to
+Github and see what happens. Going to our Github repository page, there you can
+see a new button called <strong>Actions</strong>:</p>
+
+<p><img src="/assets/images/github_actions_button.jpg" alt="Github Actions button" /></p>
+
+<p>Lets click on it. You will be taken to the <strong>Workflows</strong> list. There we see our
+<strong>Deploy</strong> workflow we just created.</p>
+
+<p><img src="/assets/images/github_workflows_running.jpg" alt="Github Actions button" /></p>
+
+<p>Now inside of our workflow execution context, we can see all of our actions
+being executed:</p>
+
+<p><img src="/assets/images/github_execution_pipeline.jpg" alt="Github Actions button" /></p>
+
+<p>Ok, now our automation work was fully done. As a cherry on top, you can also add
+a badge to your README.md file showing the current status of your custom actions
+like that:</p>
+
+<div class="language-md highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gh"># Where /deploy/ must be replaced with your workflow name</span>
+
+<span class="p">![</span><span class="nv">workflow-badge</span><span class="p">](</span><span class="sx">https://github.com/brunojppb/brunojppb.github.io/workflows/deploy/badge.svg</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>That will render a nice image by Github on your repository page with the current
+action status. <img src="/assets/images/github_action_badge.jpg" alt="Github Actions Badge" /></p>
+
+<p>Now I can enjoy my time spent building and deploying my website doing something
+else like playing video games 🎮 or drawing 🎨. Here is the
+<a href="https://github.com/brunojppb/brunojppb.github.io">open-source repository of my blog if you want to take a look.</a></p>
+
+    </div>
+    <script src="/assets/js/prism.js"></script>
+    <script>
+    	Prism.highlightAll();
+    </script>
+</div>
+
+<div id="progress-bar"></div>
+            </div>
+        </div>
+
+        <footer class="main-footer fixed-bottom">
+    <div class="follow-container">
+        <p>
+            Get in touch via <a href="https://twitter.com/bpaulino0">Twitter</a>
+            / follow my <a href="/feed.xml">RSS Feed.</a>
+        </p>
+
+        <span>
+            © 2022 Bruno Paulino | <a style="font-size: 12px;" href="https://github.com/brunojppb/brunojppb.github.io">This website is open-source</a>
+        </span> 
+    </div>
+</footer>
+
+    </div>
+
+    <!-- Full-screen image presentation -->
+    <div class="fullscreen-overlay" style="display: none;">
+        <button class="close-overlay">close</button>
+    </div>
+
+    <!-- Night/Light mode switch -->
+    <button id="theme-switcher" 
+            aria-label="Toggle theme" 
+            title="Toggle theme" 
+            data-light-asset="/assets/images/sun.svg"
+            data-dark-asset="/assets/images/moon.svg">
+    </button>
+
+
+    <!-- Minimal Blog scripts -->
+    <script src="/assets/js/blog.js?v=1665087387"></script>
+
+    <!-- Privacy-first Analytics -->
+    <script data-goatcounter="https://bpaulino.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  </body>
+</html>

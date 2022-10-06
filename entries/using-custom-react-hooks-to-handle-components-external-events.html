@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    
+    
+    
+    
+    
+    
+    
+    <meta name="author" content="Bruno Paulino">
+    <meta name="description" content="Creating a custom React hook for handling events outside of components like dismissing a modal.">
+    <meta name="keywords" content="react,hooks,functional,components,frontend">
+    <meta name="theme-color" content="#21364B">
+    
+    <!-- Open Graph meta properties for beautifully rendering link previews on social -->
+    <!-- See: https://ogp.me/ -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://bpaulino.com/entries/using-custom-react-hooks-to-handle-components-external-events" />
+    <meta property="og:title" content="Using custom React hooks to handle components external events" />
+    <meta property="og:description" content="Creating a custom React hook for handling events outside of components like dismissing a modal." />
+    <meta property="og:image" content="https://bpaulino.com/assets/images/posts/2020-09-20-using-custom-react-hooks-to-handle-components-external-events.jpg" />
+
+    <!-- twitter card tags additive to og: meta properties -->
+    <!-- See: https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/markup -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:domain" content="bpaulino.com" />
+    <meta name="twitter:title" content="Using custom React hooks to handle components external events" />
+    <meta name="twitter:description" content="Creating a custom React hook for handling events outside of components like dismissing a modal." />
+    <meta name="twitter:image" content="https://bpaulino.com/assets/images/posts/2020-09-20-using-custom-react-hooks-to-handle-components-external-events.jpg" />
+    <meta name="twitter:url" content="https://bpaulino.com/entries/using-custom-react-hooks-to-handle-components-external-events" />
+    <meta name="twitter:creator" content="@bpaulino0" />
+    <meta name="twitter:label1" content="Created by" />
+    <meta name="twitter:data1" content="Bruno Paulino" />
+    <meta name="twitter:label2" content="Twitter" />
+    <meta name="twitter:data2" content="@bpaulino0" />
+    
+    
+    <link rel="shortcut icon" href="/assets/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+    <title>Using custom React hooks to handle components external events</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <!-- Timestamp from jekyll build to make sure the latest version is loaded correctly on our lovely readers' clients -->
+    <link rel="stylesheet" href="/assets/css/styles.css?v=1665087387">
+  </head>
+  <body>
+
+    <div role="main" class="main-container">
+
+        <div class="main-header">
+  <a href="/">
+    <h2>bpaulino.com</h2>
+  </a>
+  <p>
+    Hi, I am Bruno Paulino.<br />
+    Software is my craft.
+  </p>
+  <nav>
+    <a href="/">Blog</a>
+    <a href="/about">About</a>
+    <a href="/courses">Courses</a>
+    <!-- <a href="/speaking">Speaking</a> -->
+    <a href="/reading">Reading</a>
+  </nav>
+  <canvas class="particles-canvas"></canvas>
+</div>
+
+
+        <div class="flex-wrapper">
+            <div class="max-width-wrapper">
+                <div class="entry-container">
+    <div class="entry">
+        <h1 class="entry-title">Using custom React hooks to handle components external events</h1>
+        <div style="text-align: center; font-style: italic;">September 20, 2020</div>
+    	<p>On a side project this weekend, I had the classic case for a modal
+implementation. In most of the applications you have to deal with daily, you
+come to a place where you have to confirm some action or review some changes
+before pushing the <em>“I am 100% sure about this”</em> button.</p>
+
+<p>This is the perfect case for a modal, a small view that partially covers the
+screen and presents you with a few options. Most of the time, there will be a
+button to close the modal away by clicking on the “close” button on the
+top-right corner. But an even better way to let the user dismiss the modal is to
+let them click outside of the view in focus, without forcing them to hit the
+often too small <strong>“x”</strong> on top.</p>
+
+<p>Here is the live implementation of our modal component we will build during this
+post. Try it out on our
+<a href="https://codesandbox.io/s/small-browser-vosod?file=/src/Modal.js">Codesandbox</a>.</p>
+
+<iframe src="https://codesandbox.io/embed/react-custom-hooks-see0d?fontsize=14&amp;hidenavigation=1&amp;theme=dark&amp;view=preview" style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;" title="react-custom-hooks" allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking" sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"></iframe>
+
+<p>For cases like this, you most probably want to watch for clicks or taps outside
+the main view, in this case, the modal, so you can take the correct action of
+closing it. But how could you do that in <a href="https://reactjs.org/">React?</a> one way
+would be to implement a global click handler in the component, something like
+this:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">useRef</span><span class="p">,</span> <span class="nx">useEffect</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">Modal</span><span class="p">({</span> <span class="nx">onClose</span><span class="p">,</span> <span class="p">...</span><span class="nx">props</span> <span class="p">})</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">modalRef</span> <span class="o">=</span> <span class="nx">useRef</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+
+  <span class="nx">useEffect</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">handleClick</span> <span class="o">=</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">modalRef</span><span class="p">.</span><span class="nx">current</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">modalRef</span><span class="p">.</span><span class="nx">current</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">target</span><span class="p">))</span> <span class="p">{</span>
+        <span class="c1">// Here you can close your modal.</span>
+        <span class="c1">// how to close it, that is up to you</span>
+        <span class="c1">// (e.g. removing components, changing routes)</span>
+        <span class="c1">// in this case, I am calling a `onClose` function</span>
+        <span class="c1">// passed down as a prop.</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">Click happened outside. you can close now.</span><span class="dl">"</span><span class="p">);</span>
+        <span class="nx">onClose</span><span class="p">();</span>
+      <span class="p">}</span>
+    <span class="p">};</span>
+
+    <span class="c1">// Pointer events are more device agnostic</span>
+    <span class="c1">// which are able to handle clicks on Desktops and Taps on mobile devices</span>
+    <span class="c1">// See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/pointerdown_event</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">pointerdown</span><span class="dl">"</span><span class="p">,</span> <span class="nx">handleClick</span><span class="p">);</span>
+    <span class="c1">// Once our component unmount or update, we must remove the event listener</span>
+    <span class="k">return</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nb">document</span><span class="p">.</span><span class="nx">removeEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">pointerdown</span><span class="dl">"</span><span class="p">,</span> <span class="nx">handleClick</span><span class="p">);</span>
+
+    <span class="c1">// Use the modalRef as dependency for the useEffect hook</span>
+    <span class="c1">// so whenever this reference changes, the listener will update</span>
+  <span class="p">},</span> <span class="p">[</span><span class="nx">modalRef</span><span class="p">]);</span>
+
+  <span class="k">return</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">ref</span><span class="p">=</span><span class="si">{</span><span class="nx">modalRef</span><span class="si">}</span> <span class="na">className</span><span class="p">=</span><span class="s">"my-modal"</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="p">=</span><span class="s">"modal-header"</span><span class="p">&gt;</span>Super important Action<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="p">=</span><span class="s">"modal-body"</span><span class="p">&gt;</span>
+        This is an important message. read it carefully.
+      <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="p">=</span><span class="s">"modal-footer"</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">button</span><span class="p">&gt;</span>Cancel<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">button</span><span class="p">&gt;</span>Ok<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+  <span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>But this implementation leaves a lot of room for duplication isn’t? If we need
+to handle a similar case on a different component, we will be doomed to repeat
+the same click away logic. We can do better than that by leveraging the power of
+custom React hooks.</p>
+
+<h2 id="sharing-logic-with-custom-react-hooks">Sharing logic with Custom React hooks</h2>
+
+<p>In my opinion, hooks are one of the most beautiful features in React. You can
+compose your components in such a way that gives your application superpowers.
+React itself leverages the power of hooks with
+<a href="https://reactjs.org/docs/hooks-state.html">useState</a>,
+<a href="https://reactjs.org/docs/hooks-effect.html">useEffect</a> and a bunch of others.</p>
+
+<p>But we are not limited to the hooks React offers, we can create our own hooks,
+enabling us to share logic in a very functional way across our app. Lets extract
+that click away logic from our previous modal component into a custom hook:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">useEffect</span><span class="p">,</span> <span class="nx">useRef</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="kd">function</span> <span class="nx">useClickAway</span><span class="p">(</span><span class="nx">ref</span><span class="p">,</span> <span class="nx">onClickAway</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// Keep a mutable reference to click away callback</span>
+  <span class="c1">// and change it every time the component using it changes</span>
+  <span class="c1">// using 'useRef' here will make sure that we have a mutable</span>
+  <span class="c1">// and single callback lying around.</span>
+  <span class="kd">const</span> <span class="nx">callbackRef</span> <span class="o">=</span> <span class="nx">useRef</span><span class="p">(</span><span class="nx">onClickAway</span><span class="p">);</span>
+  <span class="nx">useEffect</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">callbackRef</span><span class="p">.</span><span class="nx">current</span> <span class="o">=</span> <span class="nx">onClickAway</span><span class="p">;</span>
+  <span class="p">},</span> <span class="p">[</span><span class="nx">onClickAway</span><span class="p">]);</span>
+
+  <span class="c1">// listen for click events on ref element</span>
+  <span class="c1">// attaching a handler and calling the callback if necessary</span>
+  <span class="nx">useEffect</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">onPointerDown</span> <span class="o">=</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">ref</span><span class="p">.</span><span class="nx">current</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">ref</span><span class="p">.</span><span class="nx">current</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">target</span><span class="p">))</span> <span class="p">{</span>
+        <span class="nx">callbackRef</span><span class="p">.</span><span class="nx">current</span><span class="p">(</span><span class="nx">event</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">};</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">pointerdown</span><span class="dl">"</span><span class="p">,</span> <span class="nx">onPointerDown</span><span class="p">);</span>
+    <span class="k">return</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nb">document</span><span class="p">.</span><span class="nx">removeEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">pointerdown</span><span class="dl">"</span><span class="p">,</span> <span class="nx">onPointerDown</span><span class="p">);</span>
+    <span class="p">};</span>
+  <span class="p">},</span> <span class="p">[</span><span class="nx">ref</span><span class="p">]);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>lets break our custom hook down.</p>
+
+<ul>
+  <li>
+    <p>We start by declaring a plain javascript function called <code class="language-plaintext highlighter-rouge">useClickAway</code>. This
+function takes two arguments. A <code class="language-plaintext highlighter-rouge">ref</code> which is a mutable reference to the
+component we want to watch for clicks “outside” of its boundaries. And a
+<code class="language-plaintext highlighter-rouge">onClickAway</code> callback, which will be executed once we detect a click outside.</p>
+  </li>
+  <li>
+    <p>We created a ref for the <code class="language-plaintext highlighter-rouge">useClickAway</code> callback using the <code class="language-plaintext highlighter-rouge">useRef</code> hook. This
+will make sure that we have only one reference to our <code class="language-plaintext highlighter-rouge">useClickAway</code> callback
+that is captured by our <code class="language-plaintext highlighter-rouge">useEffect</code> calls we will use later.</p>
+  </li>
+  <li>
+    <p>On our first useEffect call, we make sure to keep track of the <code class="language-plaintext highlighter-rouge">useClickAway</code>
+reference. So in case our component updates the <code class="language-plaintext highlighter-rouge">useClickAway</code> reference, we
+also have to update our internal reference inside our custom hook.</p>
+  </li>
+  <li>
+    <p>On our second useEffect call, this where rubber hits the road. If you pay
+close attention, this call is exactly the same as we implemented in our modal
+component. The only difference is that we are calling our <code class="language-plaintext highlighter-rouge">callbackRef</code>
+reference for the <code class="language-plaintext highlighter-rouge">onClickAway</code> function instead. This is an extra layer of
+check to make sure that we are calling the right reference of the callback
+once a click happens outside of the view.</p>
+  </li>
+</ul>
+
+<p>With that in place, how can we use that in our modal component? Lets see how the
+code looks like now:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">useRef</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">useClickAway</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./useClickAway</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">Modal</span><span class="p">({</span> <span class="nx">onClose</span> <span class="p">})</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">modalRef</span> <span class="o">=</span> <span class="nx">useRef</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+
+  <span class="nx">useClickAway</span><span class="p">(</span><span class="nx">modalRef</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">onClose</span><span class="p">();</span>
+  <span class="p">});</span>
+
+  <span class="k">return</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="p">=</span><span class="s">"shadow-overlay"</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">div</span> <span class="na">ref</span><span class="p">=</span><span class="si">{</span><span class="nx">modalRef</span><span class="si">}</span> <span class="na">className</span><span class="p">=</span><span class="s">"my-modal"</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="p">=</span><span class="s">"modal-header"</span><span class="p">&gt;</span>Super important Action<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="p">=</span><span class="s">"modal-body"</span><span class="p">&gt;</span>
+          This is an important message. read it carefully.
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="p">=</span><span class="s">"modal-footer"</span><span class="p">&gt;</span>
+          <span class="p">&lt;</span><span class="nt">button</span> <span class="na">onClick</span><span class="p">=</span><span class="si">{</span><span class="nx">onClose</span><span class="si">}</span><span class="p">&gt;</span>Cancel<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+          <span class="p">&lt;</span><span class="nt">button</span><span class="p">&gt;</span>Ok<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+  <span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Can you notice how clean our modal component looks now? Better yet, we can reuse
+that same logic across our app just by reusing the <code class="language-plaintext highlighter-rouge">useClickAway</code> hook. Isn’t
+that cool?</p>
+
+<blockquote>
+  <p>Disclaimer: This simple modal we created here is highly inaccessible. You
+should not use that modal sample code in production.</p>
+</blockquote>
+
+<p><a href="https://codesandbox.io/s/react-custom-hooks-see0d">Here is the link</a> to the
+Codesandbox demo we built on this blogpost. Feel free to copy and use it on your
+apps.</p>
+
+    </div>
+    <script src="/assets/js/prism.js"></script>
+    <script>
+    	Prism.highlightAll();
+    </script>
+</div>
+
+<div id="progress-bar"></div>
+            </div>
+        </div>
+
+        <footer class="main-footer fixed-bottom">
+    <div class="follow-container">
+        <p>
+            Get in touch via <a href="https://twitter.com/bpaulino0">Twitter</a>
+            / follow my <a href="/feed.xml">RSS Feed.</a>
+        </p>
+
+        <span>
+            © 2022 Bruno Paulino | <a style="font-size: 12px;" href="https://github.com/brunojppb/brunojppb.github.io">This website is open-source</a>
+        </span> 
+    </div>
+</footer>
+
+    </div>
+
+    <!-- Full-screen image presentation -->
+    <div class="fullscreen-overlay" style="display: none;">
+        <button class="close-overlay">close</button>
+    </div>
+
+    <!-- Night/Light mode switch -->
+    <button id="theme-switcher" 
+            aria-label="Toggle theme" 
+            title="Toggle theme" 
+            data-light-asset="/assets/images/sun.svg"
+            data-dark-asset="/assets/images/moon.svg">
+    </button>
+
+
+    <!-- Minimal Blog scripts -->
+    <script src="/assets/js/blog.js?v=1665087387"></script>
+
+    <!-- Privacy-first Analytics -->
+    <script data-goatcounter="https://bpaulino.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  </body>
+</html>

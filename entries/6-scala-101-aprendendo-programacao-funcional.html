@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    
+    
+    
+    
+    
+    
+    
+    <meta name="author" content="Bruno Paulino">
+    <meta name="description" content="Trabalhando no journi, decidi ajudar no backend e aprender Scala foi uma das melhores coisa que fiz.">
+    <meta name="keywords" content="scala,funcional,programação,computação">
+    <meta name="theme-color" content="#21364B">
+    
+    <!-- Open Graph meta properties for beautifully rendering link previews on social -->
+    <!-- See: https://ogp.me/ -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://bpaulino.com/entries/6-scala-101-aprendendo-programacao-funcional" />
+    <meta property="og:title" content="Scala 101: Aprendendo Programação Funcional" />
+    <meta property="og:description" content="Trabalhando no journi, decidi ajudar no backend e aprender Scala foi uma das melhores coisa que fiz." />
+    <meta property="og:image" content="https://bpaulino.com/assets/images/bpaulino.jpg" />
+
+    <!-- twitter card tags additive to og: meta properties -->
+    <!-- See: https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/markup -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:domain" content="bpaulino.com" />
+    <meta name="twitter:title" content="Scala 101: Aprendendo Programação Funcional" />
+    <meta name="twitter:description" content="Trabalhando no journi, decidi ajudar no backend e aprender Scala foi uma das melhores coisa que fiz." />
+    <meta name="twitter:image" content="https://bpaulino.com/assets/images/bpaulino.jpg" />
+    <meta name="twitter:url" content="https://bpaulino.com/entries/6-scala-101-aprendendo-programacao-funcional" />
+    <meta name="twitter:creator" content="@bpaulino0" />
+    <meta name="twitter:label1" content="Created by" />
+    <meta name="twitter:data1" content="Bruno Paulino" />
+    <meta name="twitter:label2" content="Twitter" />
+    <meta name="twitter:data2" content="@bpaulino0" />
+    
+    
+    <link rel="shortcut icon" href="/assets/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+    <title>Scala 101: Aprendendo Programação Funcional</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <!-- Timestamp from jekyll build to make sure the latest version is loaded correctly on our lovely readers' clients -->
+    <link rel="stylesheet" href="/assets/css/styles.css?v=1665087387">
+  </head>
+  <body>
+
+    <div role="main" class="main-container">
+
+        <div class="main-header">
+  <a href="/">
+    <h2>bpaulino.com</h2>
+  </a>
+  <p>
+    Hi, I am Bruno Paulino.<br />
+    Software is my craft.
+  </p>
+  <nav>
+    <a href="/">Blog</a>
+    <a href="/about">About</a>
+    <a href="/courses">Courses</a>
+    <!-- <a href="/speaking">Speaking</a> -->
+    <a href="/reading">Reading</a>
+  </nav>
+  <canvas class="particles-canvas"></canvas>
+</div>
+
+
+        <div class="flex-wrapper">
+            <div class="max-width-wrapper">
+                <div class="entry-container">
+    <div class="entry">
+        <h1 class="entry-title">Scala 101: Aprendendo Programação Funcional</h1>
+        <div style="text-align: center; font-style: italic;">February 5, 2017</div>
+    	<p>Trabalhando no <a href="https://www.journiapp.com/">journi</a> como iOS developer, em
+poucos meses, percebi que a melhor forma de aprender e evoluir rápido é usando o
+que você precisa no dia-a-dia. Todo dia um desafio novo, um nova funcionalidade
+para implementar e forma nova de aprender algo. Agora chegou a hora de trabalhar
+em nosso backend. Como a alguns amigos sabem, eu tenho trabalhado com Ruby on
+Rails em meu trabalho passando, onde adquiri um bom conhecimento no assunto.
+Porém nosso backend aqui na empresa é escrito em Scala. Um linguagem que trás o
+melhor dos 2 mundos: Orientação a Objeto e Programação Funcional.</p>
+
+<p>Enquanto aprendo <em>on the fly</em> todos os dias na empresa, resolvi comprar o livro
+<a href="https://www.amazon.com/Scala-Action-Covers-2-10/dp/1935182757">Scala in Action</a>
+para aprender melhor os conceitos da linguagem, como também criar uma série de
+posts durante a leitura. Isso vai facilitar meu aprendizado e ao mesmo tempo
+poderei compartilhar com você que está lendo isso aqui agora e provavelmente
+está interessado em aprender um pouco mais sobre Scala.</p>
+
+<h3 id="sobre-a-linguagem">Sobre a Linguagem</h3>
+
+<p>Scala é uma linguagem multi-paradigma desenvolvida por
+<a href="https://twitter.com/odersky">Martin Odersky</a> em seu laboratório na EPFL(École
+Polytechnique Fédérale de Lausanne) na Suíça em 2001. O principal objetivo da
+linguagem é expressar padrões conhecidos de programação de forma concisa e
+eficiente, integrando funcionalidades do estilo orientado a objeto e programação
+funcional. Outra grande vantagem da linguagem é rodar em cima da JVM(Java
+Virtual Machine) a qual é extremamente eficiente e também poder usar todas as
+bibliotecas Java disponíveis, sendo uma linguagem 100% compatível com as
+funcionalidades Java.</p>
+
+<h3 id="instalação">Instalação</h3>
+
+<p>Como Scala roda em cima da JVM, nós precisamos do
+<a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">Java SDK</a>
+instalado. Após a instalação do Java SDK, baixe o
+<a href="http://www.scala-lang.org/download/">Instalador Scala</a> e prossiga com a
+instalação. Abra seu terminal e verifique a versão instalada com o comando</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>scala <span class="nt">-version</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/posts/scala_current_version.png" alt="versão atual" /></p>
+
+<h3 id="scala-repl">Scala REPL</h3>
+
+<p>Como programador Ruby, estou acostumado a ter um console rápido onde posso
+escrever um código rápido e testa-lo sem precisar instalar uma IDE e criar uma
+aplicação, em Scala não é diferente. com o Scala REPL(read-evaluate-print loop)
+podemos executar código Scala direto em nosso terminal e ter resposta imediata.
+Isso facilita bastante o uso da linguagem para aprendizado e para testes
+rápidos.</p>
+
+<p>Abra seu terminal e execute o comando:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>scala
+</code></pre></div></div>
+
+<p>Logo você verá seu console aguardando seu input e cada linha adicionada é
+avaliada imediatamente trazendo sua resposta. #rubyFeelings</p>
+
+<p><img src="/assets/images/posts/scala_repl.png" alt="Scala REPL" /></p>
+
+<h2 id="declarando-variáveis">Declarando Variáveis</h2>
+
+<p>podemos declarar variáveis de 2 formas:</p>
+
+<ul>
+  <li>var: usada para variáveis mutáveis, ou seja, quando você pode modificar;</li>
+  <li>val: usada para variáveis imutáveis, ou seja, depois de declarada, não podemos
+modificar seu valor.</li>
+</ul>
+
+<p>Vejamos os exemplos:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span> <span class="n">nomeMutavel</span> <span class="k">=</span> <span class="s">"John Due"</span>
+<span class="c1">// vamos modificar nomeMutavel</span>
+<span class="n">nomeMutavel</span> <span class="k">=</span> <span class="s">"Felix Roger"</span>
+
+<span class="c1">// Agora usando val, se tentarmos modificar, teremos um erro:</span>
+<span class="k">val</span> <span class="nv">nomeImutavel</span> <span class="k">=</span> <span class="s">"Bruno Paulino"</span>
+<span class="n">nomeImutavel</span> <span class="k">=</span> <span class="s">"Paulino Bruno"</span>
+<span class="c1">// error: reassignment to val</span>
+</code></pre></div></div>
+
+<p>Vejam que podemos suprir o tipo, pois Scala infere o tipo basedo no valor do
+lado direito</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Declarando tipo</span>
+<span class="k">val</span> <span class="nv">nome</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"Bruno"</span>
+<span class="c1">// Usando inferencia</span>
+<span class="k">val</span> <span class="nv">sobrenome</span> <span class="k">=</span> <span class="s">"Paulino"</span>
+</code></pre></div></div>
+
+<h2 id="definindo-funções">Definindo funções</h2>
+
+<p>definir funções em Scala é bem parecido com Java ou Ruby. Com algumas diferenças
+é claro. Vamos para os exemplos:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Na definição da função soma temos 2 parametros: a e b, onde definimos seus tipos separados por :(dois pontos) e o tipo de retorno(que também é opcional) Int.</span>
+<span class="c1">// Em seguida temos corpo da função. reparem que não utilizamos a palavra chave 'return' pois em Scala a última linha executada é retornada e o tipo de retorno da função(se não declaramos) é inferido.</span>
+<span class="k">def</span> <span class="nf">soma</span><span class="o">(</span><span class="n">a</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">b</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">{</span> <span class="kt">a+b</span> <span class="o">}</span>
+
+<span class="c1">//executando a função:</span>
+<span class="k">val</span> <span class="nv">resultado</span> <span class="k">=</span> <span class="nf">soma</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="mi">1</span><span class="o">)</span>
+<span class="nf">println</span><span class="o">(</span><span class="n">resultado</span><span class="o">)</span>
+<span class="c1">// 2</span>
+</code></pre></div></div>
+
+<h3 id="funções-como-parâmetro">Funções como Parâmetro</h3>
+
+<p>Em Scala, funções também são objetos, logo podemos passar funções como
+parâmetros em outras funções. Vejamos um exemplo utilizando a função map em
+listas, a qual recebe uma função que receba um parâmetro e retorne o mesmo tipo
+do parâmetro:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Função que eleva um número ao quadrado</span>
+<span class="k">def</span> <span class="nf">aoQuadrado</span><span class="o">(</span><span class="n">a</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="o">{</span> <span class="n">a</span> <span class="o">*</span> <span class="n">a</span> <span class="o">}</span>
+
+<span class="k">val</span> <span class="nv">lista</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">4</span><span class="o">,</span><span class="mi">5</span><span class="o">)</span>
+<span class="k">val</span> <span class="nv">resultado</span> <span class="k">=</span> <span class="nv">lista</span><span class="o">.</span><span class="py">map</span><span class="o">(</span><span class="n">aoQuadrado</span><span class="o">)</span>
+<span class="c1">// List[Int] = List(1, 4, 9, 16, 25)</span>
+</code></pre></div></div>
+
+<h3 id="controle-de-fluxo">Controle de Fluxo</h3>
+
+<p>Usar <em>if</em> e <em>else</em> em Scala é bem parecido como em outras linguagens, porém
+temos um benefício: valor de retorno. Vamos ao exemplo:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="nv">idade</span> <span class="k">=</span> <span class="mi">20</span>
+<span class="k">val</span> <span class="nv">quantidade</span> <span class="k">=</span> <span class="nf">if</span> <span class="o">(</span><span class="n">idade</span> <span class="o">&gt;</span> <span class="mi">18</span><span class="o">)</span> <span class="mi">20</span> <span class="k">else</span> <span class="mi">15</span>
+</code></pre></div></div>
+
+<p>Usando <em>for</em>, <em>while</em> e <em>do-while</em> não é muito diferente do Java, porém em Scala
+temos compreensão de lista, que torna nosso loop ainda mais poderoso. Podemos
+adicionar filtros na cláusula <em>for</em> e executarmos apenas o necessário. Vamos ao
+exemplo:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="nv">lista</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">7</span><span class="o">,</span><span class="mi">8</span><span class="o">,</span><span class="mi">9</span><span class="o">)</span>
+<span class="nf">for</span><span class="o">(</span>
+  <span class="n">numero</span> <span class="k">&lt;-</span> <span class="n">lista</span><span class="o">;</span>
+  <span class="n">dobro</span> <span class="k">=</span> <span class="n">numero</span> <span class="o">*</span> <span class="mi">2</span><span class="o">;</span>
+  <span class="nf">if</span><span class="o">(</span><span class="n">dobro</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="o">)</span>
+<span class="o">)</span> <span class="nf">println</span><span class="o">(</span><span class="n">dobro</span><span class="o">)</span>
+<span class="c1">// 12, 14, 16, 18</span>
+</code></pre></div></div>
+
+    </div>
+    <script src="/assets/js/prism.js"></script>
+    <script>
+    	Prism.highlightAll();
+    </script>
+</div>
+
+<div id="progress-bar"></div>
+            </div>
+        </div>
+
+        <footer class="main-footer fixed-bottom">
+    <div class="follow-container">
+        <p>
+            Get in touch via <a href="https://twitter.com/bpaulino0">Twitter</a>
+            / follow my <a href="/feed.xml">RSS Feed.</a>
+        </p>
+
+        <span>
+            © 2022 Bruno Paulino | <a style="font-size: 12px;" href="https://github.com/brunojppb/brunojppb.github.io">This website is open-source</a>
+        </span> 
+    </div>
+</footer>
+
+    </div>
+
+    <!-- Full-screen image presentation -->
+    <div class="fullscreen-overlay" style="display: none;">
+        <button class="close-overlay">close</button>
+    </div>
+
+    <!-- Night/Light mode switch -->
+    <button id="theme-switcher" 
+            aria-label="Toggle theme" 
+            title="Toggle theme" 
+            data-light-asset="/assets/images/sun.svg"
+            data-dark-asset="/assets/images/moon.svg">
+    </button>
+
+
+    <!-- Minimal Blog scripts -->
+    <script src="/assets/js/blog.js?v=1665087387"></script>
+
+    <!-- Privacy-first Analytics -->
+    <script data-goatcounter="https://bpaulino.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  </body>
+</html>

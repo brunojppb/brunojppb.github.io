@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    
+    
+    
+    
+    
+    
+    
+    <meta name="author" content="Bruno Paulino">
+    <meta name="description" content="Learn how to rapid prototype a website with the most modern Javascript frameworks out there.">
+    <meta name="keywords" content="react,reactjs,gatsbyjs,website,dev,programming">
+    <meta name="theme-color" content="#21364B">
+    
+    <!-- Open Graph meta properties for beautifully rendering link previews on social -->
+    <!-- See: https://ogp.me/ -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://bpaulino.com/entries/11-rapid-prototyping-with-gatsby-js" />
+    <meta property="og:title" content="Rapid Prototyping with GatsbyJS" />
+    <meta property="og:description" content="Learn how to rapid prototype a website with the most modern Javascript frameworks out there." />
+    <meta property="og:image" content="https://bpaulino.com/assets/images/posts/rapid-prototyping-with-gatsby.jpg" />
+
+    <!-- twitter card tags additive to og: meta properties -->
+    <!-- See: https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/markup -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:domain" content="bpaulino.com" />
+    <meta name="twitter:title" content="Rapid Prototyping with GatsbyJS" />
+    <meta name="twitter:description" content="Learn how to rapid prototype a website with the most modern Javascript frameworks out there." />
+    <meta name="twitter:image" content="https://bpaulino.com/assets/images/posts/rapid-prototyping-with-gatsby.jpg" />
+    <meta name="twitter:url" content="https://bpaulino.com/entries/11-rapid-prototyping-with-gatsby-js" />
+    <meta name="twitter:creator" content="@bpaulino0" />
+    <meta name="twitter:label1" content="Created by" />
+    <meta name="twitter:data1" content="Bruno Paulino" />
+    <meta name="twitter:label2" content="Twitter" />
+    <meta name="twitter:data2" content="@bpaulino0" />
+    
+    
+    <link rel="shortcut icon" href="/assets/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+    <title>Rapid Prototyping with GatsbyJS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <!-- Timestamp from jekyll build to make sure the latest version is loaded correctly on our lovely readers' clients -->
+    <link rel="stylesheet" href="/assets/css/styles.css?v=1665087387">
+  </head>
+  <body>
+
+    <div role="main" class="main-container">
+
+        <div class="main-header">
+  <a href="/">
+    <h2>bpaulino.com</h2>
+  </a>
+  <p>
+    Hi, I am Bruno Paulino.<br />
+    Software is my craft.
+  </p>
+  <nav>
+    <a href="/">Blog</a>
+    <a href="/about">About</a>
+    <a href="/courses">Courses</a>
+    <!-- <a href="/speaking">Speaking</a> -->
+    <a href="/reading">Reading</a>
+  </nav>
+  <canvas class="particles-canvas"></canvas>
+</div>
+
+
+        <div class="flex-wrapper">
+            <div class="max-width-wrapper">
+                <div class="entry-container">
+    <div class="entry">
+        <h1 class="entry-title">Rapid Prototyping with GatsbyJS</h1>
+        <div style="text-align: center; font-style: italic;">February 26, 2020</div>
+    	<p>On February 17th, I
+<a href="https://www.meetup.com/ReactVienna/events/268478297/">gave a talk at the React Vienna Meetup</a>
+about this topic and I thought writing a blogpost about could benefit some folks
+that either couldn’t make it or are living somewhere else around the globe. You
+can find my slides <a href="https://bpaulino.com/rapid-prototyping-gatsby-js/">here.</a></p>
+
+<p>I would like to start off with a question. What if you want to put together a
+website with the most modern web tech out there? You probably need to know a
+bunch of things to start a simple website. Do you want to use modern Javascript
+syntax? no problem, just use <a href="https://webpack.js.org/">Webpack</a> and
+<a href="https://babeljs.io/">Babel</a> to help you transpile your code. Do you want to put
+your website online? just configure an small box on Digital Ocean, add Nginx and
+your website is online. Do you want to write blogposts and publish them using a
+CMS? No problem, just implement your backend, maybe using Postgres as a
+database. This list goes on and on if you try to start with a modern tool chain.</p>
+
+<p>To get this whole setup done, and most importantly, correctly configured, can be
+hard. It is even worse if you are a beginner.</p>
+
+<p><img src="/assets/images/posts/stackoverflow_hard_time.jpg" alt="A beginner having a hard time on Stackoveflow" /></p>
+
+<h2 id="static-site-generators-come-to-the-rescue">Static site generators come to the rescue</h2>
+
+<p>So you realize that this is an enormous amount of tools (and knowledge) you need
+to know upfront to start with a simple website. That is really overwhelming.
+This is where static site generators really shine. There is usually minimal to
+none configuration you have to do, there are many templates you can use to start
+with and most of the configuration thing is done for you. Some cool static site
+generators are:</p>
+
+<ul>
+  <li><a href="https://jekyllrb.com/">Jekyll (Ruby)</a></li>
+  <li><a href="https://gohugo.io/">Hugo (Javascript)</a></li>
+  <li><a href="https://vuejs.org/">NuxtJS (Vue.js)</a></li>
+  <li><a href="https://www.gatsbyjs.org/">GatsbyJS (ReactJS)</a></li>
+</ul>
+
+<p>The most interesting one that caught my attention lately was
+<a href="https://www.gatsbyjs.org/">GatsbyJS.</a> I have been working with React for the
+past 3 years and finding a decent static site generator based on React was very
+interesting. Right from the start, it solves all the problems I mentioned
+before. You don’t have to configure anything to start. You only need the minimal
+tools installed like a <a href="https://code.visualstudio.com/">good text editor</a> and
+<a href="https://nodejs.org/en/">node.js</a>. There is also no need to have a server for
+hosting. It generates all the pages statically, which means that when you bundle
+your website, you have one HTML file for each page of your website, just like
+the web is supposed to work. And simple enough, you can just upload those files
+to a static site hosting provider like <a href="https://www.netlify.com/">netlify</a> or
+even use <a href="https://pages.github.com/">Github Pages</a> to host it for free.</p>
+
+<p>Gatsby has an incredible feature that sets it apart from other generators: Your
+datasource doesn’t have to be statically located within the code, like markdown
+files. It can be pulled from a remote datasource, like a headless CMS, before
+generating the pages.<br />
+That is a big deal if you want the freedom of publishing blogposts from a nice
+CMS or you have a team of content creators that are simultaneously creating
+content. Their don’t have to be developers to be able to create a blog post, and
+Gatsby enables exactly that.</p>
+
+<h2 id="our-little-experiment">Our little experiment</h2>
+
+<p>At <a href="https://woombikes.com/">woom</a> we are modernizing our tech stack. One
+interesting project we had was to rebuild our blog frontend, but in a way that
+we don’t get stuck at a specific platform like we had before (using our ERP). As
+the main engineer responsible for this project, I decided to give Gatsby a try.
+I was impressed with the development speed we had using it to implement our blog
+prototype. We ended up using <a href="https://www.hubspot.com/">Hubspot</a> as our CMS
+since we are using it for other marketing purposes, but the frontend is still
+portable if we decide to shift to a new CMS.
+<a href="https://blog.woombikes.com">You can take a look at our blog here.</a></p>
+
+<p>This is how it looks like after we got it done:</p>
+
+<p><img src="/assets/images/posts/woom_blog_prototype.png" alt="woom blog using GatsbyJS" /></p>
+
+<p>But what are the main advantages of Gatsby anyway? What really made us to look
+at it differently?</p>
+
+<h3 id="it-uses-react">It uses React</h3>
+
+<p>If you never heard of <a href="https://reactjs.org/">React</a> before, it is the
+state-of-the-art of frontend libraries. Writing frontend with React requires a
+different approach, but it definitely pays off. It lets you break your
+application into reusable components, which makes it infinitely simpler to
+reason about it and debug.</p>
+
+<h3 id="react-hooks">React hooks</h3>
+
+<p>Even though Gatsby generates static pages, you can still benefit from React
+state management. hooks like <code class="language-plaintext highlighter-rouge">useState</code> and <code class="language-plaintext highlighter-rouge">useContext</code> are still there to help
+us have a more dynamic page.</p>
+
+<h3 id="graphql-included">GraphQL included</h3>
+
+<p>Using the built-in GraphQL API, you can pull data from a remote datasource,
+process static files from your local repository, like lets say images and
+transform them to alternative resolutions for different device sizes and so on.</p>
+
+<h3 id="development-and-production-configuration-out-of-the-box">Development and Production configuration out-of-the-box</h3>
+
+<p>You don’t have to hassle around WebPack configurations, pipelines or anything
+like this. The basics, which is already what you need to start, is already
+there, properly configured and ready to row with the single command
+<code class="language-plaintext highlighter-rouge">yarn develop</code> during development and <code class="language-plaintext highlighter-rouge">yarn build</code> to deploy a new build.</p>
+
+<h3 id="rich-plugin-ecosystem">Rich plugin ecosystem</h3>
+
+<p>When looking for a framework, you usually have to consider how flexible it can
+be, so you can benefit from the community, using code extensions and plugins.
+Gatsby has a very rich plugin ecosystem, and the most important ones, like
+<a href="https://www.gatsbyjs.org/packages/gatsby-image/">gatsby-image</a> for image
+processing are already there, provided and maintained by Gatsby directly, which
+is a good sign that will be kept up2date.</p>
+
+<h2 id="lets-try-to-build-something">Lets try to build something</h2>
+
+<p>For this <del>talk</del> blogpost, I created a little demo. This is a website with a
+blog section. The blogposts come from
+<a href="https://www.storyblok.com/">the headless CMS Storyblok.</a>. You can find the
+source code of
+<a href="https://github.com/brunojppb/gatsby-minimal-blog">this demo here.</a></p>
+
+<p><img src="/assets/images/posts/gatsby_minimal_website.png" alt="Gatsby minimal website with Blog component" /></p>
+
+<p>Clone the <a href="https://github.com/brunojppb/gatsby-minimal-blog">demo repo</a> and
+execute the following commands:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Clone the repo</span>
+git clone git@github.com:brunojppb/gatsby-minimal-blog.git
+<span class="c"># Now lets go to our newly created project</span>
+<span class="nb">cd </span>gatsby-minimal-blog
+<span class="c"># install all dependencies</span>
+yarn <span class="nb">install</span>
+<span class="c"># and fire up the dev server</span>
+yarn develop
+</code></pre></div></div>
+
+<p>Now lets go to our browser and type in <code class="language-plaintext highlighter-rouge">localhost:8000</code> to see what happens. You
+will see a nice and bare-minimum website, very similar to the screenshot I
+posted above, but with a link to the blog section of the website.</p>
+
+<p><img src="/assets/images/posts/gatsby_minimal_website_home.png" alt="Gatsby Minimal website home page" /></p>
+
+<p>If you take a look at the terminal, you will see that there was an error with a
+plugin. something like <code class="language-plaintext highlighter-rouge">failed createPages - 0.193s</code>. This is because when we
+hit <code class="language-plaintext highlighter-rouge">yarn develop</code> Gatsby kicks in and try to fetch our posts from Storyblok.
+But since you don’t have an account there yet, it can’t find out your API token
+to access your blogposts. So go ahead and open
+<a href="https://app.storyblok.com/#!/">Storyblok</a> to create your account and select the
+demo.<br />
+After signing in, you will that there is a <strong>demo space</strong> created for you. Don’t
+get bogged down with the details, Lets just try to create content there. On the
+left-hand side, click on <strong>Content</strong>, inside content, you will see a list of
+different assets. You have to delete all of them, but leave <strong>Blog Articles</strong>.
+Now select <strong>Blog Articles</strong>.<br />
+You will see a list of different contents, select all of them and delete it. We
+will create a new article from scratch. On the top-right corner, select
+<strong>“+Entry”</strong>. You will be asked to enter a title. On the <code class="language-plaintext highlighter-rouge">content type</code> dialog,
+select <code class="language-plaintext highlighter-rouge">article</code> and hit create. After this screen, you will land on a CMS-like
+page where you can write on the right-hand side menu and see it live rendering
+on the left-hand side. Try it out, update the title field and write something
+into the <strong>long text</strong> dialog. When you are happy with it, just hit <strong>publish</strong>
+on the top-right corner.</p>
+
+<p>Now lets get the API Key to access our content. To to settings -&gt; API-Keys.
+There you have an API token called <code class="language-plaintext highlighter-rouge">public</code>. copy it to your clipboard. Now head
+back to your text editor and create a file called <code class="language-plaintext highlighter-rouge">.env.development</code> on your
+project root folder. and inside of it, add your API token in the following
+pattern:</p>
+
+<pre><code class="language-env">CMS_API_TOKEN=YOUR_API_TOKEN_HERE
+</code></pre>
+
+<p>After that, restart your development server. Go to your browser and click on
+<code class="language-plaintext highlighter-rouge">Visit our blog section</code>. You should see your recently created article there.
+You can click on it and to directly to the article page. But what happened
+there? Lets take a look at the a file called <code class="language-plaintext highlighter-rouge">gatsby-node.js</code>:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">axios</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">axios</span><span class="dl">"</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">marked</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">marked</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">createPages</span> <span class="o">=</span> <span class="k">async</span> <span class="p">({</span> <span class="na">actions</span><span class="p">:</span> <span class="p">{</span> <span class="nx">createPage</span> <span class="p">}</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">url</span> <span class="o">=</span> <span class="s2">`https://api.storyblok.com/v1/cdn/stories`</span><span class="p">;</span>
+  <span class="kd">const</span> <span class="nx">articles</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">axios</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">params</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">token</span><span class="p">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">CMS_API_TOKEN</span><span class="p">,</span>
+      <span class="dl">"</span><span class="s2">space.version</span><span class="dl">"</span><span class="p">:</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">(),</span>
+    <span class="p">},</span>
+  <span class="p">});</span>
+
+  <span class="c1">// Create articles list page</span>
+  <span class="nx">createPage</span><span class="p">({</span>
+    <span class="na">path</span><span class="p">:</span> <span class="dl">"</span><span class="s2">/articles</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">component</span><span class="p">:</span> <span class="nx">require</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="dl">"</span><span class="s2">./src/templates/all_articles.js</span><span class="dl">"</span><span class="p">),</span>
+    <span class="na">context</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">articles</span><span class="p">:</span> <span class="nx">articles</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">stories</span><span class="p">,</span>
+    <span class="p">},</span>
+  <span class="p">});</span>
+
+  <span class="c1">// create each individual article page</span>
+  <span class="nx">articles</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">stories</span><span class="p">.</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">article</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">createPage</span><span class="p">({</span>
+      <span class="na">path</span><span class="p">:</span> <span class="s2">`/article/</span><span class="p">${</span><span class="nx">article</span><span class="p">.</span><span class="nx">slug</span><span class="p">}</span><span class="s2">/`</span><span class="p">,</span>
+      <span class="na">component</span><span class="p">:</span> <span class="nx">require</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="dl">"</span><span class="s2">./src/templates/article.js</span><span class="dl">"</span><span class="p">),</span>
+      <span class="na">context</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">article</span><span class="p">:</span> <span class="p">{</span>
+          <span class="p">...</span><span class="nx">article</span><span class="p">,</span>
+          <span class="na">content</span><span class="p">:</span> <span class="p">{</span>
+            <span class="p">...</span><span class="nx">article</span><span class="p">.</span><span class="nx">content</span><span class="p">,</span>
+            <span class="c1">// Don't do this at home :)</span>
+            <span class="c1">// You need to sanitize this HTML first</span>
+            <span class="na">long_text</span><span class="p">:</span> <span class="nx">marked</span><span class="p">(</span><span class="nx">article</span><span class="p">.</span><span class="nx">content</span><span class="p">.</span><span class="nx">long_text</span><span class="p">),</span>
+          <span class="p">},</span>
+        <span class="p">},</span>
+      <span class="p">},</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>This is a lifecycle script executed by Gatsby during build time. What this
+script does is:</p>
+
+<ul>
+  <li>fetch all articles from Storyblok</li>
+  <li>create an index page with all the articles so you have a complete list</li>
+  <li>create individual pages with each article</li>
+</ul>
+
+<p>If you look into <code class="language-plaintext highlighter-rouge">src/templates/all_article.js</code> you will see:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Link</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">gatsby</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Layout</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">../components/layout</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">AllArticles</span><span class="p">({</span> <span class="na">pageContext</span><span class="p">:</span> <span class="p">{</span> <span class="nx">articles</span> <span class="p">}</span> <span class="p">})</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Layout</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="p">=</span><span class="s">"article-list"</span><span class="p">&gt;</span>
+        <span class="si">{</span><span class="nx">articles</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">article</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">(</span>
+          <span class="p">&lt;</span><span class="nt">div</span> <span class="na">key</span><span class="p">=</span><span class="si">{</span><span class="nx">article</span><span class="p">.</span><span class="nx">uuid</span><span class="si">}</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nc">Link</span> <span class="na">to</span><span class="p">=</span><span class="si">{</span><span class="s2">`/article/</span><span class="p">${</span><span class="nx">article</span><span class="p">.</span><span class="nx">slug</span><span class="p">}</span><span class="s2">`</span><span class="si">}</span><span class="p">&gt;</span><span class="si">{</span><span class="nx">article</span><span class="p">.</span><span class="nx">content</span><span class="p">.</span><span class="nx">title</span><span class="si">}</span><span class="p">&lt;/</span><span class="nc">Link</span><span class="p">&gt;</span>
+          <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">))</span><span class="si">}</span>
+      <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">Layout</span><span class="p">&gt;</span>
+  <span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The <strong>AllArticles</strong> component follows a pattern imposed by Gatsby. It must
+receive a prop called <code class="language-plaintext highlighter-rouge">pageContext</code>. This necessary for Gatsby to inject the
+content at build-time and render the component to generate the static pages. If
+you follow the convention, you get all this magic for free.<br />
+The same thing happens to the <strong>Article</strong> component. it expects a <code class="language-plaintext highlighter-rouge">pageContext</code>
+prop and from there on, you can create your React component in the same way.</p>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>This example was very naive and simplistic, but you can already have a feeling
+of what Gatsby can do. If you are considering to develop a new website and don’t
+want to waste your time with tooling configuration, give Gatsby a try. It will
+be probably worth it.<br />
+We are now evaluating if makes sense or not to build out Shop frontend with it
+in a way that supports multi-language. I got some interesting feedback from
+folks using Gatsby in production during my React Vienna talk that will
+definitely help to try it out.</p>
+
+    </div>
+    <script src="/assets/js/prism.js"></script>
+    <script>
+    	Prism.highlightAll();
+    </script>
+</div>
+
+<div id="progress-bar"></div>
+            </div>
+        </div>
+
+        <footer class="main-footer fixed-bottom">
+    <div class="follow-container">
+        <p>
+            Get in touch via <a href="https://twitter.com/bpaulino0">Twitter</a>
+            / follow my <a href="/feed.xml">RSS Feed.</a>
+        </p>
+
+        <span>
+            © 2022 Bruno Paulino | <a style="font-size: 12px;" href="https://github.com/brunojppb/brunojppb.github.io">This website is open-source</a>
+        </span> 
+    </div>
+</footer>
+
+    </div>
+
+    <!-- Full-screen image presentation -->
+    <div class="fullscreen-overlay" style="display: none;">
+        <button class="close-overlay">close</button>
+    </div>
+
+    <!-- Night/Light mode switch -->
+    <button id="theme-switcher" 
+            aria-label="Toggle theme" 
+            title="Toggle theme" 
+            data-light-asset="/assets/images/sun.svg"
+            data-dark-asset="/assets/images/moon.svg">
+    </button>
+
+
+    <!-- Minimal Blog scripts -->
+    <script src="/assets/js/blog.js?v=1665087387"></script>
+
+    <!-- Privacy-first Analytics -->
+    <script data-goatcounter="https://bpaulino.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  </body>
+</html>

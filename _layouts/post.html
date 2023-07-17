@@ -3,11 +3,11 @@ layout: default
 ---
 
 <div class="entry-container">
-    <div class="entry">
+    <article class="entry">
         <h1 class="entry-title">{{ page.title }}</h1>
         <div style="text-align: center; font-style: italic;">{{ page.date | date: "%B %-d, %Y" }}</div>
     	{{ content }}
-    </div>
+    </article>
     <script src="/assets/js/prism.js"></script>
     <script>
     	Prism.highlightAll();

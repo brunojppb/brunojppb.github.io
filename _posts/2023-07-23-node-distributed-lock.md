@@ -79,3 +79,20 @@ that only a single worker can acquire a lock at any given time. We will see that
 in action soon, but this blogpost largely follows the pattern suggested by Redis
 itself in its
 [patterns manual here](https://redis.io/docs/manual/patterns/distributed-locks/).
+
+To facilitate the understanding on how the distributed lock works, have a look
+at the following diagram. We have a pool of four workers which are Node.js
+servers responsible for processing our hypothetic serial queue. These four
+servers will concurrently try to acquire the lock by setting a key-value pair in
+Redis. The first server that manages to do it, "wins" and will hold the lock.
+With the lock at hand, this server should be able to start processing jobs.
+
+![Lock with Redis - lock acquired by server](/assets/images/posts/lock_1.jpg)
+
+Then, in case this server needs to be shutdown (e.g. during a deployment), the
+lock should be released, giving the chance to one of the other servers to
+acquire it and continue to process the background jobs.
+
+![Lock with Redis - Server shutdown](/assets/images/posts/lock_2.jpg)
+
+# Fail-safe with expiring keys

@@ -27,12 +27,20 @@ But what happens when you must guarantee that their processing order be
 respected? If you have a single server and a single worker thread, then it's
 simple. Jobs will be processed serially and their ordering will be respected.
 
-But what happens if you have a fleet of workers deployed across different
+And what happens when you have a fleet of workers deployed across different
 servers? You will need to "elect" one of your workers to be the one processing
 these jobs. Better yet, you must make sure that if that worker dies or gets
 removed from your servers pool, another healthy worker must pick-up the jobs and
 continue processing them in some sort of handover fashion. This is where a
 distributed lock algorithm is handy.
+
+Here is our demo running where we simulate two servers competing to acquire the
+lock and how the lock handover works when a server goes down:
+
+<img src="/assets/images/posts/lock_animated_demo.gif" 
+     loading="lazy" 
+     alt="two terminal windows showing two instances of our app running and acquiring the lock"
+/>
 
 > If you are a savvy Node.js engineer and just want to see the code,
 > [here is the Github repo ready for you.](https://github.com/brunojppb/node-distributed-lock)

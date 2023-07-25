@@ -10,7 +10,7 @@ meta_description:
 ---
 
 Often times, you need to build a feature that requires coordinated access to a
-certain resources. A common use-case is around queues where jobs can be enqueued
+certain resource. A common use-case is around queues where jobs can be enqueued
 to be processed in the background.
 
 These jobs can either be:

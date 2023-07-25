@@ -6,7 +6,7 @@ permalink: entries/distributed-lock-in-node-js
 keywords: lock,distributed,node,redis,typescript,javascript,scale
 meta_image: /assets/images/posts/2023-07-23-node-distributed-lock.jpg
 meta_description:
-  Implementing distributed lock in Node.js using TypeScript, Redis and Xstate
+  Implementing distributed locks in Node.js using TypeScript, Redis and Xstate
 ---
 
 Often times, you need to build a feature that requires coordinated access to a

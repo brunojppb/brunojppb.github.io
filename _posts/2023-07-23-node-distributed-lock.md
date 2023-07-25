@@ -44,7 +44,7 @@ lock and how the lock handover works when a server goes down:
 
 > If you are a savvy Node.js engineer and just want to see the code,
 > [here is the Github repo ready for you.](https://github.com/brunojppb/node-distributed-lock)
-> Feel free to leave a Github star so folks can find distributed lock template
+> Feel free to leave a Github star so folks can find this distributed lock template
 > more easily.
 
 ## Locks on a single node
@@ -54,10 +54,10 @@ mechanism that helps the programmer to restrict access (mutual exclusion) to
 certain resources, allowing you to control which thread can read or write to
 shared data.
 
-In a single-thread runtime like Node.js, you generally don't need locks, but in
-multi-threaded environments like in [Rust](https://www.rust-lang.org/), you
+In a single-thread, event-loop based runtime like Node.js, you generally don't need locks, 
+but in multi-threaded environments like in [Rust](https://www.rust-lang.org/), you
 usually need to use the primitives for atomic operations provided by the
-standard library like the
+standard library like
 [std::sync::Mutex](https://doc.rust-lang.org/std/sync/struct.Mutex.html), which
 guarantees that a given code path is only accessed by one thread at a time.
 
@@ -110,7 +110,7 @@ So far, our example has been focusing on releasing the lock when a server needs
 to shutdown. But what happens during a hardware failure? What if your app panics
 and crashes out of nowhere? This situation could lead you to a
 [deadlock](https://en.wikipedia.org/wiki/Deadlock) where no other server from
-your server pool will be able to acquire the lock and keep processing your jobs.
+your server pool will be able to acquire the lock to keep processing jobs.
 
 Redis provides a very useful feature where whenever you set a key-value pair,
 you can also define how long this value can last on its memory. Redis will clean
@@ -136,7 +136,7 @@ But enough theory, let's dip into the code and see that in action.
 
 ## Kicking off with a Demo
 
-Our will start by demonstrating this implementation in action so you get a
+We start by demonstrating this implementation in action so you get a
 feeling of how it works and then we will have a look at the code, step-by-step.
 
 To kickstart this project, I've used [Remix](https://remix.run/) with the
@@ -164,7 +164,7 @@ be enough for starting our app:
 npm run dev
 ```
 
-If you watch your server logs, you see a few logs showing that:
+If you watch your server logs, you should see a few logs showing that:
 
 - Your node tried to acquire the lock
 - The lock was successfully acquired
@@ -241,17 +241,17 @@ state machine works.
 The main goal of this state machine is to coordinate the following:
 
 - Once our server starts up, we must signal to the state machine that it's time
-  to attempt to acquire the locks
+  to attempt to acquire the lock:
   - If the lock is acquired successfully, our worker can start processing the
     background jobs. In the meantime, our worker also needs to renew the lock to
     make sure that it can continue processing background jobs.
   - In case it can't acquire it, either because of another worker that has
     already acquired it or because Redis is unavailable, our worker needs to sit
-    on a idle state for a few seconds and then later on attempt to acquire the
+    on an idle state for a few seconds and then later on attempt to acquire the
     lock again.
 
 Don't worry if you are not familiar with state machines. The xstate
-[introduction article](https://xstate.js.org/docs/guides/introduction-to-state-machines-and-statecharts/#states)
+[introductory article](https://xstate.js.org/docs/guides/introduction-to-state-machines-and-statecharts/#states)
 does a fantastic job in introducing you the concept and guides you through
 creating your first state chart, but let's walk through the code to see how the
 entire process works and I will be referencing our demo project with links here
@@ -284,12 +284,12 @@ Services wrap our state machines and allow us to observe how the state moves
 forward in time, allowing us to hook up callbacks to it and monitor how our
 state changes over time.
 
-We first `start` our service so it listens to events and immediately send it a
+We first `start` our service so it listens to events and we immediately send it a
 `TRY_ACQUIRE_LOCK`. This event will kick-off our state machine, which internally
 will trigger its internal services to try to acquire the lock. We will have a
 look at our actual state machine code soon.
 
-If you look at where we create this `service` instance, you will
+If you look at where we create this `service` instance, you will see 
 [the following call](https://github.com/brunojppb/node-distributed-lock/blob/e2ef7d65847fe7ed165dffd4669a9f58415da1f6/app/worker/index.ts#L53-L62):
 
 ```ts
@@ -324,7 +324,7 @@ calling `createLockMachine`. This call takes an object with several parameters:
 - **startWork**: An async callback that starts doing the actual background job
   processing.
 - **stopWork**: An async callback that stops any background job processing. This
-  is important for cases where a worker don't manage to renew the lock so it
+  is important for cases where a worker doesn't manage to renew the lock so it
   needs to stop and wait.
 
 These callbacks are our services interface which allow us to make our state
@@ -500,9 +500,10 @@ acquiring_lock: {
 When it enters this state, it `invoke`s the source (src) service called
 `acquireLock`. In our case, service calls are async functions that when resolved
 successfully will use the `onDone` transition and will move to the `target`
-state, in our case, it will move to `working`. If the promise returned by this
-callback rejects, it will enter the `onError` block and will transition to the
-`waiting_to_acquire_lock` state.
+state, which in this case is `working`.
+
+If the promise returned by this callback rejects, it will enter the `onError` 
+block and will transition to the `waiting_to_acquire_lock` state.
 
 Let's have a look at the `working` state
 [here](https://github.com/brunojppb/node-distributed-lock/blob/main/app/worker/machine.ts#L105-L114):
@@ -526,7 +527,7 @@ processing, we want it to remain that way for as long as it can. But it does
 have a `src` service called `startWork`. This is our service callback that
 allows our worker to effectively start processing the background jobs.
 
-But notice that we have a `after` block. This is how xstate lets us declare
+Also notice that we have an `after` block. This is how xstate lets us declare
 state transitions that will trigger automatically after a given period of time.
 In this case, whenever our state machine is on the `working` state, after 5
 seconds, it will transition to the `renew_lock` state.
@@ -601,7 +602,7 @@ Let's have a look at how we `set` and update the expiry time of our keys using
 [ioredis](https://github.com/redis/ioredis).
 
 Let's head to our `acquireLock` function
-[here](https://github.com/brunojppb/node-distributed-lock/blob/e2ef7d65847fe7ed165dffd4669a9f58415da1f6/app/services/lock.ts#L10-L30)
+[here:](https://github.com/brunojppb/node-distributed-lock/blob/e2ef7d65847fe7ed165dffd4669a9f58415da1f6/app/services/lock.ts#L10-L30)
 
 ```ts
 export async function acquireLock(
@@ -632,7 +633,7 @@ within the `NX` and `EX` arguments:
 This is a fundamental part of this implementation. Redis allows us to have keys
 that automatically expire and get deleted from its memory, which guarantees that
 we won't face
-[lock contention issues](<https://en.wikipedia.org/wiki/Lock_(computer_science)>).
+[lock contention](<https://en.wikipedia.org/wiki/Lock_(computer_science)>).
 This covers the eventual case where a server crashes and don't get the chance to
 release the lock, which would cause a major issue for all our other workers that
 would be forever waiting to acquire the lock.

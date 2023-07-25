@@ -1,7 +1,7 @@
 ---
 layout: post
 author: Bruno Paulino
-title: "Distributed Lock in Node.js"
+title: "Distributed Locks in Node.js"
 permalink: entries/distributed-lock-in-node-js
 keywords: lock,distributed,node,redis,typescript,javascript,scale
 meta_image: /assets/images/posts/2023-07-23-node-distributed-lock.jpg

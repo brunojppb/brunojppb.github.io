@@ -1,8 +1,6 @@
 # bpaulino.com blog
 
-![deploy](https://github.com/brunojppb/brunojppb.github.io/workflows/deploy/badge.svg?branch=master)
-
-![Text saying Welcome to my digital garden and a picture of myself smiling](https://repository-images.githubusercontent.com/158101370/5540e200-5739-11eb-8232-7315b07197d0)
+Hi there! Welcome to my digital garden. This website is a collection of some of my experiences.
 
 ## Install dependencies
 

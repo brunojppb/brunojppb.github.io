@@ -16,7 +16,7 @@ to be processed in the background.
 These jobs can either be:
 
 1. Picked up by a fleet of workers and processed in parallel. The order they
-   start and finish don't matter.
+   start and finish doesn't matter.
 1. Picked up and processed serially. The order they are processed matters.
 
 The first case is generally simple enough. You generally don't have to concern

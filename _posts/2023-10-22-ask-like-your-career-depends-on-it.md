@@ -192,19 +192,18 @@ to fly around back then:
 I think there was a good lesson I learned from these experiences. I had several
 opportunities during my life that I could have completely missed out if I didn't
 ask for help back then. And in other situations, where I had no clue whether
-something could work or not, by simply asking around, I could carve out the
-opportunity I needed, like that internship.
+something could work, by simply asking around, I could carve out the opportunity
+I needed, like that internship.
 
 In retrospect, I feel quite lucky. I was at the right place, at the right time
 and thankfully had the right people by my side. Things could have turned out
 much differently, but by the simple fact that I asked around, I managed to
 increase the likelihood of these lucky moments to come to reality.
 
-So if you are ever wondering whether you should ask or not, go ask. You should
-of course do your homework, do a bit of research around what you are looking for
-and try to help yourself first. If you are reaching out to a mentor, a friend or
-your boss, try to offer a few ideas on how this person can help you with right
-away.
+So if you are ever wondering whether you should ask, just go, ask. You should,
+of course, do your homework, research around what you are looking for and try to
+help yourself first. If you are reaching out to a mentor, a friend or your boss,
+try to offer a few ideas on how this person can help you with right away.
 
 But even then, if you are clueless, ask anyways. The worst outcome is likely
 that things will remain the way they are. And in case things don't work out, you

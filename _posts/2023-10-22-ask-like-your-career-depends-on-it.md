@@ -113,7 +113,7 @@ with the American Department of Defense and, due to security reasons, if you are
 not an American citizen, they won't even consider you as a suitable candidate.
 This is even written in the job ad as a requirement.
 
-So my search for an internship immediately became super hard. My American
+So my search for an internship immediately became quite difficult. My American
 friends were getting job interviews left and right, while I was only getting
 rejections. I thought "That is it, I'm going back to Brazil without some
 international experience. But that is fine, I got really far, this is already

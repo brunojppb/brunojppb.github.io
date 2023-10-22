@@ -5,7 +5,7 @@ title: "Ask, like you career depends on it"
 permalink: entries/ask-like-your-career-depend-on-it
 keywords: career,advice,pragmatism,leadership
 meta_image: /assets/images/posts/2023-10-22-ask.jpg
-meta_description: Never be ashamed to ask
+meta_description: Never be ashamed of asking questions
 ---
 
 It has been a while since I wanted to write this but I've been putting this on

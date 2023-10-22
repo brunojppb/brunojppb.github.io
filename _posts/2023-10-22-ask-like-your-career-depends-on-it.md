@@ -109,9 +109,9 @@ NASA is based at, together with many companies working with aerospace tech.
 
 This was super exciting to me during my whole time there, but when it came to
 find an internship, I quickly found that many of these companies have contracts
-with the American department of defense and if you are not an American citizen,
-they won't even consider you as a suitable candidate. This is even written in
-the job ad.
+with the American Department of Defense and, due to security reasons, if you are
+not an American citizen, they won't even consider you as a suitable candidate.
+This is even written in the job ad as a requirement.
 
 So my search for an internship immediately became super hard. My American
 friends were getting job interviews left and right, while I was only getting

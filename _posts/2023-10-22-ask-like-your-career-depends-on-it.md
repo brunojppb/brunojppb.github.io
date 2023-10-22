@@ -10,9 +10,11 @@ meta_description: Never be ashamed to ask
 
 It has been a while since I wanted to write this but I've been putting this on
 the side, until this week when a more junior engineer at my current job
-approached me with some interesting questions around a work-related topic. I
-noticed that he was a bit afraid of asking, perhaps concerned that he would come
-across as unprepared or stupid.
+approached me with some questions around a work-related topic. I noticed that he
+was a bit afraid of asking, perhaps concerned that he would come across as
+unprepared or stupid. Turns out, his question was really interesting and sparked
+a really good conversation with surprisingly good outcomes for him and for
+myself as well.
 
 This really motivated me to write this piece because I have once been like this
 and was constantly ashamed of asking questions, fearing to sound stupid or dumb,
@@ -41,8 +43,8 @@ at the same time.
 I was a little worried that it would be troubling to find a work schedule that
 could support my studies, so I was already thinking that I would have to give up
 university given that I couldn't afford to lose my job. Either way, I simply
-went to my boss and asked if he could support me in figuring this out. Not
-surprisingly, he was quite happy that I was going to university and went out of
+went to my boss and asked if he could support me in figuring this out.
+Surprisingly, he was quite happy that I was going to university and went out of
 his way to help me out. He figured out a way to change my work schedule where I
 could work a few nights and weekends and I wouldn't miss classes much.
 
@@ -68,13 +70,13 @@ around when he heard the news. He was very honest and told me he had no clue
 whether I could go and keep my job, but he would do everything on his power to
 help me out. He asked me for a few days so he could figure something out.
 
-two days had gone by. It was a weekend evening when he called me and said "Hey
+A week had gone by. It was a weekend evening when he called me and said "Hey
 Bruno, I've figured something out. let's try it next week". After talking to him
 I was really surprised, I had no idea what that could be, but I was willing to
 try anything.
 
 Next week, once I was back to the office, he explained to me that there was some
-sort of particular law which allowed the chief of the police authorise any
+sort of particular law which allowed the chief of the police authorize any
 particular officer to go anywhere and take a course that could benefit the
 police.
 
@@ -126,7 +128,7 @@ lab that took him in the past summer. I looked it up and to my surprise, this
 was a Brazilian company (Embraer), with a research facility in the same town I
 was based at.
 
-But looking at their website and LinkedIn page, I couldn't find any available
+Looking at their website and LinkedIn page, I couldn't find any available
 opportunity. So I started checking the folks that work there. I managed to find
 one of the HR department heads on LinkedIn. I couldn't contact her directly
 given that we were not connected on the platform, so I just tried to guess her
@@ -137,12 +139,14 @@ I simply tried:
 > from: bruno  
 > to: firstname.lastname@embraer.com  
 > subject: Looking for an Internship Opportunity
+>
+> {Email body left out for brevity}
 
-So I sent her an email. I didn't receive any error delivery message, so I
-assumed it worked and her email existed. This already felt like a small win. But
-even then, my chances of getting a reply were really slim. Worse yet, even if I
-get a reply, what are the chances of getting an actual internship opportunity?
-Very likely zero.
+I sent her an email. I didn't receive any error delivery message, so I assumed
+it worked and her email existed. This already felt like a small win. But even
+then, my chances of getting a reply were really slim. Worse yet, even if I get a
+reply, what are the chances of getting an actual internship opportunity? Very
+likely zero.
 
 ### A little surprise three days later
 

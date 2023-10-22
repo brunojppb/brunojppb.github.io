@@ -45,12 +45,13 @@ university given that I couldn't afford to lose my job. Either way, I simply
 went to my boss and asked if he could support me in figuring this out.
 Surprisingly, he was quite happy that I was going to university and went out of
 his way to help me out. He figured out a way to change my work schedule where I
-could work a few nights and weekends and I wouldn't miss classes much.
+could work a few nights and weekends and I wouldn't have to miss classes much.
 
 It all worked out and I managed to study just fine. I missed one class here and
-there, but I wasn't expecting to attend at all, so that was a huge win already.
-So everything was going well until nearing the end of my studies, where I
-managed to get a scholarship with all expenses paid to go to the US.
+there, but I wasn't expecting to attend at all. That was a huge win already.
+
+Everything was going well until nearing the end of my studies, where I managed
+to get a scholarship with all expenses paid to go to the US.
 
 ## Getting the chance to study abroad without losing my job
 

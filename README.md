@@ -1,12 +1,13 @@
 # bpaulino.com blog
 
-Hi there! Welcome to my digital garden. This website is a collection of some of my experiences.
+Hi there! Welcome to my digital garden. This website is a collection of some of
+my experiences.
 
 ## Install dependencies
 
 This blog is built with [Jekyll](https://jekyllrb.com/), a
 [Ruby](https://www.ruby-lang.org/en/) based static site generator.  
-Make sure you have [Ruby](https://www.ruby-lang.org/en/) 2.6 installed and run
+Make sure you have [Ruby](https://www.ruby-lang.org/en/) 3.2 installed and run
 the following commands:
 
 ```shell

@@ -209,4 +209,7 @@ But even then, if you are clueless, ask anyways. The worst outcome is likely
 that things will remain the way they are. And in case things don't work out, you
 at least tried and can already think about other plans.
 
-Don't hold questions to yourself.
+Most people have good intentions and are very likely able to help you. Sometimes
+you hit a jerk here and there, but you know, they are not the common place. They
+are also missing the opportunity to be part of your story, so don't hold
+questions to yourself.

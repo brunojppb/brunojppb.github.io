@@ -143,7 +143,7 @@ I sent her an email. I didn't receive any error delivery message, so I assumed
 it worked and her email existed. This already felt like a small win. But even
 then, my chances of getting a reply were really slim. Worse yet, even if I get a
 reply, what are the chances of getting an actual internship opportunity? Very
-likely zero. But it was worth it asking anyways.
+likely zero. But it was worth asking it anyways.
 
 ### Three days later, a unexpected surprise
 

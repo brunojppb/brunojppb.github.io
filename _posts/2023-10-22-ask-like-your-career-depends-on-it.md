@@ -158,7 +158,7 @@ looked something like the following:
 > that. I am trying to contact someone at Florida Tech for a couple of weeks
 > now, but I couldn't get a hold of anyone from the administration.
 >
-> We actually have 10 available spots for the Summer Internship pProgram at
+> We actually have 10 available spots for the Summer Internship Program at
 > Embraer and we are looking for students like you. Could you send me your
 > resume and if you have more colleagues looking for internship opportunities in
 > IT, please let me know.

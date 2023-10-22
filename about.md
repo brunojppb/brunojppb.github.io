@@ -9,7 +9,7 @@ meta_image: /assets/images/about_cover.jpg
 
 <div class="flex-center about-me" style="line-height: 1.6;">
     <h1>About</h1>
-    <img src="/assets/images/bpaulino_.jpg" class="me" alt="Bruno Paulino smiling"/>
+    <img src="/assets/images/bpaulino.jpg" class="me" alt="Bruno Paulino smiling"/>
     <p>Hi There 👋,<br/>Bruno Paulino here.</p>
     <p>
         I am originally from Brazil and currently based in Vienna, Austria.<br/>

@@ -37,3 +37,9 @@ Auto-regeneration: enabled for '/the/repo/path/here'
 All commits to `master` will trigger an integration with
 [Cloudflare Pages](https://pages.cloudflare.com/) where we cache and serve these
 contents under my own domain.
+
+## Preview deployments
+
+During development, any pull-request opened from a branch starting with
+`preview-` gets deployed to Cloudflare pages automatically and a message gets
+posted to the PR with the preview URL.

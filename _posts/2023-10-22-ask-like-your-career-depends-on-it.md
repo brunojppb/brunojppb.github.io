@@ -104,9 +104,8 @@ And the time to find an internship came. I was looking for jobs everywhere in
 the little town I was based in (Melbourne, Florida).
 
 If you are not familiar with this area in Florida, you have probably heard about
-the "space coast", which is this area in the USA where rockets go around, where
-NASA is based at, together with many companies that working on aerospace
-technology.
+the "Space Coast", which is this area in the USA where rockets go around, where
+NASA is based at, together with many companies working with aerospace tech.
 
 This was super exciting to me during my whole time there, but when it came to
 find an internship, I quickly found that many of these companies have contracts

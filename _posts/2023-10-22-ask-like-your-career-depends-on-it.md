@@ -134,55 +134,54 @@ work email address.
 
 I simply tried:
 
-> from: bruno  
-> to: firstname.lastname@embraer.com  
-> subject: Looking for an Internship Opportunity
+> **Subject:** Looking for an Internship Opportunity  
+> **to:** firstname.lastname@embraer.com
 >
-> {Email body left out for brevity}
+> _{Email body left out for brevity}_
 
 I sent her an email. I didn't receive any error delivery message, so I assumed
 it worked and her email existed. This already felt like a small win. But even
 then, my chances of getting a reply were really slim. Worse yet, even if I get a
 reply, what are the chances of getting an actual internship opportunity? Very
-likely zero.
+likely zero. But it was worth it asking anyways.
 
-### A little surprise three days later
+### Three days later, a unexpected surprise
 
 Three days have gone by since I sent her that email. Around that time, I've
-already mostly given up to find an internship and was already preparing to
-travel back home. Then suddenly, I had this one unread message in my inbox. The
-message looked something like the following:
+already mostly given up my internship search and was already preparing to travel
+back home. Then suddenly, I had this one unread message in my inbox. The message
+looked something like the following:
 
-> Re: Looking for an Internship Opportunity
+> **Re:** Looking for an Internship Opportunity
 >
-> Hi Bruno, Thank you for reaching out. I am really glad you wrote me regarding
+> Hi Bruno, Thank you for reaching out. I'm really glad you wrote me regarding
 > that. I am trying to contact someone at Florida Tech for a couple of weeks
 > now, but I couldn't get a hold of anyone from the administration.
 >
-> We actually have 10 available spots for the summer internship program at
+> We actually have 10 available spots for the Summer Internship pProgram at
 > Embraer and we are looking for students like you. Could you send me your
 > resume and if you have more colleagues looking for internship opportunities in
 > IT, please let me know.
 
 After reading this email, I couldn't believe it... I not only found a potential
-opportunity for me, but somehow I could also help 10 other colleagues?
+opportunity for me, but somehow I could also help ten other colleagues?
 
 I am pretty sure that you, the reader, might be thinking that this is some sort
-of joke and to be honest, I couldn't believe myself when I read this email.
+of joke and to be honest, I couldn't believe it myself when I read this email.
 
 Fast-forward 2 weeks later, I managed to get one of the spots for that
 internship program, and believe it or not, I also managed to bring along 10
 other friends that were in a similar situation. All of them got hired.
 
 This internship was one of the coolest experiences in my professional career and
-I could not have been happier about the outcome of that. I made many friends
-from several different countries, I learned a sh\*t ton of new stuff and I even
-got paid for it.
+I could not have been happier about its outcome. I made many friends from
+several different countries, I learned a sh\*t ton of new stuff and I even got
+paid for it.
 
 Here is a picture of me, a few of my colleagues that joined me after that lucky
-email I sent, and one of our managers, getting the chance to explore the Embraer
-Legacy aircraft, the same aircraft that the queen of England used to fly around
-back then:
+email I sent, and one of our great managers, getting the chance to experience
+the Embraer Legacy aircraft, the same aircraft which the queen of England used
+to fly around back then:
 
 <img src="/assets/images/embraer.jpg" 
         loading="lazy"

@@ -13,14 +13,13 @@ the side, until this week when a more junior engineer at my current job
 approached me with some questions around a work-related topic. I noticed that he
 was a bit afraid of asking, perhaps concerned that he would come across as
 unprepared or stupid. Turns out, his question was really interesting and sparked
-a really good conversation with surprisingly good outcomes for him and for
-myself as well.
+a great conversation with surprisingly new learnings for him and myself.
 
 This really motivated me to write this piece because I have once been like this
 and was constantly ashamed of asking questions, fearing to sound stupid or dumb,
 which eventually led me to lose a few opportunities.
 
-But there was a point where I stopped worrying about this and the results of it
+But there was a point where I stopped worrying about this and the result of it
 was really surprising: It changed my life and career in several ways I could
 never imagine and today I want to share a few situations where I simply asked,
 already expecting the worst outcome, but it turned out to work much better than
@@ -55,10 +54,9 @@ managed to get a scholarship with all expenses paid to go to the US.
 
 ## Getting the chance to study abroad without losing my job
 
-I was again with that feeling of feeling defeated. There was no way for me to
-go, spend almost 2 years in the US without losing my job. I thought "That is it,
-I am gonna lose this opportunity. I cannot afford to support my family without
-my job".
+I was starting to feel defeated. There was no way for me to go, spend almost 2
+years in the US without losing my job. I thought "That is it, I am gonna lose
+this opportunity. I cannot afford to support my family without my job".
 
 Although I knew the chances of keeping my job while away were really slim, I had
 to ask my boss again. I thought "What have I got to lose? I did not have this
@@ -71,18 +69,18 @@ whether I could go and keep my job, but he would do everything on his power to
 help me out. He asked me for a few days so he could figure something out.
 
 A week had gone by. It was a weekend evening when he called me and said "Hey
-Bruno, I've figured something out. let's try it next week". After talking to him
+Bruno, I've figured something out. Let's try it next week". After talking to him
 I was really surprised, I had no idea what that could be, but I was willing to
 try anything.
 
 Next week, once I was back to the office, he explained to me that there was some
-sort of particular law which allowed the chief of the police authorize any
+sort of particular law which allowed the police chief to authorize any
 particular officer to go anywhere and take a course that could benefit the
 police.
 
-I HAD NO CLUE THIS EVEN EXISTED! Neither my boss, until he talked to his
-colleagues about my situation and a good friend of him, who turns out was a
-really good lawyer explained it to him. Long-story short, we went through all
+I HAD NO CLUE THIS EVEN EXISTED! Neither did my boss, until he talked to his
+colleagues about my situation and a good friend of his, who turns out was a
+really good lawyer, explained it to him. Long-story short, we went through all
 the paperwork internally and eventually I got the approval to go, enjoy my
 hard-earned scholarship in the US while I kept my job, including part of my
 salary.
@@ -105,9 +103,9 @@ And the time to find an internship came. I was looking for jobs everywhere in
 the little town I was based in (Melbourne, Florida).
 
 If you are not familiar with this area in Florida, you have probably heard about
-the "space coast", which is this area in the USA where there is lots of rockets
-going around, where NASA is based at and also all of those companies that
-produce aerospace technology.
+the "space coast", which is this area in the USA where rockets go around, where
+NASA is based at, together with many companies that working on aerospace
+technology.
 
 This was super exciting to me during my whole time there, but when it came to
 find an internship, I quickly found that many of these companies have contracts
@@ -116,17 +114,17 @@ they won't even consider you as a suitable candidate. This is even written in
 the job ad.
 
 So my search for an internship immediately became super hard. My American
-friends were getting to job interviews left and right, while I was only getting
+friends were getting job interviews left and right, while I was only getting
 rejections. I thought "That is it, I'm going back to Brazil without some
 international experience. But that is fine, I got really far, this is already
 good enough".
 
-I once again had that defeating feeling. I Felt I've not tried to ask around
-hard enough. So I started reaching out to other foreign colleagues that got
-internships in the past. Until one of them gave me a hint about a jet research
-lab that took him in the past summer. I looked it up and to my surprise, this
-was a Brazilian company (Embraer), with a research facility in the same town I
-was based at.
+I was once again at the state of feeling defeated. I felt I've not tried hard
+enough to get an internship. So I started reaching out to other foreign
+colleagues that got internships in the past. Until one of them gave me a hint
+about a jet research lab that took him in the past summer. I looked it up and to
+my surprise, this was a Brazilian company (Embraer), with a research facility in
+the same town I was based at.
 
 Looking at their website and LinkedIn page, I couldn't find any available
 opportunity. So I started checking the folks that work there. I managed to find
@@ -178,7 +176,7 @@ other friends that were in a similar situation. All of them got hired.
 
 This internship was one of the coolest experiences in my professional career and
 I could not have been happier about the outcome of that. I made many friends
-from several different countries, I learned a sh\*it ton of new stuff and I even
+from several different countries, I learned a sh\*t ton of new stuff and I even
 got paid for it.
 
 Here is a picture of me, a few of my colleagues that joined me after that lucky
@@ -192,7 +190,7 @@ back then:
 
 ## What can you learn from this?
 
-I think there is a good lesson I learned after these experiences. I had several
+I think there was a good lesson I learned from these experiences. I had several
 opportunities during my life that I could have completely missed out if I didn't
 ask for help back then. And in other situations, where I had no clue whether
 something could work or not, by simply asking around, I could carve out the
@@ -203,7 +201,14 @@ and thankfully had the right people by my side. Things could have turned out
 much differently, but by the simple fact that I asked around, I managed to
 increase the likelihood of these lucky moments to come to reality.
 
-So if you are ever wondering whether you should ask or not, go ask. Most likely
-the worst case is that things will remain the way they are. And in case things
-don't work out, you at least tried and can already think about other plans.
+So if you are ever wondering whether you should ask or not, go ask. You should
+of course do your homework, do a bit of research around what you are looking for
+and try to help yourself first. If you are reaching out to a mentor, a friend or
+your boss, try to offer a few ideas on how this person can help you with right
+away.
+
+But even then, if you are clueless, ask anyways. The worst outcome is likely
+that things will remain the way they are. And in case things don't work out, you
+at least tried and can already think about other plans.
+
 Don't hold questions to yourself.

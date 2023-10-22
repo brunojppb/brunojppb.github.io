@@ -72,6 +72,7 @@ PLATFORMS
   arm64-darwin-21
 
 DEPENDENCIES
+  bundler (~> 2.4.21)
   jekyll (~> 4.3.2)
   jekyll-feed (~> 0.17.0)
   jekyll-sitemap (~> 1.4.0)

@@ -55,7 +55,7 @@ to get a scholarship with all expenses paid to go to the US.
 
 ## Getting the chance to study abroad without losing my job
 
-I was starting to feel defeated. There was no way for me to go, spend almost 2
+There was no way for me to go, spend almost 2
 years in the US without losing my job. I thought "That is it, I am gonna lose
 this opportunity. I cannot afford to support my family without my job".
 
@@ -79,7 +79,7 @@ sort of particular law which allowed the police chief to authorize any
 particular officer to go anywhere and take a course that could benefit the
 police.
 
-I HAD NO CLUE THIS EVEN EXISTED! Neither did my boss, until he talked to his
+I HAD NO CLUE THAT THIS EVEN EXISTED! Neither did my boss, until he talked to his
 colleagues about my situation and a good friend of his, who turns out was a
 really good lawyer, explained it to him. Long-story short, we went through all
 the paperwork internally and eventually I got the approval to go, enjoy my
@@ -145,7 +145,7 @@ then, my chances of getting a reply were really slim. Worse yet, even if I get a
 reply, what are the chances of getting an actual internship opportunity? Very
 likely zero. But it was worth asking it anyways.
 
-### Three days later, a unexpected surprise
+### Three days later, an unexpected surprise
 
 Three days have gone by since I sent her that email. Around that time, I've
 already mostly given up my internship search and was already preparing to travel

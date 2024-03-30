@@ -1,7 +1,7 @@
 ---
 layout: post
 author: Bruno Paulino
-title: "Ask, like you career depends on it"
+title: "Ask away, like you career depends on it"
 permalink: entries/ask-like-your-career-depend-on-it
 keywords: career,advice,pragmatism,leadership
 meta_image: /assets/images/posts/2023-10-22-ask.jpg
@@ -23,7 +23,7 @@ But there was a point where I stopped worrying about this and the result of it
 was really surprising: It changed my life and career in several ways I could
 never imagine and today I want to share a few situations where I simply asked,
 already expecting the worst outcome, but it turned out to work much better than
-I could ever believe.
+I could ever believe it
 
 ## Getting the chance to study without losing my job
 
@@ -55,9 +55,9 @@ to get a scholarship with all expenses paid to go to the US.
 
 ## Getting the chance to study abroad without losing my job
 
-There was no way for me to go, spend almost 2
-years in the US without losing my job. I thought "That is it, I am gonna lose
-this opportunity. I cannot afford to support my family without my job".
+There was no way for me to go, spend almost 2 years in the US without losing my
+job. I thought "That is it, I am gonna lose this opportunity. I cannot afford to
+support my family without my job".
 
 Although I knew the chances of keeping my job while away were really slim, I had
 to ask my boss again. I thought "What have I got to lose? I did not have this
@@ -79,9 +79,9 @@ sort of particular law which allowed the police chief to authorize any
 particular officer to go anywhere and take a course that could benefit the
 police.
 
-I HAD NO CLUE THAT THIS EVEN EXISTED! Neither did my boss, until he talked to his
-colleagues about my situation and a good friend of his, who turns out was a
-really good lawyer, explained it to him. Long-story short, we went through all
+I HAD NO CLUE THAT THIS EVEN EXISTED! Neither did my boss, until he talked to
+his colleagues about my situation and a good friend of his, who turns out was a
+really good lawyer explained it to him. Long-story short, we went through all
 the paperwork internally and eventually I got the approval to go, enjoy my
 hard-earned scholarship in the US while I kept my job, including part of my
 salary.
@@ -143,7 +143,7 @@ I sent her an email. I didn't receive any error delivery message, so I assumed
 it worked and her email existed. This already felt like a small win. But even
 then, my chances of getting a reply were really slim. Worse yet, even if I get a
 reply, what are the chances of getting an actual internship opportunity? Very
-likely zero. But it was worth asking it anyways.
+likely zero. But it was worth asking anyway.
 
 ### Three days later, an unexpected surprise
 
@@ -203,11 +203,11 @@ increase the likelihood of these lucky moments to come to reality.
 So if you are ever wondering whether you should ask, just go, ask. You should,
 of course, do your homework, research around what you are looking for and try to
 help yourself first. If you are reaching out to a mentor, a friend or your boss,
-try to offer a few ideas on how this person can help you with right away.
+try to offer a few ideas on how this person can help you right away.
 
-But even then, if you are clueless, ask anyways. The worst outcome is likely
-that things will remain the way they are. And in case things don't work out, you
-at least tried and can already think about other plans.
+But even then, if you are clueless, ask anyway. The worst outcome is likely that
+things will remain the way they are. And in case things don't work out, you at
+least tried and can already think about other plans.
 
 Most people have good intentions and are very likely able to help you. Sometimes
 you hit a jerk here and there, but you know, they are not the common place. They

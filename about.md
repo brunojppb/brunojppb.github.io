@@ -12,7 +12,7 @@ meta_image: /assets/images/about_cover.jpg
     <img src="/assets/images/bpaulino.jpg" class="me" alt="Bruno Paulino smiling"/>
     <p>Hi There 👋,<br/>Bruno Paulino here.</p>
     <p>
-        I am originally from Brazil and currently based in Vienna, Austria.<br/>
+        I am originally from Brazil and currently based in Spain.<br/>
         I am a passionate Software Engineer who loves crafting solutions that can help ease our lives and make it more fun.
     </p>
     <p>

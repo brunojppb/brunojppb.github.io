@@ -76,7 +76,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  bundler (~> 2.4.21)
+  bundler (~> 2.6.0)
   jekyll (~> 4.3.2)
   jekyll-feed (~> 0.17.0)
   jekyll-sitemap (~> 1.4.0)
@@ -84,4 +84,4 @@ DEPENDENCIES
   webrick (~> 1.8)
 
 BUNDLED WITH
-   2.4.21
+   2.6.2

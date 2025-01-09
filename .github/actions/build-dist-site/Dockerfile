@@ -1,5 +1,5 @@
 
-FROM ruby:2.6.8-slim
+FROM ruby:2.7.8-slim
 LABEL author="Bruno Paulino"
 LABEL version="1.0.0"
 

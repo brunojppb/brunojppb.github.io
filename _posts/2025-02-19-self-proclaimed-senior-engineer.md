@@ -1,44 +1,39 @@
 ---
 layout: post
 author: Bruno Paulino
-title: "Why internal platforms fail?"
-permalink: entries/why-internal-platforms-fail
-keywords: career,advice,pragmatism,leadership,platform
-meta_description: Do these three things to have a successful platform
+title: "If you want to be senior, stick around for a while"
+permalink: entries/if-you-want-to-be-senior-stick-around-for-a-while
+keywords: career,advice,pragmatism,leadership
+meta_description: How legacy projects can teach you valuable lessons
 ---
 
-Why do so many internal platforms fail to gain traction with product engineers?
+I’ve recently read an interesting article
+([link](https://www.infobip.com/developers/blog/seniors-working-on-a-legacy-project))
+arguing that one can only be considered a senior engineer after navigating at
+least one legacy project. And I somewhat agree with this sentiment.
 
-After many years in platform engineering, I’ve seen firsthand how easy it is to
-assume that product engineers will instantly embrace whatever tools you create
-for them. The famous metaphor “if you build it, they will come” is really
-appealing, but I'm sad to say that this rarely works.
+I’ve been around the software industry for a little while now, experiencing
+everything from greenfield codebases at early-stage startups to massive,
+multi-year enterprise software in large organizations where I was a maintainer.
 
-I'm a big believer in meeting people where they are: Treat the engineering teams
-that use your platform as your invaluable customers. You must understand their
-needs, swallow your pride and make a product that is approachable for them,
-meeting them exactly where they are, fighting their daily battles.
+Reflecting on those experiences, I’ve learned a lot about what went well and
+where I failed to anticipate challenges when projects scaled massively. This is
+where a critical skill is formed: The power of hindsight and the lessons learned
+from past mistakes.
 
-If you follow this principle, having product engineers onboarding on your
-platform is a lot easier. You essentially make the onboarding process smoother
-and more approachable for them. Want a few examples?
+Looking back, it’s sometimes obvious that certain decisions were less than
+ideal. But we often forget that, at the time, we lacked the mental tools to
+foresee those outcomes. Whether it was underestimating technical debt,
+misjudging scalability needs, or not fully grasping maintainability issues,
+these lessons only became clear after sticking around long enough to see their
+long-term impact.
 
-Nothing beats dog-fooding: By experiencing the platform firsthand, you gain
-invaluable insights into the challenges and pain points your users might face.
-Go through the process of implementing it on your own services. Put yourself in
-the shoes of your customer. That will give you invaluable lessons on how your
-product actually works.
+That’s why I recommend every engineer to stick around for a while. Make
+decisions, learn from the consequences, and grow from them. Sure, job-hopping is
+a thing in the tech industry, and if a significant pay bump is on the table, go
+for it. But if you want to gain the kind of production-grade insights that truly
+shape your career, you have to stay long enough to witness the outcome of your
+choices. You can't simply speed-run some experiences.
 
-Document your product from the user’s perspective. Ain't nobody got time for
-that obscure Kubernetes configuration only you care about. Your customers are
-fighting their own monsters and deadlines, they just want to ship and your
-platform is there to support their journey and get out of the way.
-
-Work closely with your user and help them implement your solution. Pair with
-them and observe how they interact with your product. You’ll be surprised how
-seemingly minor details can become significant pain points. That “clear” method
-signature? It might not be as intuitive as you thought. Use this feedback to
-iterate and improve.
-
-If you manage to do these three small things, I can almost guarantee you will
-have a better platform.
+What lessons have you learned by seeing your decisions pan-out over time? Feel
+free to send me a message on socials.

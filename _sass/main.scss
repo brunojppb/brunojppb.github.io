@@ -1,12 +1,12 @@
-@import "lib/normilize";
-@import "lib/prism";
-@import "common/common";
-@import "common/header";
-@import "common/footer";
-@import "home/home";
-@import "entries/entry_list";
-@import "entries/entry";
-@import "home/reading";
+@use "lib/normilize";
+@use "lib/prism";
+@use "common/common";
+@use "common/header";
+@use "common/footer";
+@use "home/home";
+@use "entries/entry_list";
+@use "entries/entry";
+@use "home/reading";
 
 :root {
   --primary-color: #0f2438;

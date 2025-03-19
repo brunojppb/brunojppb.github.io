@@ -86,10 +86,11 @@ GEM
 
 PLATFORMS
   arm64-darwin-21
+  arm64-darwin-24
   x86_64-linux
 
 DEPENDENCIES
-  bundler (~> 2.6.0)
+  bundler (~> 2.6.6)
   jekyll (~> 4.4.0)
   jekyll-feed (~> 0.17.0)
   jekyll-sitemap (~> 1.4.0)

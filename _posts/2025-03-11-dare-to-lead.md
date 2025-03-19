@@ -35,3 +35,5 @@ Without that, it’s easy to stagnate.
 
 I highly recommend giving this book a read. It’s a thoughtful guide to leading
 with courage, empathy, and purpose.
+
+![Me holding the book Dare to Lead by Brené Brown in an airport lounge. A glass of red wine is on the table, and airplanes are visible through the large window.](/assets/images/posts/2025-03-11-dare-to-lead.jpg)

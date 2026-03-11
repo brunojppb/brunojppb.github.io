@@ -1,5 +1,5 @@
 
-FROM ruby:3.4.4-slim
+FROM ruby:3.4.9-slim
 LABEL author="Bruno Paulino"
 LABEL version="1.0.0"
 

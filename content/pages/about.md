@@ -57,15 +57,6 @@ meta_image: /assets/images/about_cover.jpg
         </p>
     </div>
     <div style="background: rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 12px; margin-top: 12px;">
-        <h2 style="margin: 0 0 10px 0;"><a href="https://apps.apple.com/us/app/card-vault-lite/id1389892665">Card Vault - Your Card Wallet</a></h2>
-        <div style="color: #888; margin-bottom: 20px; font-size: 14px;">Self-published iOS App</div>
-        <p>
-            I wanted to keep all my cards in a safe place that I was sure nobody was tracking me or uploading my cards to any server. I decided to build my own solution.
-            <br/><br/>
-            Card Vault is the go-to app if you want to keep all your cards in a single place. You can scan them automatically. It is also saved safely protected with password, FaceID or TouchID. You can download it on the <a href="https://apps.apple.com/us/app/card-vault-lite/id1389892665">App Store</a>.
-        </p>
-    </div>
-    <div style="background: rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 12px; margin-top: 12px;">
         <h2 style="margin: 0 0 10px 0;"><a href="https://journiapp.com/">Journi</a></h2>
         <div style="color: #888; margin-bottom: 20px; font-size: 14px;">September 2016 • April 2018 • Vienna, Austria</div>
         <p>

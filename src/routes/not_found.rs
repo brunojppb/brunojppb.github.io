@@ -3,7 +3,7 @@ use maudit::route::prelude::*;
 use crate::content::PageContent;
 use crate::layout::{layout, PageMeta};
 
-#[route("/404")]
+#[route("/404.html")]
 pub struct NotFound;
 
 impl Route for NotFound {
@@ -23,7 +23,7 @@ impl Route for NotFound {
             PageMeta {
                 title,
                 description,
-                url: "/404".to_string(),
+                url: "/404.html".to_string(),
                 base_url,
                 ..Default::default()
             },

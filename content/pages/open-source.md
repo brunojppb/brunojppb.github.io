@@ -25,7 +25,6 @@ meta_image: /assets/images/bpaulino.jpg
             The server is compatible with S3-compatible storage services like AWS S3, Cloudflare R2, and Minio, making it flexible for different deployment scenarios. It can be deployed as a GitHub Action or Docker container, supporting various CI environments including GitHub and GitLab.
         </p>
     </div>
-
     <div style="background: rgba(255, 255, 255, 0.05); border-radius: 8px;  margin-top: 12px; padding: 12px;">
         <h2 style="margin: 0 0 10px 0;"><a href="https://github.com/brunojppb/sanitisium">Sanitisium</a></h2>
         <div style="color: #888; margin-bottom: 20px; font-size: 14px;">Rust • PDFium • Security</div>

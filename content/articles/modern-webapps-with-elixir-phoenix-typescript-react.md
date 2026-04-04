@@ -148,7 +148,7 @@ npm install react-router-dom@6
 Now open up your favorite text editor and edit our React app file at
 `phoenix_react/frontend/src/App.tsx` with the following components:
 
-```typescriptx
+```js
 import { useEffect } from "react";
 import { BrowserRouter, Link, Routes, Route } from "react-router-dom";
 

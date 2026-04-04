@@ -33,7 +33,7 @@ meta_image: /assets/images/about_cover.jpg
 <div style="line-height: 1.6;">
     <div style="background: rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 12px; margin-top: 12px;">
         <h2 style="margin: 0 0 10px 0;"><a href="https://buffer.com">Buffer</a></h2>
-        <div style="color: #888; margin-bottom: 20px; font-size: 14px;">2025 • Present • Remote</div>
+        <div style="color: #888; margin-bottom: 20px; font-size: 14px;">February 2026 • Present • Remote</div>
         <p>
             Working at Buffer, the social media management platform trusted by over 100,000 businesses. Buffer helps creators and small businesses plan, publish, and analyze content across 11 social platforms.
             <br/><br/>
@@ -42,7 +42,7 @@ meta_image: /assets/images/about_cover.jpg
     </div>
     <div style="background: rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 12px; margin-top: 12px;">
         <h2 style="margin: 0 0 10px 0;"><a href="https://n26.com">N26 - The bank you'll love</a></h2>
-        <div style="color: #888; margin-bottom: 20px; font-size: 14px;">February 2021 • 2025 • Berlin, Germany</div>
+        <div style="color: #888; margin-bottom: 20px; font-size: 14px;">February 2021 • February 2026 • Berlin, Germany</div>
         <p>
             Joined N26 as the <strong>Tech Lead</strong> of the Web Core team. Getting the chance to do banking is really exciting, specially being one of the customers that have suffered for decades with crappy internet banking everywhere I go. N26 is doing an amazing job and being part of it was an incredible opportunity to grow and learn.
         </p>

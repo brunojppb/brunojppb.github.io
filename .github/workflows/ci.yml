@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install Maudit CLI
+        run: cargo install maudit-cli
+
+      - name: Build site
+        run: maudit build

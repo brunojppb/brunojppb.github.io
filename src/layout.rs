@@ -17,7 +17,7 @@ impl Default for PageMeta {
             title: "bpaulino.com".to_string(),
             description: "I am a software engineer. Here I blog about programming and life experiences.".to_string(),
             keywords: "programming,development,web,javascript,backend,scala,frontend,ios,api,rest".to_string(),
-            image: "/assets/images/bpaulino.jpg".to_string(),
+            image: "/assets/images/home_cover.jpg".to_string(),
             url: "https://bpaulino.com".to_string(),
             base_url: "https://bpaulino.com".to_string(),
             is_post: false,

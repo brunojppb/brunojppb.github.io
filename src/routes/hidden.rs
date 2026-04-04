@@ -32,7 +32,7 @@ impl Route<HiddenParams> for Hidden {
         let image = data
             .meta_image
             .clone()
-            .unwrap_or_else(|| "/assets/images/bpaulino.jpg".to_string());
+            .unwrap_or_else(|| "/assets/images/home_cover.jpg".to_string());
         let date = data.date.clone();
 
         let rendered = article.render(ctx);

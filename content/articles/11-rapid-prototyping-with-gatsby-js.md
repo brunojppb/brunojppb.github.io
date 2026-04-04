@@ -178,7 +178,7 @@ back to your text editor and create a file called `.env.development` on your
 project root folder. and inside of it, add your API token in the following
 pattern:
 
-```env
+```shell
 CMS_API_TOKEN=YOUR_API_TOKEN_HERE
 ```
 
@@ -239,7 +239,7 @@ script does is:
 
 If you look into `src/templates/all_article.js` you will see:
 
-```jsx
+```javascript
 import React from "react";
 import { Link } from "gatsby";
 import Layout from "../components/layout";

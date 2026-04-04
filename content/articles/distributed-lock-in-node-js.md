@@ -260,7 +260,7 @@ Once we start listening to HTTP requests,
 [here](https://github.com/brunojppb/node-distributed-lock/blob/e2ef7d65847fe7ed165dffd4669a9f58415da1f6/server.ts#L36-L39)
 we can start our worker with a call to `startLockWorker`:
 
-```ts
+```javascript
 httpServer.listen(process.env.PORT, () => {
   console.log("Express server started at port " + process.env.PORT);
   startLockWorker();
@@ -270,7 +270,7 @@ httpServer.listen(process.env.PORT, () => {
 Now let's head to the worker implementation of `startLockWorker`
 [here](https://github.com/brunojppb/node-distributed-lock/blob/e2ef7d65847fe7ed165dffd4669a9f58415da1f6/app/worker/index.ts#L64-L67):
 
-```ts
+```javascript
 export function startLockWorker() {
   service.start();
   service.send("TRY_ACQUIRE_LOCK");
@@ -291,7 +291,7 @@ look at our actual state machine code soon.
 If you look at where we create this `service` instance, you will see 
 [the following call](https://github.com/brunojppb/node-distributed-lock/blob/e2ef7d65847fe7ed165dffd4669a9f58415da1f6/app/worker/index.ts#L53-L62):
 
-```ts
+```javascript
 const service = interpret(
   createLockMachine({
     workerId,
@@ -334,7 +334,7 @@ it and passing the service callbacks that do the actual business logic.
 Now let's have a look at
 [our state machine](https://github.com/brunojppb/node-distributed-lock/blob/e2ef7d65847fe7ed165dffd4669a9f58415da1f6/app/worker/machine.ts#L51-L188):
 
-```ts
+```javascript
 export function createLockMachine({
   workerId,
   acquireLock,
@@ -482,7 +482,7 @@ The main thing you want to watch out for is how our machine transition from one
 state to another. Let's have a look at what happens when our machine enters the
 `acquiring_lock` state:
 
-```ts
+```javascript
 acquiring_lock: {
   invoke: {
     src: "acquireLock",
@@ -507,7 +507,7 @@ block and will transition to the `waiting_to_acquire_lock` state.
 Let's have a look at the `working` state
 [here](https://github.com/brunojppb/node-distributed-lock/blob/main/app/worker/machine.ts#L105-L114):
 
-```ts
+```javascript
 working: {
   invoke: {
     src: "startWork",
@@ -534,7 +534,7 @@ seconds, it will transition to the `renew_lock` state.
 Let's head to the `renew_lock` state
 [here](https://github.com/brunojppb/node-distributed-lock/blob/e2ef7d65847fe7ed165dffd4669a9f58415da1f6/app/worker/machine.ts#L116-L126):
 
-```ts
+```javascript
 renew_lock: {
   invoke: {
     src: "renewLock",
@@ -558,7 +558,7 @@ After this tour, you might be wondering how these string identifiers are turned
 into function calls? Let's have a look at our `services` section in our state
 machine:
 
-```ts
+```javascript
 {
   services: {
     acquireLock: (context, _event) => {
@@ -603,7 +603,7 @@ Let's have a look at how we `set` and update the expiry time of our keys using
 Let's head to our `acquireLock` function
 [here:](https://github.com/brunojppb/node-distributed-lock/blob/e2ef7d65847fe7ed165dffd4669a9f58415da1f6/app/services/lock.ts#L10-L30)
 
-```ts
+```javascript
 export async function acquireLock(
   lockKey: string,
   lockValue: string,
@@ -644,7 +644,7 @@ time. This is also covered by a Redis API. let's have a look at our renewLock
 function
 [here](https://github.com/brunojppb/node-distributed-lock/blob/e2ef7d65847fe7ed165dffd4669a9f58415da1f6/app/services/lock.ts#L35-L55).
 
-```ts
+```javascript
 export async function renewLock(
   lockKey: string,
   lockValue: string,

@@ -122,7 +122,7 @@ at
 [`redis/Dockerfile`](https://github.com/brunojppb/redis-cluster-demo/blob/main/redis/Dockerfile)
 we have the following content:
 
-```Dockerfile
+```shell
 FROM redis:latest
 
 COPY ./entrypoint.sh /entrypoint.sh
@@ -178,7 +178,7 @@ Now notice that inside of our `redis` folder we also have a file called
 can instruct the Redis instance to work as part of a cluster. Let's have a look
 at its contents:
 
-```conf
+```shell
 # Custom config file to enable cluster mode
 # on all Redis instances started via Docker
 port 6379

@@ -72,7 +72,7 @@ content below. Each line will be explained with a comment:
 
 ### deploy-workflow.yml
 
-```yaml
+```yml
 # This is the name of our workflow.
 # Github will show it on its Website UI
 name: deploy
@@ -136,7 +136,7 @@ Under `.github/actions/build-dist-site` lets create 3 files:
 
 ### Dockerfile
 
-```dockerfile
+```shell
 # Our Docker image will be based on ruby:2-slim
 # it is a very light docker image.
 FROM ruby:2-slim
@@ -174,7 +174,7 @@ why we need the `action.yml` file.
 
 ### action.yml
 
-```yaml
+```yml
 # Ok, here the keys are pretty much self explanatory :)
 name: "Deploy new version"
 description: "Setup Ruby env and build new site version"

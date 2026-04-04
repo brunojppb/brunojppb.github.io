@@ -38,7 +38,7 @@ closing it. But how could you do that in [React?](https://reactjs.org/) one way
 would be to implement a global click handler in the component, something like
 this:
 
-```jsx
+```javascript
 import React, { useRef, useEffect } from "react";
 
 export default function Modal({ onClose, ...props }) {
@@ -100,7 +100,7 @@ But we are not limited to the hooks React offers, we can create our own hooks,
 enabling us to share logic in a very functional way across our app. Lets extract
 that click away logic from our previous modal component into a custom hook:
 
-```jsx
+```javascript
 import { useEffect, useRef } from "react";
 
 export function useClickAway(ref, onClickAway) {
@@ -154,7 +154,7 @@ lets break our custom hook down.
 With that in place, how can we use that in our modal component? Lets see how the
 code looks like now:
 
-```jsx
+```javascript
 import React, { useRef } from "react";
 import { useClickAway } from "./useClickAway";
 

@@ -148,7 +148,7 @@ npm install react-router-dom@6
 Now open up your favorite text editor and edit our React app file at
 `phoenix_react/frontend/src/App.tsx` with the following components:
 
-```tsx
+```typescriptx
 import { useEffect } from "react";
 import { BrowserRouter, Link, Routes, Route } from "react-router-dom";
 
@@ -259,7 +259,7 @@ Our custom mix task will make sure that:
 Let's go ahead and create `lib/mix/tasks/webapp.ex` with the following Elixir
 code:
 
-```elixir
+```ruby
 defmodule Mix.Tasks.Webapp do
   @moduledoc """
     React frontend compilation and bundling for production.
@@ -327,7 +327,7 @@ path to all our resources. This is paramount for our app to work.
 Vite provides a specific configuration entry for that. Let's go ahead and edit
 our `frontend/vite.config.ts` file with the following:
 
-```ts
+```javascript
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
@@ -390,7 +390,7 @@ endpoint configuration so our `Plug.Static` can serve it. Head to
 `lib/phoenix_react_web/endpoint.ex` at line 23. Add the `webapp` to the string
 list:
 
-```elixir
+```ruby
 plug Plug.Static,
     at: "/",
     from: :phoenix_react,
@@ -417,7 +417,7 @@ Create a new controller at
 `lib/phoenix_react_web/controllers/webapp_controller.ex` with the following
 module:
 
-```elixir
+```ruby
 defmodule PhoenixReactWeb.WebappController do
   use PhoenixReactWeb, :controller
 
@@ -442,7 +442,7 @@ We now have a controller that can serve our `index.html` file, but we need to
 configure a route that will hit this newly created `index` function. Let's add
 the following scope to our Phoenix router:
 
-```elixir
+```ruby
 scope "/app", PhoenixReactWeb do
   get "/", WebappController, :index
   get "/*path", WebappController, :index
@@ -494,7 +494,7 @@ Luckily, Vite saves the day again by providing us with the server proxy
 configuration. Head over to the `frontend/vite.config.ts` and add the `server`
 entry to your config:
 
-```ts
+```javascript
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
@@ -530,7 +530,7 @@ From now on, if you are making requests with
 [axios](https://github.com/axios/axios) for instance, you can safely make a
 request in your React component like this:
 
-```jsx
+```javascript
 import { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -577,7 +577,7 @@ But before we generate our release, since we are testing the build locally, we
 need to change the port configuration since our runtime configuration is binding
 to **443** by default. Let's quickly change that at `config/runtime.exs`:
 
-```elixir
+```ruby
 config :phoenix_react, PhoenixReactWeb.Endpoint,
   # here use the `port` variable so we can control that with environment variables
   url: [host: host, port: port],

@@ -29,7 +29,7 @@ I created a demo app with all the configurations detailed on this post. The
 We start out by creating a `Dockerfile` on our project root folder with the
 following content:
 
-```dockerfile
+```shell
 # This image won't be shipped with our final container
 # we only use it to compile our app.
 FROM node:12.2.0-alpine as build
@@ -68,7 +68,7 @@ image called `build` and copy it into `/usr/share/nginx/html`. Next, we remove
 the default nginx configuration file and add our custom configuration under
 `nginx/nginx.conf` with the following content:
 
-```nginx
+```shell
 # To support react-router, we must configure nginx
 # to route the user to the index.html file for all initial requests
 # e.g. landing on /users/1 should render index.html

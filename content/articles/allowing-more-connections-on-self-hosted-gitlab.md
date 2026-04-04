@@ -58,7 +58,7 @@ separated by columns represented as `start:rate:full`. They mean:
 
 If you look at `/etc/ssh/sshd_config`, the SSH configuration file, you will see:
 
-```toml
+```yml
 MaxStartups 10:30:100
 ```
 
@@ -75,7 +75,7 @@ really playing the dice when running those builds 😅.
 
 With that in mind, we tweaked MaxStartups with the following values:
 
-```toml
+```yml
 MaxStartups 60:60:300
 ```
 

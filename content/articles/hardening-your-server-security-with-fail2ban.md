@@ -163,7 +163,7 @@ So let's go ahead and activate `recidive`. Edit the file
 `/etc/fail2ban/jail.local` (I am using nano, but feel free to use a different
 text editor). Look for the following code:
 
-```conf
+```shell
 # Jail for more extended banning of persistent abusers
 # !!! WARNINGS !!!
 # 1. Make sure that your loglevel specified in fail2ban.conf/.local
@@ -181,7 +181,7 @@ findtime = 1d
 
 Notice that the configuration is already in place. We only need to activate it:
 
-```conf
+```shell
 # ... comments
 [recidive]
 # Include the next line to enable recidive

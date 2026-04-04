@@ -1,9 +1,3 @@
-# Jekyll (legacy)
-_site/
-.sass-cache/
-.jekyll-cache/
-.jekyll-metadata
-
 # Maudit / Rust
 dist/
 target/

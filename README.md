@@ -1,45 +1,130 @@
-# bpaulino.com blog
+# bpaulino.com
 
 Hi there! Welcome to my digital garden. This website is a collection of some of
-my experiences.
+my experiences as a software engineer.
 
-## Install dependencies
+## Architecture
 
-This blog is built with [Jekyll](https://jekyllrb.com/), a
-[Ruby](https://www.ruby-lang.org/en/) based static site generator.  
-Make sure you have [Ruby](https://www.ruby-lang.org/en/) 3.2 installed and run
-the following commands:
+This blog is built with [Maudit](https://maudit.org/), a Rust-based static site
+generator. The site is structured as a standard Rust binary that uses Maudit as a
+library:
 
-```shell
-# If bundler is not there yet, execute:
-$ gem install bundler
-# Now install all dependencies
-$ bundle install
+- **Templating:** [Maud](https://maud.lambda.xyz/) (Rust macro-based HTML)
+- **Content:** Markdown files with YAML frontmatter
+- **Styling:** Plain CSS processed and bundled by [Rolldown](https://rolldown.rs/)
+- **JavaScript:** Vanilla JS (particles, theme switcher, reading progress, GoodReads integration)
+- **Syntax highlighting:** [Syntect](https://github.com/trishume/syntect) (built-in, at build time)
+- **Analytics:** [GoatCounter](https://www.goatcounter.com/) (privacy-first)
+
+### Project structure
+
+```
+.
+├── Cargo.toml              # Rust project manifest
+├── src/
+│   ├── main.rs             # Entry point: routes, content sources, build options
+│   ├── content.rs          # Markdown entry types (ArticleContent, PageContent)
+│   ├── layout.rs           # Shared HTML layout with SEO meta tags
+│   └── routes/             # One file per route
+│       ├── index.rs        # Homepage (post listing)
+│       ├── article.rs      # Blog posts (/entries/[slug])
+│       ├── about.rs        # About page
+│       ├── courses.rs      # Courses page
+│       ├── reading.rs      # Reading list (GoodReads)
+│       ├── open_source.rs  # Open-source projects
+│       ├── not_found.rs    # 404 page
+│       ├── feed.rs         # RSS feed (/feed.xml)
+│       ├── work.rs         # Redirect to /about
+│       └── hidden.rs       # Hidden posts (/hidden/[slug])
+├── content/
+│   ├── articles/           # Blog posts (Markdown)
+│   └── pages/              # Static pages (Markdown with inline HTML)
+├── data/
+│   ├── style.css           # Combined stylesheet
+│   └── blog.js             # Client-side JavaScript
+├── static/
+│   └── assets/             # Images, favicons (copied as-is to output)
+└── dist/                   # Build output (gitignored)
 ```
 
-## Development and Running locally
+## Prerequisites
 
-Once you have all dependencies installed, you can run the local development
-server with:
+- [Rust](https://rustup.rs/) 1.85+ (stable)
+- [Maudit CLI](https://maudit.org/docs/installation/):
+  ```shell
+  cargo install maudit-cli
+  ```
+
+## Development
+
+Start the local dev server with auto-rebuild and live refresh:
 
 ```shell
-# That should kickstart the local dev server
-# and make the site available on port 4000 by default for you
-jekyll server
-# This command should generate an output like this:
-Auto-regeneration: enabled for '/the/repo/path/here'
-  Server address: http://127.0.0.1:4000
-  Server running... press ctrl-c to stop.
+maudit dev
 ```
 
-## Deployment with Cloudflare Pages 🎉
+This compiles the Rust binary, runs it, watches for file changes, and serves the
+site locally. The dev server URL will be printed in the terminal output.
 
-All commits to `master` will trigger an integration with
-[Cloudflare Pages](https://pages.cloudflare.com/) where we cache and serve these
-contents under my own domain.
+## Production build
 
-## Preview deployments
+```shell
+maudit build
+```
 
-During development, any pull-request opened from a branch starting with
-`preview-` gets deployed to Cloudflare pages automatically and a message gets
-posted to the PR with the preview URL.
+Output goes to `dist/`. The build includes:
+
+- Minified and hashed CSS/JS assets
+- Syntax-highlighted code blocks
+- RSS feed at `/feed.xml`
+- Sitemap at `/sitemap.xml`
+- Prefetching for near-instant navigation
+
+Typical build time is ~80ms (full) or ~20ms (incremental).
+
+You can also preview the production build locally:
+
+```shell
+maudit preview
+```
+
+## Writing a new blog post
+
+1. Create a Markdown file in `content/articles/` named after its URL slug
+   (e.g. `my-new-post.md`)
+2. Add YAML frontmatter:
+
+   ```yaml
+   ---
+   title: "My New Post"
+   date: 2025-04-04
+   author: Bruno Paulino
+   keywords: web,rust,programming
+   meta_description: A short description for SEO and social previews.
+   meta_image: /assets/images/posts/my-new-post.jpg
+   ---
+   ```
+
+3. Write your content in Markdown below the frontmatter.
+4. The post will automatically appear on the homepage and in the RSS feed.
+
+The `meta_image` field is optional. If omitted, the default profile image is
+used for social previews.
+
+## Deployment
+
+All commits to `master` trigger an integration with
+[Cloudflare Pages](https://pages.cloudflare.com/) where we build and serve the
+site under [bpaulino.com](https://bpaulino.com).
+
+### Preview deployments
+
+Any pull request opened from a branch starting with `preview-` gets deployed to
+Cloudflare Pages automatically and a comment with the preview URL is posted on
+the PR.
+
+## License
+
+This website is open-source. The content (blog posts, images) is
+copyright Bruno Paulino. The source code is available on
+[GitHub](https://github.com/brunojppb/brunojppb.github.io).

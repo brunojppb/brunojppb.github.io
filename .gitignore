@@ -1,6 +1,9 @@
-_site/
-.sass-cache/
-.jekyll-cache/
-.jekyll-metadata
+# Maudit / Rust
+dist/
+target/
+
+# IDE
 .vscode
+
+# OS
 *.DS_Store

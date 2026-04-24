@@ -78,6 +78,10 @@ Our reverse proxy does this automatically via the Cloudflare API, and the
 certificate it gets back is valid everywhere, including for services that
 exist only on the LAN.
 
+Before we move along, here is a little diagram showing how this all works together:
+
+![Network topology diagram](/assets/images/posts/homelab-topology-diagram.jpg)
+
 ## What you’ll need
 
 - A home server that runs Docker. Mine runs Ubuntu. Any Linux machine works.

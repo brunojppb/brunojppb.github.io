@@ -442,13 +442,11 @@ and they’ll break. You have two reasonable options:
 
 1. Drop the wildcard and add one rewrite per locally-hosted service
    explicitly. Slightly more typing when you add a new app, but explicit.
-1. Put your homelab services under a sub-sub-domain like
-   `*.home.yourdomain.com`, and use that in your Traefik routers. Then the
-   wildcard rewrite for `*.home.yourdomain.com` doesn’t collide with
-   anything external. This is what I eventually landed on and I think
-   it’s the cleaner design. You will need to extend your wildcard
-   certificate to also cover `*.home.yourdomain.com`, which is a one-line
-   addition to `dynamic.yml`.
+1. Register a separate domain just for your homelab and use it everywhere
+   in this setup. This is what I eventually landed on and I think it’s
+   the cleanest design. The wildcard rewrite can’t collide with anything,
+   the wildcard certificate is dead simple, and at a glance any URL tells
+   me whether it’s pointing at my house or at a public cloud provider.
 
 Once the rewrite is in, verify from your laptop:
 

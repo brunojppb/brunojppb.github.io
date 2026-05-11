@@ -2255,9 +2255,9 @@ dependencies = [
 
 [[package]]
 name = "maudit"
-version = "0.11.1"
+version = "0.11.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5c43f39818011d84e351f1d681dd5c689e5927e8980f5888109825e719cbfbd5"
+checksum = "21db8a277bd201cf4ffb6cbb6a8ba051ef89929f08505f86dd4dd4d167275e5e"
 dependencies = [
  "base64",
  "bincode",

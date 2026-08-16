@@ -39,8 +39,9 @@ test('rows are at least 44px tall at 390', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'mobile', 'mobile only');
   await page.goto('/posts/');
   // data-filerow sits on the row's own <a> (the whole row is the link),
-  // not on a wrapper around one — `[data-filerow] a` would match zero
-  // nested anchors and vacuously pass, so this targets the row itself.
+  // not on a wrapper around one — `[data-filerow] a` matches zero nested
+  // anchors, which would fail the length assertion below rather than
+  // pass vacuously. Targets the row itself instead.
   const heights = await page.locator('[data-filerow]').evaluateAll((els) =>
     els.map((e) => e.getBoundingClientRect().height)
   );

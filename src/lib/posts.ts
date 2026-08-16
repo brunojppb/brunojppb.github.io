@@ -50,6 +50,28 @@ export function groupByYear<T extends { data: { date: Date } }>(posts: T[]) {
     }));
 }
 
+/**
+ * Posts sharing a tag with `post`, most shared tags first, then most
+ * recent. Excludes `post` itself and any post with zero shared tags —
+ * there is no fallback list, so a post with no tag-mates gets none back.
+ */
+export function relatedPosts<T extends { id: string; data: { tags: readonly string[]; date: Date } }>(
+  post: T,
+  posts: T[],
+  limit = 3
+): T[] {
+  return posts
+    .filter((p) => p.id !== post.id)
+    .map((p) => ({
+      post: p,
+      shared: p.data.tags.filter((t) => post.data.tags.includes(t)).length,
+    }))
+    .filter((r) => r.shared > 0)
+    .sort((a, b) => b.shared - a.shared || b.post.data.date.getTime() - a.post.data.date.getTime())
+    .slice(0, limit)
+    .map((r) => r.post);
+}
+
 /** All published posts, newest first. */
 export async function getPosts(): Promise<Post[]> {
   const posts = await getCollection('posts', ({ data }) => !data.draft);

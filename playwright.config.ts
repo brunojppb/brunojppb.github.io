@@ -20,7 +20,11 @@ export default defineConfig({
   webServer: {
     command: 'npm run build && npx serve dist -p 4321',
     url: 'http://localhost:4321',
-    reuseExistingServer: !process.env.CI,
+    // Never adopt a server already on 4321. Reusing one skips the build in
+    // the command above, so the suite silently tests whatever `dist` that
+    // process was started with — stale HTML fails assertions all over the
+    // suite and reads as flakiness.
+    reuseExistingServer: false,
     timeout: 180_000,
   },
 });

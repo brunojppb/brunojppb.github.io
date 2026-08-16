@@ -3,19 +3,6 @@ import { getPosts } from '../lib/posts';
 
 const SITE = 'https://bpaulino.com';
 
-// The content migration dropped the `author` frontmatter field — the new
-// posts schema (src/content.config.ts) has no such field. The old Rust
-// feed (src/routes/feed.rs) read `author: Bruno` for exactly these four
-// posts and defaulted every other one to "Bruno Paulino". Reproduced here
-// from content/articles/*.md so the byline still matches what subscribers
-// already saw.
-const AUTHOR_OVERRIDES: Record<string, string> = {
-  '1-ios-push-notifications-for-rails-developers': 'Bruno',
-  'replace-me-at-woom': 'Bruno',
-  'retrying-api-calls-with-exponential-backoff': 'Bruno',
-  'taming-ambiguity': 'Bruno',
-};
-
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTHS = [
   'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -54,14 +41,13 @@ export const GET: APIRoute = async () => {
       // subscribers dedupe on — reproducing the old shape, not the
       // site's current `trailingSlash: 'always'` convention.
       const link = `${SITE}/entries/${post.id}`;
-      const author = AUTHOR_OVERRIDES[post.id] ?? 'Bruno Paulino';
       return [
         '    <item>',
         `      <title>${escapeXml(post.data.title)}</title>`,
         `      <link>${link}</link>`,
         `      <guid>${link}</guid>`,
         `      <description>${escapeXml(post.data.description)}</description>`,
-        `      <author>${escapeXml(author)}</author>`,
+        `      <author>${escapeXml(post.data.author)}</author>`,
         `      <pubDate>${formatRfc822(post.data.date)}</pubDate>`,
         '    </item>',
       ].join('\n');

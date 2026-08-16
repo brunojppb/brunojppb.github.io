@@ -1,5 +1,6 @@
 ---
 title: "Replace me at woombikes.com"
+author: "Bruno"
 description: "If you are interested in working in challenging projects, I invite you to read along."
 date: 2020-12-23
 tags: [career]

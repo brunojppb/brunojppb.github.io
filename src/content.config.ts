@@ -15,6 +15,7 @@ const posts = defineCollection({
     keywords: z.string().optional(),
     image: z.string().optional(),
     draft: z.boolean().default(false),
+    author: z.string().default('Bruno Paulino'),
   }),
 });
 

@@ -1,5 +1,6 @@
 ---
 title: "iOS push notifications for Rails Developers"
+author: "Bruno"
 description: "While creating mobile applications, one of the the main features that we can explore is the Notification."
 date: 2015-08-03
 tags: [ruby]

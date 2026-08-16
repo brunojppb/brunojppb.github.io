@@ -25,5 +25,13 @@ test('reduced motion pins the caret visible', async ({ page }) => {
   await page.goto('/');
   const caret = page.locator('.caret').first();
   await expect(caret).toBeVisible();
+  // `console-blink` is `1.1s steps(1) infinite`: opacity sits at 1 for the
+  // first half of every cycle regardless of reduced motion, so reading
+  // opacity alone passes about half the time by coincidence. duration is
+  // a static computed-style property, not a snapshot mid-animation — it
+  // can only read near-zero if theme.css's reduced-motion override
+  // actually applied.
+  const duration = await caret.evaluate((el) => getComputedStyle(el).animationDuration);
+  expect(parseFloat(duration)).toBeLessThan(0.01);
   expect(await caret.evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
 });

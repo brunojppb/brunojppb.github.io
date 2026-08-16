@@ -1,5 +1,6 @@
 ---
 title: "Retrying API Calls with Exponential Backoff in JavaScript"
+author: "Bruno"
 description: "Making your application more robust with Exponential Backoff."
 date: 2021-03-01
 tags: [javascript]

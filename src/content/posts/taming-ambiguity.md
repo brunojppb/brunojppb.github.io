@@ -1,5 +1,6 @@
 ---
 title: "Taming ambiguity"
+author: "Bruno"
 description: "Ambiguity is a fundamental part of working with people. Here is a simple way to cope with it."
 date: 2021-02-13
 tags: [leadership]

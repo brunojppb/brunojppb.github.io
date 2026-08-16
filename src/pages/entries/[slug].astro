@@ -47,7 +47,7 @@ const rawUrl = `https://github.com/brunojppb/brunojppb.github.io/blob/master/src
     <span>{readingTime} · {formatListDate(post.data.date)}</span>
   </Fragment>
 
-  <div class="min-[900px]:grid min-[900px]:grid-cols-[1fr_240px]">
+  <div class="min-[900px]:grid min-[900px]:grid-cols-[minmax(0,1fr)_240px]">
     <div class="min-[900px]:border-r min-[900px]:border-line-faint min-[900px]:pr-[30px]">
       <PromptLine path="~/posts" command={`cat ${post.id}.md`} />
 

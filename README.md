@@ -40,7 +40,11 @@ The full spec is in `docs/design-system.md`; the rules for working on it are in
 
 ## Development
 
+Node is pinned in `mise.toml`. With [mise](https://mise.jdx.dev) installed,
+`mise install` gets the right version; CI reads the same file.
+
 ```shell
+mise install
 npm install
 npm run dev
 ```

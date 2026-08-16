@@ -6,31 +6,22 @@
  */
 interface Props {
   rows: string[];
-  animate?: 'drift' | 'sweep';
+  animate?: 'sweep';
 }
 
 const { rows, animate } = Astro.props;
 ---
 
-{
-  animate === 'drift' ? (
-    // Crop window is exactly one field's height (leading-none => 13px per
-    // row at text-xs), so translating the doubled field by -50% loops
-    // seamlessly per §7.15's recipe.
-    <div class="overflow-hidden" style={`height:${rows.length * 13}px`} aria-hidden="true">
-      <pre
-        data-ascii
-        class="animate-drift whitespace-pre text-xs leading-none text-accent-lift opacity-40"
-      >{[...rows, ...rows].join('\n')}</pre>
-    </div>
-  ) : (
-    <pre
-      data-ascii
-      aria-hidden="true"
-      class:list={[
-        'overflow-hidden whitespace-pre text-xs leading-none text-accent-lift opacity-40',
-        animate === 'sweep' && 'animate-sweep',
-      ]}
-    >{rows.join('\n')}</pre>
-  )
-}
+<pre
+  data-ascii
+  aria-hidden="true"
+  class:list={[
+    // The 404 mockup hardcodes the fill hex at opacity:.45; text-accent-lift
+    // at opacity-40 stays in §7.15's 30-50% range and matches the lift
+    // convention used elsewhere, though this element is decorative and
+    // aria-hidden so the 11px-contrast reasoning behind that convention
+    // doesn't strictly apply here — either hue would read fine.
+    'overflow-hidden whitespace-pre text-xs leading-none text-accent-lift opacity-40',
+    animate === 'sweep' && 'animate-sweep',
+  ]}
+>{rows.join('\n')}</pre>

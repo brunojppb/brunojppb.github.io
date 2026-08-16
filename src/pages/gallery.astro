@@ -11,11 +11,6 @@ import BookCover from '../components/media/BookCover.astro';
 import AsciiBanner from '../components/media/AsciiBanner.astro';
 
 const sweepRow = '░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░';
-const driftRows = [
-  '░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░',
-  '▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░',
-  '▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒',
-];
 ---
 
 <BaseLayout
@@ -107,7 +102,6 @@ const driftRows = [
       <SectionRule label="AsciiBanner" meta="7.15" />
       <AsciiBanner rows={[sweepRow]} />
       <AsciiBanner rows={[sweepRow]} animate="sweep" />
-      <AsciiBanner rows={driftRows} animate="drift" />
     </section>
   </div>
 </BaseLayout>

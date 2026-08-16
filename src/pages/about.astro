@@ -1,0 +1,198 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PromptLine from '../components/shell/PromptLine.astro';
+
+// Every string on this page is reproduced word for word from
+// content/pages/about.md — Bruno's own bio and role history, not copy
+// written for this rebuild. Only punctuation that isn't in Departure Mono
+// (the "•" bullet in each role's meta line) was swapped for the allowed
+// "·" middot; no word was added, removed or reordered.
+
+interface Segment {
+  text: string;
+  accent?: boolean;
+}
+
+interface Role {
+  id: string;
+  company: string;
+  url: string;
+  meta: string;
+  paragraphs: (string | Segment[])[];
+}
+
+const roles: Role[] = [
+  {
+    id: 'buffer',
+    company: 'Buffer',
+    url: 'https://buffer.com',
+    meta: 'February 2026 · Present · Remote',
+    paragraphs: [
+      "Working at Buffer, the social media management platform trusted by over 100,000 businesses. Buffer helps creators and small businesses plan, publish, and analyze content across 11 social platforms.",
+      "As part of a fully remote, globally distributed engineering team, I'm building product features that help people grow their audience and engage with their community at scale.",
+    ],
+  },
+  {
+    id: 'n26',
+    company: "N26 - The bank you'll love",
+    url: 'https://n26.com',
+    meta: 'February 2021 · February 2026 · Berlin, Germany',
+    paragraphs: [
+      [
+        { text: 'Joined N26 as the ' },
+        { text: 'Tech Lead', accent: true },
+        {
+          text: ' of the Web Core team. Getting the chance to do banking is really exciting, specially being one of the customers that have suffered for decades with crappy internet banking everywhere I go. N26 is doing an amazing job and being part of it was an incredible opportunity to grow and learn.',
+        },
+      ],
+    ],
+  },
+  {
+    id: 'woom',
+    company: 'woom bikes',
+    url: 'https://woombikes.com',
+    meta: 'April 2018 · January 2021 · Vienna, Austria',
+    paragraphs: [
+      "Working at woom was a joy and challenging at the same time. We dealt with a large scale infrastructure that spans across many continents (EU, North America, Asia) and yet we were still a startup with a very small and efficient team. And c'mon! we make bikes for kids. How cool is that?",
+      "On the technical side, I wrote high-scale, cloud-based applications using Scala and the Play framework. I also rebuilt the whole international e-commerce experience from scratch using TypeScript, GraphQL, Apollo and Vue.js with Nuxt.",
+    ],
+  },
+  {
+    id: 'journi',
+    company: 'Journi',
+    url: 'https://journiapp.com/',
+    meta: 'September 2016 · April 2018 · Vienna, Austria',
+    paragraphs: [
+      'Worked on the Scala backend, PostgreSQL database and React.js frontend using functional programming. Also handled DevOps with SaltStack and TeamCity to automate the entire deployment process and server management.',
+      'On the mobile side I worked with iOS development using Swift and the Cocoa Touch framework.',
+    ],
+  },
+  {
+    id: 'embraer',
+    company: 'Embraer Private Jets',
+    url: 'https://embraer.com/',
+    meta: 'June 2015 · August 2015 · Melbourne, FL, USA',
+    paragraphs: [
+      'Design and development of an internal web app for Project Management and Internal Excellence Program (Embraer P3E) using Ruby on Rails.',
+    ],
+  },
+  {
+    id: 'pmpb',
+    company: 'Policia Militar da Paraíba',
+    url: 'http://www.pm.pb.gov.br/portal/',
+    meta: 'March 2009 · December 2016 · Paraíba, Brazil',
+    paragraphs: [
+      'Part of the development team tasked with designing and developing a resilient mobile application for police officers on duty. The project targeted the Android platform with backend services built in Ruby and Scala.',
+    ],
+  },
+];
+
+// The stack sentence from about.md: "I have been writing web applications
+// using Scala, Elixir, JavaScript and TypeScript."
+const STACK = ['Scala', 'Elixir', 'JavaScript', 'TypeScript'];
+
+const description =
+  'I am a passionate Software Engineer who loves crafting solutions that can help ease our lives and make it more fun.';
+---
+
+<BaseLayout
+  title="About — bpaulino.com"
+  description={description}
+  path="/about/"
+  shellPath="~/about.md"
+  current="/about/"
+>
+  <Fragment slot="chrome-meta">
+    <span>{roles.length} ROLES</span>
+  </Fragment>
+
+  <PromptLine command="cat about.md" />
+
+  <div class="mt-6 grid gap-9 sm:grid-cols-[1fr_200px] sm:items-start">
+    <div>
+      <h1 class="text-2xl leading-tight text-ink">Bruno Paulino</h1>
+      <p class="mt-3.5 max-w-[62ch] text-md text-ink-body">Hi there, Bruno Paulino here.</p>
+      <p class="mt-3.5 max-w-[62ch] text-md text-ink-body">
+        I am originally from Brazil and currently based in Spain. I am a passionate Software
+        Engineer who loves crafting solutions that can help ease our lives and make it more fun.
+      </p>
+      <p class="mt-3.5 max-w-[62ch] text-md text-ink-body">
+        I am mainly interested in Web development and programming languages these days. I have
+        been writing web applications using Scala, Elixir, JavaScript and TypeScript.
+      </p>
+      <nav aria-label="profiles" class="mt-3 flex flex-wrap gap-1 text-2xs tracking-chrome">
+        <a href="https://github.com/brunojppb" class="flex min-h-11 items-center pr-3.5 text-accent-lift">
+          ↗ GITHUB
+        </a>
+        <a
+          href="https://stackoverflow.com/users/2301092/bruno-paulino?tab=profile"
+          class="flex min-h-11 items-center pr-3.5 text-accent-lift"
+        >
+          ↗ STACK OVERFLOW
+        </a>
+        <a href="https://twitter.com/bpaulino0" class="flex min-h-11 items-center pr-3.5 text-accent-lift">
+          ↗ TWITTER
+        </a>
+        <a href="https://www.linkedin.com/in/brunojppb/" class="flex min-h-11 items-center text-accent-lift">
+          ↗ LINKEDIN
+        </a>
+      </nav>
+    </div>
+
+    <div class="order-first flex flex-col gap-2 sm:order-last">
+      <div class="relative aspect-square border border-line-accent">
+        <img
+          src="/assets/images/bpaulino.jpg"
+          alt="Bruno Paulino smiling"
+          class="block h-full w-full object-cover"
+        />
+        <div class="dither-mute absolute inset-0" aria-hidden="true"></div>
+      </div>
+      <span class="text-2xs tracking-label text-ink-muted">DITHERED, 1-BIT</span>
+    </div>
+  </div>
+
+  <div class="mt-9">
+    <PromptLine command="history --work" />
+  </div>
+
+  <div class="mt-5">
+    {
+      roles.map((role, i) => (
+        <div
+          class:list={[
+            'grid gap-2 border-t border-line-faint py-4 sm:grid-cols-[170px_1fr] sm:gap-5',
+            i === roles.length - 1 && 'border-b',
+          ]}
+        >
+          <div class="text-xs text-ink-muted">{role.meta}</div>
+          <div>
+            <h2 class="text-lg leading-snug">
+              <a href={role.url} class="text-ink">
+                {role.company}
+              </a>
+            </h2>
+            {role.paragraphs.map((p) => (
+              <p class="mt-2.5 max-w-[70ch] text-sm text-ink-body">
+                {typeof p === 'string'
+                  ? p
+                  : p.map((seg) =>
+                      seg.accent ? <span class="text-accent-lift">{seg.text}</span> : seg.text
+                    )}
+              </p>
+            ))}
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="mt-8">
+    <PromptLine command="echo $STACK" caret />
+  </div>
+  <div class="mt-4 flex flex-wrap gap-2">
+    {STACK.map((s) => (
+      <span class="border border-line-strong px-2.75 py-1.25 text-xs text-ink-body">{s}</span>
+    ))}
+  </div>
+</BaseLayout>

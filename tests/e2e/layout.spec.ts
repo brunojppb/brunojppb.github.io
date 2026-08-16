@@ -9,6 +9,9 @@ const ROUTES = [
   '/',
   '/posts/',
   '/tags/leadership/',
+  '/about/',
+  '/courses/',
+  '/404',
 ];
 
 for (const route of ROUTES) {

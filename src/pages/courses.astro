@@ -1,0 +1,111 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PromptLine from '../components/shell/PromptLine.astro';
+
+const courses = await getCollection('courses');
+---
+
+<BaseLayout
+  title="Courses — bpaulino.com"
+  description="Programming courses that I created and some I share for free."
+  path="/courses/"
+  shellPath="~/courses"
+  current="/courses/"
+>
+  <Fragment slot="chrome-meta">
+    <span>{String(courses.length).padStart(2, '0')} COURSES · PT-BR</span>
+  </Fragment>
+
+  <PromptLine command="ls -l courses/" />
+
+  <h1 class="mt-6 text-2xl leading-tight text-ink">Courses</h1>
+  <p class="mt-3.5 max-w-[62ch] text-md text-ink-body">
+    Programming courses I've created and published on Udemy. Together, they have over 50,000
+    enrolled students.
+  </p>
+
+  <div class="mt-6.5 grid grid-cols-3 gap-px border border-line bg-line">
+    <div class="bg-surface-window px-2.5 py-3 sm:px-5 sm:py-4">
+      <div class="text-md leading-tight text-accent-lift sm:text-xl">50,000+</div>
+      <div class="mt-2 text-2xs tracking-label text-ink-muted">ENROLLED STUDENTS</div>
+    </div>
+    <div class="bg-surface-window px-2.5 py-3 sm:px-5 sm:py-4">
+      <div class="text-md leading-tight text-ink sm:text-xl">
+        {String(courses.length).padStart(2, '0')}
+      </div>
+      <div class="mt-2 text-2xs tracking-label text-ink-muted">PUBLISHED COURSES</div>
+    </div>
+    <div class="bg-surface-window px-2.5 py-3 sm:px-5 sm:py-4">
+      <div class="text-md leading-tight text-ink sm:text-xl">PT-BR</div>
+      <div class="mt-2 text-2xs tracking-label text-ink-muted">
+        ALL COURSES ARE TAUGHT IN BRAZILIAN PORTUGUESE
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-3.5">
+    {
+      courses.map((course, i) => (
+        <div
+          class:list={[
+            'grid gap-5 py-7 sm:grid-cols-[236px_1fr] sm:gap-6.5',
+            i > 0 && 'border-t border-line-faint',
+            i === courses.length - 1 && 'border-b border-line-faint',
+          ]}
+        >
+          <div class="flex flex-col gap-2.5">
+            <div class="aspect-video border border-line-accent">
+              <img
+                src={course.data.thumbnail}
+                alt={`${course.data.title} thumbnail`}
+                class="block h-full w-full object-cover"
+              />
+            </div>
+            <span class="text-2xs tracking-chrome text-ink-muted">
+              {String(i + 1).padStart(2, '0')} · UDEMY
+            </span>
+          </div>
+
+          <div>
+            <div class="flex flex-wrap items-baseline gap-3">
+              <a href={course.data.url} class="text-xl leading-tight text-ink">
+                {course.data.title}
+              </a>
+              {course.data.free && (
+                <span class="bg-accent px-2.25 py-1 text-2xs tracking-chrome text-on-accent">
+                  FREE
+                </span>
+              )}
+            </div>
+            <div class="mt-3.5 flex flex-wrap gap-2">
+              {course.data.tags.map((tag) => (
+                <span class="border border-line-strong px-2.5 py-1 text-xs text-ink-body">
+                  {tag}
+                </span>
+              ))}
+            </div>
+            <p class="mt-4.5 max-w-[66ch] text-md text-ink-body">{course.data.description}</p>
+            <a
+              href={course.data.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class:list={[
+                'mt-5 block w-full px-4 py-3.25 text-center text-xs tracking-chrome sm:inline-block sm:w-auto sm:py-2.25 sm:text-left',
+                course.data.free
+                  ? 'bg-accent text-on-accent'
+                  : 'border border-line-accent text-accent-lift',
+              ]}
+            >
+              {course.data.free ? '↗ ENROL ON UDEMY' : '↗ VIEW ON UDEMY'}
+            </a>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="mt-2">
+    <PromptLine command="" caret />
+  </div>
+</BaseLayout>

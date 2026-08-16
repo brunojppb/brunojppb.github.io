@@ -1,5 +1,5 @@
 import { defineCollection } from 'astro:content';
-import { glob } from 'astro/loaders';
+import { file, glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { TAG_ORDER } from './lib/tags';
 
@@ -17,4 +17,19 @@ const posts = defineCollection({
   }),
 });
 
-export const collections = { posts };
+// Courses Bruno created and published on Udemy. Reproduced word for word
+// from content/pages/courses.md. The file() loader keys each entry by its
+// `id` field, so `id` is not part of the schema below.
+const courses = defineCollection({
+  loader: file('src/data/courses.yaml'),
+  schema: z.object({
+    title: z.string(),
+    url: z.string().url(),
+    tags: z.array(z.string()),
+    free: z.boolean(),
+    thumbnail: z.string(),
+    description: z.string(),
+  }),
+});
+
+export const collections = { posts, courses };

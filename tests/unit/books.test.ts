@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { parseBooks, finishedMonth, groupFinishedByYear } from '../../src/lib/books';
+import { bookSchema } from '../../src/content.config';
 
 const YAML = `
 reading:
@@ -65,5 +66,38 @@ describe('groupFinishedByYear', () => {
 
   it('returns an empty list for an empty input', () => {
     expect(groupFinishedByYear([])).toEqual([]);
+  });
+});
+
+describe('bookSchema', () => {
+  it('rejects a finished book with no finished date, naming it by title', () => {
+    const result = bookSchema.safeParse({
+      title: 'Dare to Lead',
+      author: 'Brené Brown',
+      status: 'finished',
+    });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0]?.message).toBe(
+      '"Dare to Lead" is in the finished section but has no finished: YYYY-MM date.'
+    );
+  });
+
+  it('accepts a finished book that has a finished date', () => {
+    const result = bookSchema.safeParse({
+      title: 'Dare to Lead',
+      author: 'Brené Brown',
+      status: 'finished',
+      finished: '2026-03',
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('does not require a finished date on a book still being read', () => {
+    const result = bookSchema.safeParse({
+      title: "Ender's Game",
+      author: 'Orson Scott Card',
+      status: 'reading',
+    });
+    expect(result.success).toBe(true);
   });
 });

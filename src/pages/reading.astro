@@ -52,17 +52,28 @@ const finishedYears = groupFinishedByYear(finished);
     }
   </div>
 
-  <div class="mt-10">
-    <SectionRule label="[x] FINISHED" tone="muted" meta={String(finished.length).padStart(2, '0')} />
-  </div>
   {
+    // §7.12 / the mockup ("2a Reading", `[x] FINISHED · 2025`) combine the
+    // section label and the year into one SectionRule per year, rather than
+    // a total header followed by separate year headers. With no finished
+    // books yet, there is no year to combine with, so that one case falls
+    // back to a bare "[x] FINISHED" header carrying the (zero) count.
     finishedYears.length === 0 ? (
-      <p class="mt-4.5 text-sm text-ink-muted">no books finished yet</p>
+      <>
+        <div class="mt-10">
+          <SectionRule label="[x] FINISHED" tone="muted" meta={String(finished.length).padStart(2, '0')} />
+        </div>
+        <p class="mt-4.5 text-sm text-ink-muted">no books finished yet</p>
+      </>
     ) : (
-      finishedYears.map(({ year, books: yearBooks }) => (
+      finishedYears.map(({ year, books: yearBooks }, i) => (
         <>
-          <div class="mt-6">
-            <SectionRule label={`${year}`} tone="accent" meta={String(yearBooks.length).padStart(2, '0')} />
+          <div class:list={[i === 0 ? 'mt-10' : 'mt-6']}>
+            <SectionRule
+              label={`[x] FINISHED · ${year}`}
+              tone="muted"
+              meta={String(yearBooks.length).padStart(2, '0')}
+            />
           </div>
           <div class="mt-5 grid grid-cols-3 gap-4 sm:grid-cols-6 sm:gap-5">
             {yearBooks.map((book) => (

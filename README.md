@@ -40,8 +40,16 @@ The full spec is in `docs/design-system.md`; the rules for working on it are in
 
 ## Development
 
-Node is pinned in `mise.toml`. With [mise](https://mise.jdx.dev) installed,
-`mise install` gets the right version; CI reads the same file.
+Node is pinned in two files, and both must say the same version:
+
+| File | Read by |
+|---|---|
+| `mise.toml` | [mise](https://mise.jdx.dev) locally, and `jdx/mise-action` in CI |
+| `.node-version` | Cloudflare Pages, which does not read `mise.toml` |
+
+Astro 7 needs Node 22.12 or newer, and the Pages build image will not read the
+version from `package.json` engines, so the second file is what keeps
+production on the right runtime.
 
 ```shell
 mise install
@@ -120,6 +128,11 @@ All commits to `master` build and deploy to
 [Cloudflare Pages](https://pages.cloudflare.com/) at
 [bpaulino.com](https://bpaulino.com), with `npm run build` as the build
 command and `dist` as the output directory.
+
+The output directory comes from `pages_build_output_dir` in `wrangler.toml`.
+The build command does not: it lives in the Pages project settings, so it has
+to be set there by hand. Nothing else in `wrangler.toml` is needed, because
+the site is static and ships no Pages Functions.
 
 ### Preview deployments
 

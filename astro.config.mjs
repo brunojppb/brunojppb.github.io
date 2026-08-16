@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
+import { unified } from '@astrojs/markdown-remark';
 import { rehypeCodeBlock } from './src/lib/rehype-code-block.ts';
 
 export default defineConfig({
@@ -15,8 +16,11 @@ export default defineConfig({
     // so token colour can be remapped onto CONSOLE's ink/accent scale in
     // src/styles/code-vars.css instead of fighting inline hex values.
     shikiConfig: { theme: 'css-variables' },
+    // `unified({...})` is the non-deprecated way to run a rehype plugin —
+    // top-level `markdown.rehypePlugins` only works on the unified
+    // processor, and Astro warns on every build if you reach it that way.
     // Runs after Shiki has tokenised and coloured the code — see
     // src/lib/rehype-code-block.ts for what it restructures and why.
-    rehypePlugins: [rehypeCodeBlock],
+    processor: unified({ rehypePlugins: [rehypeCodeBlock] }),
   },
 });

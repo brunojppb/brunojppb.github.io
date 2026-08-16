@@ -54,7 +54,7 @@ export function rehypeCodeBlock() {
             // An empty line still needs a text node — a non-breaking space —
             // or the block collapses to zero height and the baseline count
             // (the test this plugin exists for) goes dishonest.
-            children: line.children.length > 0 ? line.children : [{ type: 'text', value: ' ' }],
+            children: line.children.length > 0 ? line.children : [{ type: 'text', value: '\u00A0' }],
           },
         ],
       }));

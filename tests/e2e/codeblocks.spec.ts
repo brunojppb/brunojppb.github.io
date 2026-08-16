@@ -22,11 +22,26 @@ for (const route of ROUTES) {
 
     // Lines live inside <code>, not as direct children of <pre> — a <pre>
     // wraps a single <code>, matching the semantic pairing Shiki emits.
+    //
+    // Ground truth comes from the block's own [data-copy] button, which
+    // carries the raw, pre-render source in data-code (see CopyButton.tsx
+    // and rehype-code-block.ts). Comparing rendered output against a
+    // DOM-derived number — line count vs. baseline count, both read off
+    // the same render — would agree trivially if the render itself emitted
+    // too few blocks; comparing against the untouched source is the only
+    // check that actually catches that.
     const blocks = await page.locator('pre:not([data-ascii])').evaluateAll((pres) =>
       pres.map((p) => {
         const container = p.querySelector('code') ?? p;
+        const button = p.closest('figure')?.querySelector('[data-copy]');
+        const rawCode = button?.getAttribute('data-code');
+        if (rawCode == null) {
+          throw new Error('code block has no [data-copy][data-code] to derive ground truth from');
+        }
+        const expectedLines = rawCode.replace(/\n$/, '').split('\n').length;
         return {
-          lines: container.children.length,
+          expectedLines,
+          renderedLines: container.children.length,
           distinctBaselines: new Set(
             [...container.children].map((c) => Math.round(c.getBoundingClientRect().top))
           ).size,
@@ -35,18 +50,20 @@ for (const route of ROUTES) {
     );
 
     expect(blocks.length).toBeGreaterThan(0);
-    // The real corpus has genuine one-line fences ("sudo nano /etc/hosts") —
-    // asserting every block has >1 line is a gallery-only assumption, the
-    // same kind the dropped `overflows` check made. What must hold for
-    // every block, one-line or not, is that its line count and its baseline
-    // count agree — a collapse fuses N lines onto 1 baseline, which this
-    // catches regardless of N.
     for (const b of blocks) {
-      expect(b.distinctBaselines, 'lines fused into one run').toBe(b.lines);
+      // Catches a render that emits the wrong number of block elements —
+      // e.g. two source lines merged into one div — even when whatever it
+      // did emit is internally consistent (lines === baselines) and would
+      // otherwise pass silently.
+      expect(b.renderedLines, 'rendered block count does not match the source').toBe(b.expectedLines);
+      // Catches the original fusion bug: right number of blocks, but laid
+      // out inline so they share one baseline instead of stacking.
+      expect(b.distinctBaselines, 'lines fused into one run').toBe(b.expectedLines);
     }
-    // And the route must actually exercise a multi-line block at least
-    // once, or the check above would pass vacuously.
-    expect(blocks.some((b) => b.lines > 1)).toBe(true);
+    // The route must actually exercise a multi-line block at least once —
+    // the real corpus has genuine one-line fences ("sudo nano /etc/hosts")
+    // — or the checks above would hold vacuously for every block.
+    expect(blocks.some((b) => b.expectedLines > 1)).toBe(true);
   });
 }
 

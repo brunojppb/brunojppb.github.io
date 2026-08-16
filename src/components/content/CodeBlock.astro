@@ -32,7 +32,7 @@ const lines = code.replace(/\n$/, '').split('\n');
   <pre class={c.pre}><code>{lines.map((line, i) => (
     <div class={c.line}>
       {showLineNumbers && <span class={c.lineNumber}>{i + 1}</span>}
-      <span>{line === '' ? ' ' : line}</span>
+      <span>{line === '' ? '\u00A0' : line}</span>
     </div>
   ))}</code></pre>
 </figure>

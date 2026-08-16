@@ -7,3 +7,6 @@ target/
 
 # OS
 *.DS_Store
+
+# Design handoff, not part of the site
+handoff/

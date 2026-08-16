@@ -1,0 +1,6 @@
+/open-source            /src      301
+/open-source/           /src/     301
+/work                   /about    301
+/work/                  /about/   301
+/hidden/*               /entries/:splat  301
+/sitemap.xml            /sitemap-index.xml  301

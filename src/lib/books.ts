@@ -29,27 +29,21 @@ export function parseBooks(text: string): Book[] {
 
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 
-/** Renders a `finished` value (`2026-03`) as the `[x] MAR` caption month. */
-export function finishedMonth(finished: string): string {
-  const month = Number(finished.slice(5, 7)) - 1;
-  return MONTHS[month] ?? finished;
+/**
+ * Renders a `finished` value (`2026-03`) as the `[x] MAR 2026` caption. The
+ * list is one flat run rather than one block per year, so each caption
+ * carries its own year.
+ */
+export function finishedLabel(finished: string): string {
+  const month = MONTHS[Number(finished.slice(5, 7)) - 1];
+  return month ? `${month} ${finished.slice(0, 4)}` : finished;
 }
 
-/** Groups finished books into years, newest year first, newest book first inside each year. */
-export function groupFinishedByYear(books: Book[]) {
-  const byYear = new Map<number, Book[]>();
-  for (const b of books) {
-    if (!b.finished) continue;
-    const year = Number(b.finished.slice(0, 4));
-    if (!byYear.has(year)) byYear.set(year, []);
-    byYear.get(year)!.push(b);
-  }
-  return [...byYear.entries()]
-    .sort((a, b) => b[0] - a[0])
-    .map(([year, list]) => ({
-      year,
-      books: list.sort((a, b) => b.finished!.localeCompare(a.finished!)),
-    }));
+/** Finished books in one list, newest first. Books with no date are dropped. */
+export function sortFinished(books: Book[]): Book[] {
+  return books
+    .filter((b) => b.finished)
+    .sort((a, b) => b.finished!.localeCompare(a.finished!));
 }
 
 /** The key a book's cover file is saved under — matches `scripts/fetch-book-covers.mjs`. */

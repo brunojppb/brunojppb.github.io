@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseBooks, finishedMonth, groupFinishedByYear } from '../../src/lib/books';
+import { parseBooks, finishedLabel, sortFinished } from '../../src/lib/books';
 import { bookSchema } from '../../src/content.config';
 
 const YAML = `
@@ -42,30 +42,32 @@ describe('parseBooks', () => {
   });
 });
 
-describe('finishedMonth', () => {
-  it('renders the month as a three-letter caption', () => {
-    expect(finishedMonth('2026-03')).toBe('MAR');
-    expect(finishedMonth('2025-12')).toBe('DEC');
+describe('finishedLabel', () => {
+  it('renders the month and year as a caption', () => {
+    expect(finishedLabel('2026-03')).toBe('MAR 2026');
+    expect(finishedLabel('2025-12')).toBe('DEC 2025');
+  });
+
+  it('falls back to the raw value when the month is out of range', () => {
+    expect(finishedLabel('2026-13')).toBe('2026-13');
   });
 });
 
-describe('groupFinishedByYear', () => {
+describe('sortFinished', () => {
   const book = (finished: string, title = 'X') =>
     ({ id: title, title, author: 'Y', status: 'finished' as const, finished });
 
-  it('groups newest year first, newest book first inside each year', () => {
-    const groups = groupFinishedByYear([book('2025-02', 'a'), book('2026-01', 'b'), book('2025-11', 'c')]);
-    expect(groups.map((g) => g.year)).toEqual([2026, 2025]);
-    expect(groups[1].books.map((b) => b.title)).toEqual(['c', 'a']);
+  it('returns one flat list, newest first, across years', () => {
+    const list = sortFinished([book('2025-02', 'a'), book('2026-01', 'b'), book('2025-11', 'c')]);
+    expect(list.map((b) => b.title)).toEqual(['b', 'c', 'a']);
   });
 
-  it('skips books with no finished date rather than crashing', () => {
-    const groups = groupFinishedByYear([{ id: 'x', title: 'X', author: 'Y', status: 'finished' }]);
-    expect(groups).toEqual([]);
+  it('drops books with no finished date rather than crashing', () => {
+    expect(sortFinished([{ id: 'x', title: 'X', author: 'Y', status: 'finished' }])).toEqual([]);
   });
 
   it('returns an empty list for an empty input', () => {
-    expect(groupFinishedByYear([])).toEqual([]);
+    expect(sortFinished([])).toEqual([]);
   });
 });
 

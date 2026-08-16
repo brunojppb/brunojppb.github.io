@@ -18,6 +18,12 @@ interface Props {
 
 const { src, alt, status } = Astro.props;
 const reading = status === 'reading';
+
+// The grids cap a cover at ~241px (reading, 4-up) and ~156px (finished,
+// 6-up) inside the 1100px window. Without a width Astro emits the source at
+// full size — publisher art runs to 2400px, which is 13MB across the page.
+// These are those caps at 2x.
+const width = reading ? 480 : 320;
 ---
 
 <div class="flex flex-col gap-3">
@@ -30,7 +36,7 @@ const reading = status === 'reading';
   >
     {
       src ? (
-        <Image src={src} alt={alt} class="block h-full w-full object-cover" />
+        <Image src={src} alt={alt} width={width} class="block h-full w-full object-cover" />
       ) : (
         <div
           class:list={['flex h-full w-full items-end p-2.5', reading ? 'dither' : 'dither-mute']}

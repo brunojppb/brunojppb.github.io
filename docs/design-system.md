@@ -242,7 +242,7 @@ Props: `src` (optional), `alt`, `status` (`reading` | `finished`).
 `repeating-linear-gradient(135deg, var(--wash-dither) 0 3px, transparent 3px 8px)` and an 11px
 `COVER 2:3` label bottom-left.
 `reading` → `--border-accent-soft`, full opacity, `█ READING` label above the title.
-`finished` → `--border-strong`, `opacity: .8`, `[x] MAR` label beneath.
+`finished` → `--border-strong`, `opacity: .8`, `[x] MAR 2021` label beneath.
 Grid: 4-up desktop / 2-up mobile for reading; 6-up desktop / 3-up mobile for finished.
 
 ### 7.13 `Outline.astro`
@@ -284,7 +284,7 @@ Every page: `BaseLayout` → `Scanlines` + `Window` → `TabBar` → content.
 | `/posts/[slug]/` | `cat <file>.md` | title, meta, `Prose` + `CodeBlock`/`Callout`, `Outline` rail, prev/next, closing prompt |
 | `/about/` | `cat about.md` then `history --work` then `echo $STACK` | bio + 1:1 dithered photo, role list with date column, stack chips |
 | `/src/` | `git remote -v` | two pinned repo cards, then a compact repo list |
-| `/reading/` | `ls reading/ --status=open` | `SectionRule` + `BookCover` grids, reading then finished by year |
+| `/reading/` | `ls reading/ --status=open` | `SectionRule` + `BookCover` grids, reading then finished in one flat list |
 | `/tags/[tag]/` | `grep -rl "#<tag>" posts/` | match count, `FileRow` list, all-tags chip cloud |
 | `/courses/` | `ls -l courses/` | intro, 3-cell stat strip, course entries with 16:9 thumbnail, enrol buttons |
 | `/system/` | `cat system/README.md` | this design system, published — colour, type, component gallery, glyph allowlist |

@@ -4,19 +4,20 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import PromptLine from '../components/shell/PromptLine.astro';
 import SectionRule from '../components/shell/SectionRule.astro';
 import BookCover from '../components/media/BookCover.astro';
-import { coverImage, finishedMonth, groupFinishedByYear, type Book } from '../lib/books';
+import { coverImage, finishedLabel, sortFinished, type Book } from '../lib/books';
 
 const books = await getCollection('books');
 const reading = books.filter((b) => b.data.status === 'reading').map((b) => b.data);
-const finished: Book[] = books
-  .filter((b) => b.data.status === 'finished')
-  .map((b) => ({ ...b.data, id: b.id }));
-const finishedYears = groupFinishedByYear(finished);
+const finished: Book[] = sortFinished(
+  books.filter((b) => b.data.status === 'finished').map((b) => ({ ...b.data, id: b.id }))
+);
+
+const description = "What I'm currently reading on my Kindle and xteink x3";
 ---
 
 <BaseLayout
   title="Reading — bpaulino.com"
-  description="What's on the desk and what got finished. No ratings, no reviews — just whether I got to the end."
+  description={description}
   path="/reading/"
   shellPath="~/reading"
   current="/reading/"
@@ -30,10 +31,7 @@ const finishedYears = groupFinishedByYear(finished);
   <PromptLine command="ls reading/ --status=open" />
 
   <h1 class="mt-6 text-xl leading-tight text-ink md:text-2xl">Reading</h1>
-  <p class="mt-3.5 max-w-measure text-md text-ink-body">
-    What's on the desk and what got finished. No ratings, no reviews — just whether I got to the
-    end.
-  </p>
+  <p class="mt-3.5 max-w-measure text-md text-ink-body">{description}</p>
 
   <div class="mt-8">
     <SectionRule label="█ CURRENTLY READING" tone="accent" meta={String(reading.length).padStart(2, '0')} />
@@ -52,44 +50,26 @@ const finishedYears = groupFinishedByYear(finished);
     }
   </div>
 
+  <div class="mt-10">
+    <SectionRule label="[x] FINISHED" tone="muted" meta={String(finished.length).padStart(2, '0')} />
+  </div>
   {
-    // §7.12 / the mockup ("2a Reading", `[x] FINISHED · 2025`) combine the
-    // section label and the year into one SectionRule per year, rather than
-    // a total header followed by separate year headers. With no finished
-    // books yet, there is no year to combine with, so that one case falls
-    // back to a bare "[x] FINISHED" header carrying the (zero) count.
-    finishedYears.length === 0 ? (
-      <>
-        <div class="mt-10">
-          <SectionRule label="[x] FINISHED" tone="muted" meta={String(finished.length).padStart(2, '0')} />
-        </div>
-        <p class="mt-4.5 text-sm text-ink-muted">no books finished yet</p>
-      </>
+    finished.length === 0 ? (
+      <p class="mt-4.5 text-sm text-ink-muted">no books finished yet</p>
     ) : (
-      finishedYears.map(({ year, books: yearBooks }, i) => (
-        <>
-          <div class:list={[i === 0 ? 'mt-10' : 'mt-6']}>
-            <SectionRule
-              label={`[x] FINISHED · ${year}`}
-              tone="muted"
-              meta={String(yearBooks.length).padStart(2, '0')}
-            />
+      <div class="mt-5 grid grid-cols-3 gap-4 sm:grid-cols-6 sm:gap-5">
+        {finished.map((book) => (
+          <div class="flex flex-col gap-2.5">
+            <BookCover src={coverImage(book)} alt={`${book.title} cover`} status="finished" />
+            <div class="text-xs leading-snug text-ink-secondary">
+              {book.title}
+              <span class="mt-1 block text-2xs tracking-label text-ink-muted">
+                [x] {finishedLabel(book.finished!)}
+              </span>
+            </div>
           </div>
-          <div class="mt-5 grid grid-cols-3 gap-4 sm:grid-cols-6 sm:gap-5">
-            {yearBooks.map((book) => (
-              <div class="flex flex-col gap-2.5">
-                <BookCover src={coverImage(book)} alt={`${book.title} cover`} status="finished" />
-                <div class="text-xs leading-snug text-ink-secondary">
-                  {book.title}
-                  <span class="mt-1 block text-2xs tracking-label text-ink-muted">
-                    [x] {finishedMonth(book.finished!)}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </>
-      ))
+        ))}
+      </div>
     )
   }
 </BaseLayout>

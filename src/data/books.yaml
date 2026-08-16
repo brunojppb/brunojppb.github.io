@@ -14,4 +14,628 @@ reading:
     # Open Library has no cover for the 2nd edition. This is the publisher's.
     cover_url: https://www.oreilly.com/covers/urn:orm:book:9781098179915/250w/
 
-finished: []
+# Imported from the Goodreads "read" shelf. Where Goodreads had no date read,
+# `finished` carries the date the book was added to the shelf instead.
+finished:
+  - title: "Coisa de Rico: A Vida dos Endinheirados Brasileiros"
+    author: Michel Alcoforado
+    finished: 2026-01
+    isbn: "9786556928593"
+    cover_url: https://books.google.com/books/content?id=yQFlEQAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Dare to Lead"
+    author: Brené Brown
+    finished: 2025-03
+    isbn: "9781473562523"
+    cover_url: https://books.google.com/books/content?id=JdlbDwAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Crafting Interpreters"
+    author: Robert Nystrom
+    finished: 2024-05
+    isbn: "9780990582946"
+    cover_url: https://books.google.com/books/content?id=q0c6EAAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Zero To Production In Rust"
+    author: Luca Palmieri
+    finished: 2024-04
+    isbn: "9798847211437"
+    cover_url: https://books.google.com/books/content?id=x7C4EAAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Rust Atomics and Locks: Low-Level Concurrency in Practice"
+    author: Mara Bos
+    finished: 2024-03
+    isbn: "9781098119409"
+    cover_url: https://books.google.com/books/content?id=jPqhEAAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Joel on Software"
+    author: Joel Spolsky
+    finished: 2024-02
+    isbn: "9781430209881"
+    cover_url: https://books.google.com/books/content?id=5WXp4j4eV4UC&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Programming Phoenix LiveView"
+    author: Bruce A. Tate
+    finished: 2023-10
+    isbn: "9781680508215"
+
+  - title: "Asynchronous Programming in Rust"
+    author: Carl Fredrik Samson
+    finished: 2023-02
+    isbn: "9781805126621"
+    cover_url: https://books.google.com/books/content?id=TLfuEAAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Rust in Action"
+    author: Tim McNamara
+    finished: 2023-02
+    isbn: "9781617294556"
+
+  - title: "Code: The Hidden Language of Computer Hardware and Software"
+    author: Charles Petzold
+    finished: 2023-01
+    isbn: "9780137909292"
+    cover_url: https://books.google.com/books/content?id=iNfPEAAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "The Rust Programming Language"
+    author: Steve Klabnik
+    finished: 2022-12
+    isbn: "9781718503106"
+    cover_url: https://books.google.com/books/content?id=SE2GEAAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Programming Ecto"
+    author: Darin Wilson
+    finished: 2022-09
+    isbn: "9781680506938"
+    cover_url: https://books.google.com/books/content?id=tMtYEQAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Testing Elixir"
+    author: Andrea Leopardi
+    finished: 2022-09
+    isbn: "9781680508925"
+    cover_url: https://books.google.com/books/content?id=TslYEQAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Team Topologies: Organizing Business and Technology Teams for Fast Flow"
+    author: Matthew Skelton
+    finished: 2022-08
+    isbn: "9781966280019"
+    cover_url: https://books.google.com/books/content?id=lNVcEQAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Bullshit Jobs: A Theory"
+    author: David Graeber
+    finished: 2022-04
+    isbn: "9780241267363"
+    cover_url: https://books.google.com/books/content?id=Lsc8DwAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "I, Robot"
+    author: Isaac Asimov
+    finished: 2022-04
+    isbn: "9780553900330"
+    cover_url: https://books.google.com/books/content?id=2vnbMzYXBQsC&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Pequeno Manual Antirracista"
+    author: Djamila Ribeiro
+    finished: 2022-02
+
+  - title: "Dune"
+    author: Frank Herbert
+    finished: 2021-11
+
+  - title: "Foundation"
+    author: Isaac Asimov
+    finished: 2021-10
+
+  - title: "Staff Engineer: Leadership Beyond the Management Track"
+    author: Will Larson
+    finished: 2021-08
+
+  - title: "Thanks for the Feedback: The Science and Art of Receiving Feedback Well"
+    author: Douglas Stone
+    finished: 2021-08
+    isbn: "9781101614273"
+    cover_url: https://books.google.com/books/content?id=bWw2AAAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Elixir in Action"
+    author: Saša Jurić
+    finished: 2021-07
+    isbn: "9781638354376"
+
+  - title: "Inspired: How to Create Tech Products Customers Love"
+    author: Marty Cagan
+    finished: 2021-06
+    isbn: "9781119387565"
+    cover_url: https://books.google.com/books/content?id=S8Q_DwAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Kill It with Fire: Manage Aging Computer Systems"
+    author: Marianne Bellotti
+    finished: 2021-06
+    isbn: "9781718501195"
+    cover_url: https://books.google.com/books/content?id=W4XwDwAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Radical Focus"
+    author: Christina Wodtke
+    finished: 2021-05
+    isbn: "9780996006088"
+
+  - title: "Range: Why Generalists Triumph in a Specialized World"
+    author: David Epstein
+    finished: 2021-05
+    isbn: "9780593084496"
+
+  - title: "Cloud Native DevOps with Kubernetes"
+    author: John Arundel
+    finished: 2021-05
+    isbn: "9781492040736"
+    cover_url: https://books.google.com/books/content?id=WEyMDwAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "White Fragility: Why It's So Hard for White People to Talk About Racism"
+    author: Robin DiAngelo
+    finished: 2021-05
+    isbn: "9780807047422"
+    cover_url: https://books.google.com/books/content?id=ZfQ3DwAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Algorithms to Live By: The Computer Science of Human Decisions"
+    author: Brian Christian
+    finished: 2021-03
+    isbn: "9781627790376"
+    cover_url: https://books.google.com/books/content?id=yvaLCgAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Nonviolent Communication: A Language of Life"
+    author: Marshall B. Rosenberg
+    finished: 2021-02
+    isbn: "9781892005021"
+
+  - title: "The Manager's Path: A Guide for Tech Leaders Navigating Growth and Change"
+    author: Camille Fournier
+    finished: 2021-01
+    isbn: "9781491973844"
+    cover_url: https://books.google.com/books/content?id=FaNaDgAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Social: Why Our Brains Are Wired to Connect"
+    author: Matthew D. Lieberman
+    finished: 2021-01
+    isbn: "9780198743811"
+
+  - title: "A Philosophy of Software Design"
+    author: John Ousterhout
+    finished: 2020-12
+    isbn: "9781732102200"
+
+  - title: "Indistractable: How to Control Your Attention and Choose Your Life"
+    author: Nir Eyal
+    finished: 2020-12
+    isbn: "9781948836531"
+    cover_url: https://books.google.com/books/content?id=kO5KEAAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Accelerate: Building and Scaling High Performing Technology Organizations"
+    author: Nicole Forsgren
+    finished: 2020-11
+    isbn: "9781942788355"
+    cover_url: https://books.google.com/books/content?id=Kax-DwAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "The Hitchhiker's Guide to the Galaxy"
+    author: Douglas Adams
+    finished: 2020-10
+    isbn: "9780330513081"
+    cover_url: https://books.google.com/books/content?id=DmUr6q1EDYMC&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Thinking in Systems: A Primer"
+    author: Donella H. Meadows
+    finished: 2020-09
+    isbn: "9781844077267"
+
+  - title: "The Systems Bible: The Beginner's Guide to Systems Large and Small"
+    author: John Gall
+    finished: 2020-08
+    isbn: "9780961825171"
+    cover_url: https://books.google.com/books/content?id=mrOsbi2pjXcC&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Programming Phoenix: Productive |> Reliable |> Fast"
+    author: Chris McCord
+    finished: 2020-06
+    isbn: "9781680507331"
+    cover_url: https://books.google.com/books/content?id=8MlYEQAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Programming Elixir: Functional |> Concurrent |> Pragmatic |> Fun"
+    author: Dave Thomas
+    finished: 2020-05
+    isbn: "9781680506136"
+    cover_url: https://books.google.com/books/content?id=NMtYEQAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "On Writing Well: The Classic Guide to Writing Nonfiction"
+    author: William Zinsser
+    finished: 2020-05
+    isbn: "9780062250506"
+    cover_url: https://books.google.com/books/content?id=mp16BDRDaYQC&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "The Richest Man in Babylon"
+    author: George S. Clason
+    finished: 2020-05
+    isbn: "9780486850931"
+    cover_url: https://books.google.com/books/content?id=Ps5xEAAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Remote: Office Not Required"
+    author: David Heinemeier Hansson
+    finished: 2020-03
+    isbn: "9780804137515"
+    cover_url: https://books.google.com/books/content?id=KeJE7Tyl6o8C&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Getting Real: The Smarter, Faster, Easier Way to Build a Web Application"
+    author: Jason Fried
+    finished: 2020-02
+    isbn: "9780578012810"
+
+  - title: "Terraform: Up and Running: Writing Infrastructure as Code"
+    author: Yevgeniy Brikman
+    finished: 2020-01
+    isbn: "9781491977057"
+    cover_url: https://books.google.com/books/content?id=rn1VDgAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Six Easy Pieces: Essentials of Physics Explained by Its Most Brilliant Teacher"
+    author: Richard Feynman
+    finished: 2020-01
+    isbn: "9780465025299"
+    cover_url: https://books.google.com/books/content?id=mo9VDgAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "The Courage to Be Disliked: How to Free Yourself, Change Your Life and Achieve Real Happiness"
+    author: Ichiro Kishimi
+    finished: 2020-01
+    isbn: "9781501197291"
+    cover_url: https://books.google.com/books/content?id=hGFEDwAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Escaping the Build Trap: How Effective Product Management Creates Real Value"
+    author: Melissa Perri
+    finished: 2019-11
+    isbn: "9781491973769"
+    cover_url: https://books.google.com/books/content?id=buJ1DwAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Badass: Making Users Awesome"
+    author: Kathy Sierra
+    finished: 2019-11
+    isbn: "9781491919071"
+    cover_url: https://books.google.com/books/content?id=fuFwBgAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Permanent Record"
+    author: Edward Snowden
+    finished: 2019-09
+    isbn: "9781250237248"
+    cover_url: https://books.google.com/books/content?id=0XCcDwAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Atomic Habits: An Easy & Proven Way to Build Good Habits & Break Bad Ones"
+    author: James Clear
+    finished: 2019-08
+    isbn: "9798217180516"
+    cover_url: https://books.google.com/books/content?id=FJ5hEQAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "The Burnout Society"
+    author: Byung-Chul Han
+    finished: 2019-07
+    isbn: "9780804797504"
+    cover_url: https://books.google.com/books/content?id=SQoNCgAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Man's Search for Meaning"
+    author: Viktor E. Frankl
+    finished: 2019-07
+    isbn: "9780807014288"
+    cover_url: https://books.google.com/books/content?id=8SERAAAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Switch: How to Change Things When Change Is Hard"
+    author: Chip Heath
+    finished: 2019-06
+    isbn: "9781448108213"
+    cover_url: https://books.google.com/books/content?id=XmzbeoN-KZ0C&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Murder on the Orient Express"
+    author: Agatha Christie
+    finished: 2019-05
+    isbn: "9780359199259"
+    cover_url: https://books.google.com/books/content?id=KKZ2DwAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "The Mythical Man-Month: Essays on Software Engineering"
+    author: Frederick P. Brooks Jr.
+    finished: 2019-04
+    isbn: "9780132119160"
+    cover_url: https://books.google.com/books/content?id=Yq35BY5Fk3gC&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "The Man on the Mountaintop"
+    author: Susan Trott
+    finished: 2019-02
+
+  - title: "Rich Dad Poor Dad: What the Rich Teach Their Kids About Money—That the Poor and Middle Class Do Not!"
+    author: Robert T. Kiyosaki
+    finished: 2019-01
+    isbn: "9780751532715"
+
+  - title: "The Docker Book: Containerization is the New Virtualization"
+    author: James Turnbull
+    finished: 2018-12
+    isbn: "9780988820234"
+    cover_url: https://books.google.com/books/content?id=CtMEBwAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "We Have No Idea: A Guide to the Unknown Universe"
+    author: Jorge Cham
+    finished: 2018-11
+    isbn: "9780735211537"
+    cover_url: https://books.google.com/books/content?id=jpLZDAAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "It Doesn't Have to Be Crazy at Work"
+    author: Jason Fried
+    finished: 2018-10
+    isbn: "9780008323455"
+    cover_url: https://books.google.com/books/content?id=LsplDwAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Fifty Inventions That Shaped the Modern Economy"
+    author: Tim Harford
+    finished: 2018-10
+    isbn: "9780735216143"
+    cover_url: https://books.google.com/books/content?id=YNpmDwAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "We Are Legion (We Are Bob)"
+    author: Dennis E. Taylor
+    finished: 2018-09
+    isbn: "9781668223413"
+
+  - title: "Me Engana Que Eu Gosto: Dois meio Brasis jamais somarão um Brasil inteiro"
+    author: Luciano Pires
+    finished: 2018-07
+
+  - title: "Homo Deus: A Brief History of Tomorrow"
+    author: Yuval Noah Harari
+    finished: 2018-07
+
+  - title: "The Demon-Haunted World: Science as a Candle in the Dark"
+    author: Carl Sagan
+    finished: 2018-06
+    isbn: "9780307801043"
+    cover_url: https://books.google.com/books/content?id=Yz8Y6KfXf9UC&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "The Lean Startup"
+    author: Eric Ries
+    finished: 2018-05
+    isbn: "9780307887917"
+    cover_url: https://books.google.com/books/content?id=tvfyz-4JILwC&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "How to Win Friends & Influence People"
+    author: Dale Carnegie
+    finished: 2018-05
+    isbn: "9789354409110"
+    cover_url: https://books.google.com/books/content?id=Z03VEQAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Sapiens: A Brief History of Humankind"
+    author: Yuval Noah Harari
+    finished: 2018-05
+
+  - title: "The Subtle Art of Not Giving a F*ck: A Counterintuitive Approach to Living a Good Life"
+    author: Mark Manson
+    finished: 2018-01
+    isbn: "9780062457738"
+    cover_url: https://books.google.com/books/content?id=yng_CwAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Cosmos"
+    author: Carl Sagan
+    finished: 2018-01
+
+  - title: "Essentialism: The Disciplined Pursuit of Less"
+    author: Greg McKeown
+    finished: 2018-01
+    isbn: "9780753550281"
+    cover_url: https://books.google.com/books/content?id=YWlcAgAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Scala in Action: Covers Scala 2.10"
+    author: Nilanjan Raychaudhuri
+    finished: 2017-12
+    isbn: "9781638352419"
+    cover_url: https://books.google.com/books/content?id=gzozEAAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Deep Work: Rules for Focused Success in a Distracted World"
+    author: Cal Newport
+    finished: 2017-02
+    isbn: "9780349411910"
+    cover_url: https://books.google.com/books/content?id=lZpFCgAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Digital Fortress"
+    author: Dan Brown
+    finished: 2017-02
+    isbn: "9781409091172"
+    cover_url: https://books.google.com/books/content?id=pfB9VsrdX4IC&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Programming in Scala: A Comprehensive Step-by-Step Guide"
+    author: Martin Odersky
+    finished: 2017-02
+    isbn: "9780981531601"
+    cover_url: https://books.google.com/books/content?id=MFjNhTjeQKkC&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "The Power of Habit: Why We Do What We Do in Life and Business"
+    author: Charles Duhigg
+    finished: 2016-08
+    isbn: "9780812981605"
+
+  - title: "Metaprogramming Ruby 2: Program Like the Ruby Pros"
+    author: Paolo Perrotta
+    finished: 2016-08
+    isbn: "9781941222126"
+
+  - title: "A Mind for Numbers: How to Excel at Math and Science"
+    author: Barbara Oakley
+    finished: 2016-07
+    isbn: "9781101621615"
+    cover_url: https://books.google.com/books/content?id=Sb1iAgAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Growing Rails Applications in Practice"
+    author: Henning Koch
+    finished: 2016-06
+
+  - title: "Pro React"
+    author: Cassio de Sousa Antonio
+    finished: 2016-05
+    isbn: "9781484212608"
+    cover_url: https://books.google.com/books/content?id=PKpPCwAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Zero to One: Notes on Startups, or How to Build the Future"
+    author: Peter Thiel
+    finished: 2016-03
+    isbn: "9780804139304"
+    cover_url: https://books.google.com/books/content?id=ZH4oAwAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Learn Enough Git to Be Dangerous"
+    author: Michael Hartl
+    finished: 2016-02
+
+  - title: "Ember-cli 101"
+    author: Adolfo Builes
+    finished: 2016-01
+
+  - title: "Geração de Valor 2: Plantando sonhos, colhendo conquistas"
+    author: Flavio Augusto da Silva
+    finished: 2016-01
+    isbn: "9786580435425"
+    cover_url: https://books.google.com/books/content?id=51rNDwAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Geração de Valor: Compartilhando Inspiração"
+    author: Flavio Augusto da Silva
+    finished: 2016-01
+    isbn: "9786580435395"
+    cover_url: https://books.google.com/books/content?id=Xq_NDwAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Android Programming: The Big Nerd Ranch Guide"
+    author: Bill Phillips
+    finished: 2016-01
+    isbn: "9780134706078"
+    cover_url: https://books.google.com/books/content?id=1igDDgAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Elon Musk: Tesla, SpaceX, and the Quest for a Fantastic Future"
+    author: Ashlee Vance
+    finished: 2016-01
+    isbn: "9780753550663"
+    cover_url: https://books.google.com/books/content?id=_LFSBgAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Use a Cabeça! JavaScript"
+    author: Michael Morrison
+    finished: 2015-11
+
+  - title: "Use a Cabeça: Java"
+    author: Kathy Sierra
+    finished: 2015-11
+    isbn: "9788550819877"
+    cover_url: https://books.google.com/books/content?id=wFNSEQAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Perdido em Marte"
+    author: Andy Weir
+    finished: 2015-11
+
+  - title: "A Menina do Vale 2"
+    author: Bel Pesce
+    finished: 2015-10
+    isbn: "9788544100707"
+    cover_url: https://books.google.com/books/content?id=TQRTBAAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "A Menina do Vale"
+    author: Bel Pesce
+    finished: 2015-10
+    isbn: "9788577343133"
+    cover_url: https://books.google.com/books/content?id=CQ6i7Kff7qgC&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "O Monge e o Executivo: Uma História Sobre a Essência da Liderança"
+    author: James C. Hunter
+    finished: 2015-10
+    isbn: "9788575425749"
+    cover_url: https://books.google.com/books/content?id=7lgqhG40iFUC&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Sonho Grande"
+    author: Cristiane Correa
+    finished: 2015-10
+    isbn: "9788575429112"
+    cover_url: https://books.google.com/books/content?id=XUqTmS--ZYgC&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Founders at Work: Stories of Startups' Early Days"
+    author: Jessica Livingston
+    finished: 2015-10
+    isbn: "9781430203278"
+    cover_url: https://books.google.com/books/content?id=oFTYD9IHX5YC&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Elon Musk: Biography of a Self-Made Visionary, Entrepreneur and Billionaire"
+    author: B. Storm
+    finished: 2015-04
+    isbn: "9781500805500"
+
+  - title: "Survival in Auschwitz"
+    author: Primo Levi
+    finished: 2015-04
+    isbn: "9780684826806"
+    cover_url: https://books.google.com/books/content?id=6w1uHveM54EC&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "The Alchemist"
+    author: Paulo Coelho
+    finished: 2015-04
+    isbn: "9780061741241"
+    cover_url: https://books.google.com/books/content?id=FEL8DlqjYEkC&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "iWoz: Computer Geek to Cult Icon"
+    author: Steve Wozniak
+    finished: 2015-03
+    isbn: "9780755314072"
+
+  - title: "The Ruby on Rails Tutorial"
+    author: Michael Hartl
+    finished: 2015-01
+
+  - title: "The Lost Symbol"
+    author: Dan Brown
+    finished: 2015-01
+    isbn: "9781409091486"
+    cover_url: https://books.google.com/books/content?id=s8l5ApOH2CwC&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Angels & Demons"
+    author: Dan Brown
+    finished: 2015-01
+    isbn: "9780743412391"
+    cover_url: https://books.google.com/books/content?id=K__fyN2gl9gC&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "The Da Vinci Code"
+    author: Dan Brown
+    finished: 2015-01
+    isbn: "9780593054253"
+    cover_url: https://books.google.com/books/content?id=A-AS46wG0p8C&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Twelve Years a Slave"
+    author: Solomon Northup
+    finished: 2015-01
+    isbn: "9781630830892"
+    cover_url: https://books.google.com/books/content?id=4TTxAgAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Harry Potter and the Deathly Hallows"
+    author: J.K. Rowling
+    finished: 2015-01
+    isbn: "9781781100264"
+    cover_url: https://books.google.com/books/content?id=gCtazG4ZXlQC&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Harry Potter and the Half-Blood Prince"
+    author: J.K. Rowling
+    finished: 2015-01
+    isbn: "9781781100257"
+    cover_url: https://books.google.com/books/content?id=qaKkenvL29UC&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Harry Potter and the Order of the Phoenix"
+    author: J.K. Rowling
+    finished: 2015-01
+    isbn: "9780747570738"
+
+  - title: "Harry Potter and the Goblet of Fire"
+    author: J.K. Rowling
+    finished: 2015-01
+    isbn: "9781855494787"
+
+  - title: "Harry Potter and the Prisoner of Azkaban"
+    author: J.K. Rowling
+    finished: 2015-01
+    isbn: "9781781100233"
+    cover_url: https://books.google.com/books/content?id=wHlDzHnt6x0C&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Harry Potter and the Chamber of Secrets"
+    author: J.K. Rowling
+    finished: 2015-01
+    isbn: "9781551922447"
+    cover_url: https://books.google.com/books/content?id=nmXTy4FPfcwC&printsec=frontcover&img=1&zoom=0&source=gbs_api
+
+  - title: "Harry Potter and the Sorcerer's Stone"
+    author: J.K. Rowling
+    finished: 2015-01
+    isbn: "9781338299144"

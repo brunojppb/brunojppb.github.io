@@ -6,6 +6,9 @@ const ROUTES = [
   '/entries/distributed-lock-in-node-js/', // 25k, the longest
   '/entries/modern-webapps-with-elixir-phoenix-typescript-react/', // 23k
   '/entries/https-for-your-homelab/', // 20k
+  '/',
+  '/posts/',
+  '/tags/leadership/',
 ];
 
 for (const route of ROUTES) {

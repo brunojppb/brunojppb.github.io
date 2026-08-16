@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { TAG_MAP, TAG_ORDER, PT_SLUGS } from '../../src/lib/tags';
+import { TAG_MAP, TAG_ORDER, PT_SLUGS, tagCounts } from '../../src/lib/tags';
 
 describe('tag vocabulary', () => {
   it('covers all 30 posts', () => {
@@ -33,5 +33,17 @@ describe('tag vocabulary', () => {
   it('marks exactly six posts as Portuguese', () => {
     expect(PT_SLUGS.size).toBe(6);
     for (const s of PT_SLUGS) expect(TAG_MAP).toHaveProperty(s);
+  });
+});
+
+describe('tagCounts', () => {
+  const post = (tags: string[]) => ({ data: { tags } }) as never;
+  it('counts posts per tag, most first', () => {
+    const counts = tagCounts([post(['react']), post(['react', 'devops']), post(['devops'])]);
+    expect([...counts.entries()]).toEqual([['react', 2], ['devops', 2]]);
+  });
+  it('omits tags with no posts', () => {
+    const counts = tagCounts([post(['react'])]);
+    expect(counts.has('devops' as never)).toBe(false);
   });
 });

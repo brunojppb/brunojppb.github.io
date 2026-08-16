@@ -41,6 +41,15 @@ export const TAG_MAP: Record<string, Tag[]> = {
   'https-for-your-homelab': ['security', 'homelab'],
 };
 
+/** Posts per tag, most used first. Tags with no posts are omitted. */
+export function tagCounts<T extends { data: { tags: readonly string[] } }>(posts: T[]) {
+  const counts = new Map<string, number>();
+  for (const p of posts) {
+    for (const t of p.data.tags) counts.set(t, (counts.get(t) ?? 0) + 1);
+  }
+  return new Map([...counts.entries()].sort((a, b) => b[1] - a[1]));
+}
+
 /** Posts written in Brazilian Portuguese. */
 export const PT_SLUGS = new Set([
   '2-arquitetura-de-branching-para-desenvolvimento-com-git',

@@ -4,6 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Prose from '../../components/content/Prose.astro';
 import Outline from '../../components/content/Outline.astro';
 import PromptLine from '../../components/shell/PromptLine.astro';
+import Tag from '../../components/listing/Tag.astro';
 import { formatProseDate, formatReadingTime, formatListDate } from '../../lib/posts';
 
 export async function getStaticPaths() {
@@ -11,17 +12,33 @@ export async function getStaticPaths() {
     (a, b) => b.data.date.getTime() - a.data.date.getTime()
   );
 
-  return posts.map((post, i) => ({
-    params: { slug: post.id },
-    props: {
-      post,
-      newer: posts[i - 1] ?? null, // newer post; the listing is newest-first
-      older: posts[i + 1] ?? null,
-    },
-  }));
+  return posts.map((post, i) => {
+    // Related: shared tags first, then most recent — a post with no
+    // tag-mates gets an empty list rather than a fabricated one.
+    const related = posts
+      .filter((p) => p.id !== post.id)
+      .map((p) => ({
+        post: p,
+        shared: p.data.tags.filter((t) => post.data.tags.includes(t)).length,
+      }))
+      .filter((r) => r.shared > 0)
+      .sort((a, b) => b.shared - a.shared || b.post.data.date.getTime() - a.post.data.date.getTime())
+      .slice(0, 3)
+      .map((r) => r.post);
+
+    return {
+      params: { slug: post.id },
+      props: {
+        post,
+        newer: posts[i - 1] ?? null, // newer post; the listing is newest-first
+        older: posts[i + 1] ?? null,
+        related,
+      },
+    };
+  });
 }
 
-const { post, newer, older } = Astro.props;
+const { post, newer, older, related } = Astro.props;
 const { Content, headings } = await render(post);
 
 const readingTime = formatReadingTime(post.body ?? '');
@@ -59,7 +76,9 @@ const rawUrl = `https://github.com/brunojppb/brunojppb.github.io/blob/master/src
       </h1>
       <div class="mt-3 flex flex-wrap items-center gap-4 text-2xs tracking-label text-ink-muted">
         <span class="uppercase">{formatProseDate(post.data.date)}</span>
-        {post.data.tags.map((tag) => <span class="text-accent-lift">#{tag}</span>)}
+        <nav aria-label="tags" class="flex flex-wrap gap-2">
+          {post.data.tags.map((tag) => <Tag label={tag} href={`/tags/${tag}/`} />)}
+        </nav>
       </div>
 
       <div class="mt-6 min-[900px]:hidden">
@@ -105,8 +124,21 @@ const rawUrl = `https://github.com/brunojppb/brunojppb.github.io/blob/master/src
     </div>
 
     <aside class="hidden min-[900px]:block min-[900px]:pl-[22px]">
-      <div class="sticky top-8">
+      <div class="sticky top-8 flex flex-col gap-6.5">
         <Outline headings={headings} variant="rail" />
+
+        {related.length > 0 && (
+          <div class="flex flex-col gap-2">
+            <span class="text-2xs tracking-label text-ink-muted">RELATED</span>
+            <nav aria-label="related posts" class="flex flex-col gap-2">
+              {related.map((r) => (
+                <a href={`/entries/${r.id}/`} class="text-xs text-ink-secondary">
+                  {r.id}.md
+                </a>
+              ))}
+            </nav>
+          </div>
+        )}
       </div>
     </aside>
   </div>

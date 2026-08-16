@@ -1,0 +1,38 @@
+{
+  "brunojppb/turbo-cache-server": {
+    "stars": 214,
+    "language": "Rust",
+    "license": "MIT",
+    "description": "Blazingly fast Turborepo remote cache server written in Rust as a Github Action with Docker support for Linux and MacOS"
+  },
+  "brunojppb/sanitisium": {
+    "stars": 5,
+    "language": "Rust",
+    "license": "MIT",
+    "description": "Eliminate PDF threats through Content Disarm and Reconstruction"
+  },
+  "brunojppb/node-distributed-lock": {
+    "stars": 5,
+    "language": "TypeScript",
+    "license": "MIT",
+    "description": "Distributed locks in Node.js with TypeScript and Redis"
+  },
+  "brunojppb/react-router-datadog-express-tracing": {
+    "stars": 3,
+    "language": "JavaScript",
+    "license": "MIT",
+    "description": "Better Datadog traces for Remix applications using Express"
+  },
+  "brunojppb/austria-expat-tips": {
+    "stars": 22,
+    "language": "MDX",
+    "license": "MIT",
+    "description": "Tips for expats living in Austria"
+  },
+  "brunojppb/redis-cluster-demo": {
+    "stars": 41,
+    "language": "JavaScript",
+    "license": null,
+    "description": "Redis Cluster with multiple shards and replicas using Docker for development"
+  }
+}

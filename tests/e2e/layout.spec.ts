@@ -12,6 +12,7 @@ const ROUTES = [
   '/about/',
   '/courses/',
   '/reading/',
+  '/src/',
   '/404',
 ];
 

@@ -8,7 +8,10 @@ import { rehypeCodeBlock } from './src/lib/rehype-code-block.ts';
 export default defineConfig({
   site: 'https://bpaulino.com',
   output: 'static',
-  trailingSlash: 'always',
+  // The old site served every URL with or without a trailing slash, and those
+  // URLs are indexed and linked. 'always' would make the dev server reject the
+  // slashless form and misrepresent what production accepts.
+  trailingSlash: 'ignore',
   integrations: [react(), sitemap()],
   vite: { plugins: [tailwindcss()] },
   markdown: {

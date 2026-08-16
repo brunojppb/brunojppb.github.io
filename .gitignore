@@ -1,6 +1,4 @@
-# Maudit / Rust
 dist/
-target/
 
 # Astro / Node
 node_modules/

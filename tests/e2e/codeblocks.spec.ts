@@ -1,13 +1,14 @@
 import { test, expect } from '@playwright/test';
 
 /**
- * `/gallery/` covers CodeBlock.astro directly. The other two are the real
- * post route (`src/pages/entries/[slug].astro`), so the audit checks the
- * same rehype pipeline (src/lib/rehype-code-block.ts) a reader of a real
- * post actually gets, not just the gallery specimens.
+ * `/system/` covers CodeBlock.astro directly (the design-system page's own
+ * specimens). The other two are the real post route
+ * (`src/pages/entries/[slug].astro`), so the audit checks the same rehype
+ * pipeline (src/lib/rehype-code-block.ts) a reader of a real post actually
+ * gets, not just the component specimens.
  */
 const ROUTES = [
-  '/gallery/',
+  '/system/',
   '/entries/distributed-lock-in-node-js/', // 16 fences
   '/entries/https-for-your-homelab/', // 19 fences
 ];
@@ -70,7 +71,7 @@ for (const route of ROUTES) {
 
 test('the copy button copies a CodeBlock.astro snippet (React island)', async ({ page, context }) => {
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
-  await page.goto('/gallery/');
+  await page.goto('/system/');
   const button = page.locator('[data-copy]').first();
   await button.scrollIntoViewIfNeeded();
   // client:visible hydrates once the button crosses into the viewport —

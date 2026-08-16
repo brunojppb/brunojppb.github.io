@@ -63,7 +63,7 @@ src/
     content/  Prose.astro  CodeBlock.astro  Callout.astro  Outline.astro
     listing/  FileRow.astro  Tag.astro  Pagination.astro
     media/    BookCover.astro  AsciiBanner.astro
-    islands/  CopyButton.tsx  CommandPalette.tsx  OutlineDisclosure.tsx
+    islands/  CopyButton.tsx  OutlineDisclosure.tsx
   content/  posts/  books/  projects/
   pages/    index.astro  posts/[...].astro  tags/[tag].astro
             about.astro  src.astro  reading.astro  404.astro
@@ -172,15 +172,12 @@ Props: `items` (`{label, href}[]`), `current` (string).
 A flex row inside the window, below the chrome bar, on `--surface-tabbar`, bottom border
 `--border-hairline`. Labels are the paths themselves: `posts/`, `about.md`, `src/`, `reading/`,
 `courses/`, `system/`. Active tab is `--surface-accent` + `--text-on-accent`; inactive is `--text-secondary`
-with a right hairline. `⌘K` hint pinned right on desktop only.
+with a right hairline.
 Mobile: `overflow-x: auto`, `scrollbar-width: none`, `flex: none` on every tab, real labels — never
 truncate a destination away.
 
 ### 7.4 Islands (React, `client:idle` unless noted)
 - `CopyButton.tsx` — the `[ COPY ]` control in a code block header. `client:visible`.
-- `CommandPalette.tsx` — the ⌘K overlay: fuzzy search over posts, tags and pages. Renders as a
-  window-within-a-window using the same `Window` visual language, centred, with the page dimmed
-  behind. `client:idle`.
 - `OutlineDisclosure.tsx` — mobile outline toggle. Prefer native `<details>`; use the island only
   if you need the scroll-spy active state.
 
@@ -320,8 +317,6 @@ keep them on some listings and not others.
   prompt line. Do not let `$ cat about.md` be the accessible page heading.
 - Tap targets ≥44px on mobile; the listing row padding is set for this.
 - Focus: 2px `--surface-accent` outline, 2px offset, never `outline: none`.
-- The command palette traps focus, closes on Escape, and is reachable from a visible control on
-  mobile (the menu button), not only from ⌘K.
 
 ---
 
@@ -367,7 +362,6 @@ render showing every state), glyphs (safe vs fallback), still-open. Reference:
 
 ## 14. Open questions
 
-- The ⌘K palette is drawn as a hint only; its overlay design does not exist yet.
-- The About page uses placeholder employers and dates.
-- Repo stats on `/src/` are hardcoded in the mockup; decide whether to fetch them at build time.
-- No RSS, search or pagination beyond "load older" has been designed.
+- The ⌘K command palette was dropped. Bruno's call — the hint came out of the tab bar and no
+  overlay was built.
+- No search or pagination beyond "load older" has been designed.

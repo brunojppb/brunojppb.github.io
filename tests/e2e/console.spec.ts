@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test';
 
-// Every distinct template on the site — ten real routes, no scratch pages
-// (/probe/, /404) and no duplicate templates.
+// Every distinct template on the site — nine real routes, no scratch pages
+// (/probe/, /gallery/, /404) and no duplicate templates.
 const ROUTES = [
   '/', '/posts/', '/entries/https-for-your-homelab/', '/about/', '/src/',
-  '/reading/', '/courses/', '/system/', '/tags/leadership/', '/gallery/',
+  '/reading/', '/courses/', '/system/', '/tags/leadership/',
 ];
 
 for (const route of ROUTES) {

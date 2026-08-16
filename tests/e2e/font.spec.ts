@@ -14,7 +14,7 @@ async function advance(page: import('@playwright/test').Page, ch: string) {
 }
 
 test('Departure Mono is loaded, not a fallback', async ({ page }) => {
-  await page.goto('/probe/');
+  await page.goto('/system/');
   await page.evaluate(() => document.fonts.ready);
   expect(await advance(page, 'M')).toBeCloseTo(63.64, 1);
 });
@@ -25,7 +25,7 @@ test('the font is served from this origin', async ({ page }) => {
     const u = new URL(r.url());
     if (r.resourceType() === 'font' && u.host !== 'localhost:4321') external.push(r.url());
   });
-  await page.goto('/probe/');
+  await page.goto('/system/');
   await page.evaluate(() => document.fonts.ready);
   expect(external).toEqual([]);
 });

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 const BANNED = ['●', '▶', '▚', '✓', '★', '⧉', '≡', '✕', '⚠'];
 
-const ROUTES = ['/gallery/', '/about/', '/courses/', '/404', '/system/'];
+const ROUTES = ['/about/', '/courses/', '/404', '/system/'];
 
 // `/system/`'s glyph section deliberately renders the banned set — that's the
 // whole point of the section, showing readers which glyphs fall back. It

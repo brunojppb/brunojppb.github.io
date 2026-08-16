@@ -1,8 +1,6 @@
 import { test, expect } from '@playwright/test';
 
 const ROUTES = [
-  '/probe/',
-  '/gallery/',
   '/entries/distributed-lock-in-node-js/', // 25k, the longest
   '/entries/modern-webapps-with-elixir-phoenix-typescript-react/', // 23k
   '/entries/https-for-your-homelab/', // 20k
@@ -46,7 +44,7 @@ test('courses stat-strip numbers do not clip at 390', async ({ page }) => {
 
 test('all six destinations are reachable at 390', async ({ page }) => {
   test.skip(page.viewportSize()?.width !== 390, 'only meaningful at the 390 viewport this test names');
-  await page.goto('/probe/');
+  await page.goto('/system/');
   const hrefs = await page.locator('[data-tabbar] a').evaluateAll((els) =>
     els.map((e) => (e as HTMLAnchorElement).getAttribute('href'))
   );
@@ -55,7 +53,7 @@ test('all six destinations are reachable at 390', async ({ page }) => {
 
 test('the tab strip scrolls rather than truncating', async ({ page }) => {
   test.skip(page.viewportSize()?.width !== 390, 'only meaningful at the 390 viewport this test names');
-  await page.goto('/probe/');
+  await page.goto('/system/');
   const strip = page.locator('[data-tabbar]');
   const { scrollW, clientW } = await strip.evaluate((el) => ({
     scrollW: el.scrollWidth, clientW: el.clientWidth,
@@ -67,7 +65,7 @@ test('the tab strip scrolls rather than truncating', async ({ page }) => {
 });
 
 test('chrome dots are square, and the count matches the breakpoint', async ({ page }) => {
-  await page.goto('/probe/');
+  await page.goto('/system/');
   const dots = page.locator('[data-chrome-dot]');
   const results = await dots.evaluateAll((els) =>
     els

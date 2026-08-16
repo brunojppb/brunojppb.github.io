@@ -56,5 +56,5 @@ npm run build && npx serve dist -p 4321   # verify against the build, not the de
 astro check
 ```
 
-Verify visually at 390 and 1440 with Playwright before calling any page done. The full check list
-is in `docs/verification.md`.
+Verify visually at all four test viewports — 390, 768, 1024, 1440 — with Playwright before calling
+any page done. The full check list is in `docs/verification.md`.

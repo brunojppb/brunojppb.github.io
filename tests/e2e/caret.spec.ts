@@ -1,10 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 // Same route list as layout.spec.ts's overflow sweep — every distinct
-// template on the site, plus the two scratch routes.
+// template on the site.
 const ROUTES = [
-  '/probe/',
-  '/gallery/',
   '/entries/distributed-lock-in-node-js/',
   '/entries/modern-webapps-with-elixir-phoenix-typescript-react/',
   '/entries/https-for-your-homelab/',

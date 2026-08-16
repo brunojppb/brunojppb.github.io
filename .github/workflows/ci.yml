@@ -10,12 +10,13 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
 
-      - uses: Swatinem/rust-cache@v2
-
-      - name: Install Maudit CLI
-        run: cargo install maudit-cli
-
-      - name: Build site
-        run: maudit build
+      - run: npm ci
+      - run: npm run check
+      - run: npm test
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e

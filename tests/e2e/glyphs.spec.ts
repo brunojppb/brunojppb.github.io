@@ -10,10 +10,35 @@ const ROUTES = ['/gallery/', '/about/', '/courses/', '/404', '/system/'];
 // audit below can drop just that text before scanning, rather than skipping
 // the route (which would stop auditing everything else on the page) or
 // weakening the checks for every other route.
+//
+// The exemption is a hole in the audit, so it carries its own guard rather
+// than trusting whoever edits the markup next to keep it narrow: at most one
+// exempted element per page, and short enough that it can only be a
+// demonstration string, not a section someone tagged to dodge the audit. A
+// comment asks nicely; this throws.
+const MAX_EXEMPT_CHARS = 40;
+
 async function stripGlyphFallbackDemo(page: import('@playwright/test').Page) {
-  await page.evaluate(() => {
-    document.querySelectorAll('[data-glyph-fallback]').forEach((el) => el.remove());
+  const exempted = await page.evaluate(() => {
+    const els = [...document.querySelectorAll('[data-glyph-fallback]')];
+    const info = els.map((el) => (el.textContent ?? '').trim());
+    els.forEach((el) => el.remove());
+    return info;
   });
+
+  if (exempted.length > 1) {
+    throw new Error(
+      `[data-glyph-fallback] must exempt at most one element per page, found ${exempted.length}`
+    );
+  }
+  for (const text of exempted) {
+    if (text.length > MAX_EXEMPT_CHARS) {
+      throw new Error(
+        `[data-glyph-fallback] exemption is ${text.length} characters — too large to be a ` +
+          `narrow demonstration (max ${MAX_EXEMPT_CHARS}): "${text.slice(0, 60)}…"`
+      );
+    }
+  }
 }
 
 for (const route of ROUTES) {

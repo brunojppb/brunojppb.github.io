@@ -156,7 +156,7 @@ const outlineHeadings = [
           <div class={`h-16 ${s.cls}`} />
           <div class="border-t border-line px-3 py-2.5">
             <div class="text-xs text-ink">{s.name}</div>
-            <div class="mt-[3px] text-2xs tracking-chrome text-ink-muted">{s.hex}</div>
+            <div class="mt-0.75 text-2xs tracking-chrome text-ink-muted">{s.hex}</div>
           </div>
         </div>
       ))
@@ -171,7 +171,7 @@ const outlineHeadings = [
           <div class="border border-line px-3 py-3.5">
             <div class={`text-lg leading-tight ${ink.class}`}>Aa</div>
             <div class="mt-2.5 text-xs text-ink">{ink.name}</div>
-            <div class="mt-[3px] text-2xs tracking-chrome text-ink-muted">
+            <div class="mt-0.75 text-2xs tracking-chrome text-ink-muted">
               {ink.hex} · {ink.note ?? `${ratio.toFixed(1)}:1`}
             </div>
           </div>
@@ -185,18 +185,18 @@ const outlineHeadings = [
       <div class="flex h-16 items-center bg-accent px-3.5 text-xs text-on-accent">--color-on-accent</div>
       <div class="border-t border-line-accent px-3 py-2.5">
         <div class="text-xs text-ink">--color-accent</div>
-        <div class="mt-[3px] text-2xs tracking-chrome text-ink-muted">{token('color-accent')} · fills only</div>
+        <div class="mt-0.75 text-2xs tracking-chrome text-ink-muted">{token('color-accent')} · fills only</div>
       </div>
     </div>
     <div class="border border-line px-3 py-3.5">
       <div class="text-lg leading-tight text-accent-lift">Aa →</div>
       <div class="mt-2.5 text-xs text-ink">--color-accent-lift</div>
-      <div class="mt-[3px] text-2xs tracking-chrome text-ink-muted">{token('color-accent-lift')} · accent as text</div>
+      <div class="mt-0.75 text-2xs tracking-chrome text-ink-muted">{token('color-accent-lift')} · accent as text</div>
     </div>
     <div class="border border-line px-3 py-3.5">
       <div class="text-lg leading-tight text-accent-deep">~/path</div>
       <div class="mt-2.5 text-xs text-ink">--color-accent-deep</div>
-      <div class="mt-[3px] text-2xs tracking-chrome text-ink-muted">{token('color-accent-deep')} · prompt path</div>
+      <div class="mt-0.75 text-2xs tracking-chrome text-ink-muted">{token('color-accent-deep')} · prompt path</div>
     </div>
   </div>
 
@@ -206,7 +206,7 @@ const outlineHeadings = [
         <div class="py-3">
           <div class={`h-px ${line.class}`} />
           <div class="mt-2.5 text-xs text-ink">{line.name}</div>
-          <div class="mt-[3px] text-2xs tracking-chrome text-ink-muted">{line.value} · {line.note}</div>
+          <div class="mt-0.75 text-2xs tracking-chrome text-ink-muted">{line.value} · {line.note}</div>
         </div>
       ))
     }
@@ -275,7 +275,7 @@ const outlineHeadings = [
       <PromptLine command="whoami" />
       <PromptLine path="~/system" command="grep -c token theme.css" />
       <p class="flex items-center gap-3 text-2xs text-ink-muted">
-        caret sizes: <Caret size="xs" /> <Caret />
+        caret sizes: <Caret size="xs" animate={false} /> <Caret animate={false} />
       </p>
     </div>
   </div>

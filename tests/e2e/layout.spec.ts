@@ -35,11 +35,24 @@ test('the tab strip scrolls rather than truncating', async ({ page }, testInfo) 
   expect(texts.some((t) => t.includes('…'))).toBe(false);
 });
 
-test('chrome dots are square', async ({ page }) => {
+test('chrome dots are square, and the count matches the breakpoint', async ({ page }, testInfo) => {
   await page.goto('/probe/');
-  const box = await page.locator('[data-chrome-dot]').first().boundingBox();
-  expect(box!.width).toBeCloseTo(box!.height, 0);
-  const radius = await page.locator('[data-chrome-dot]').first()
-    .evaluate((el) => getComputedStyle(el).borderRadius);
-  expect(radius).toBe('0px');
+  const dots = page.locator('[data-chrome-dot]');
+  const results = await dots.evaluateAll((els) =>
+    els
+      .map((el) => {
+        const style = getComputedStyle(el);
+        const box = el.getBoundingClientRect();
+        return { hidden: style.display === 'none', width: box.width, height: box.height, radius: style.borderRadius };
+      })
+      .filter((d) => !d.hidden)
+  );
+
+  const expectedCount = testInfo.project.name === 'mobile' ? 2 : 3;
+  expect(results.length).toBe(expectedCount);
+
+  for (const dot of results) {
+    expect(dot.width).toBeCloseTo(dot.height, 0);
+    expect(dot.radius).toBe('0px');
+  }
 });

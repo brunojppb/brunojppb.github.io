@@ -12,6 +12,7 @@ interface Props {
   title: string;
   description: string;
   path: string;
+  shellPath?: string;
   dims?: string;
   current?: string;
   image?: string;
@@ -22,6 +23,7 @@ const {
   title,
   description,
   path,
+  shellPath,
   dims,
   current,
   image = '/assets/images/home_cover.jpg',
@@ -35,10 +37,13 @@ const KEYWORDS =
 const canonicalUrl = `${SITE_URL}${path}`;
 const imageUrl = image.startsWith('http') ? image : `${SITE_URL}${image}`;
 
-// The chrome bar shows the page as a shell path: "/" reads as "~",
-// "/posts/" reads as "~/posts".
-const shellPath = path === '/' ? '~' : `~${path.replace(/\/$/, '')}`;
-const windowTitle = `bruno@bpaulino: ${shellPath}`;
+// The chrome bar shows the page as a shell path. Most pages want the literal
+// URL segment ("/posts/" -> "~/posts"), but the path a page shows and the
+// section it belongs to can diverge (the home page reads "~/posts", not
+// "~") — callers state that explicitly via `shellPath` rather than have it
+// guessed.
+const derivedShellPath = path === '/' ? '~' : `~${path.replace(/\/$/, '')}`;
+const windowTitle = `bruno@bpaulino: ${shellPath ?? derivedShellPath}`;
 ---
 
 <!doctype html>
@@ -91,7 +96,7 @@ const windowTitle = `bruno@bpaulino: ${shellPath}`;
   <body class="bg-surface-page">
     <div class="relative mx-auto max-w-window p-[10px] sm:p-7">
       <Scanlines />
-      <Window title={windowTitle} dims={dims}>
+      <Window title={windowTitle} dims={dims} current={current}>
         <Fragment slot="tabs">
           <TabBar current={current} />
         </Fragment>

@@ -7,19 +7,23 @@ import NavSheet from './NavSheet.astro';
 interface Props {
   title: string;
   dims?: string;
+  current?: string;
 }
 
-const { title, dims } = Astro.props;
+const { title, dims, current } = Astro.props;
 ---
 
 <div class="relative border border-line-window bg-surface-window">
   <div
-    class="flex items-center gap-3 border-b border-line-chrome bg-surface-chrome px-[14px] py-[9px]"
+    class="flex items-center gap-[9px] border-b border-line-chrome bg-surface-chrome px-3 py-[9px] sm:gap-3 sm:px-[14px]"
   >
-    <div class="flex gap-1.5" aria-hidden="true">
-      <span data-chrome-dot class="block h-[9px] w-[9px] bg-surface-inert"></span>
-      <span data-chrome-dot class="block h-[9px] w-[9px] bg-surface-inert"></span>
-      <span data-chrome-dot class="block h-[9px] w-[9px] bg-accent"></span>
+    <div class="flex gap-[5px] sm:gap-1.5" aria-hidden="true">
+      <span
+        data-chrome-dot
+        class="hidden h-2 w-2 bg-surface-inert sm:block sm:h-[9px] sm:w-[9px]"
+      ></span>
+      <span data-chrome-dot class="block h-2 w-2 bg-surface-inert sm:h-[9px] sm:w-[9px]"></span>
+      <span data-chrome-dot class="block h-2 w-2 bg-accent sm:h-[9px] sm:w-[9px]"></span>
     </div>
     <span class="text-2xs tracking-chrome text-ink-muted">
       {title}
@@ -29,7 +33,7 @@ const { title, dims } = Astro.props;
       <slot name="chrome-meta" />
     </div>
     <div class="ml-auto md:hidden">
-      <NavSheet />
+      <NavSheet current={current} />
     </div>
   </div>
 

@@ -1,0 +1,41 @@
+---
+import NavSheet from './NavSheet.astro';
+
+/**
+ * The frame every page lives in: chrome bar, tab strip and body.
+ */
+interface Props {
+  title: string;
+  dims?: string;
+}
+
+const { title, dims } = Astro.props;
+---
+
+<div class="relative border border-line-window bg-surface-window">
+  <div
+    class="flex items-center gap-3 border-b border-line-chrome bg-surface-chrome px-[14px] py-[9px]"
+  >
+    <div class="flex gap-1.5" aria-hidden="true">
+      <span data-chrome-dot class="block h-[9px] w-[9px] bg-surface-inert"></span>
+      <span data-chrome-dot class="block h-[9px] w-[9px] bg-surface-inert"></span>
+      <span data-chrome-dot class="block h-[9px] w-[9px] bg-accent"></span>
+    </div>
+    <span class="text-2xs tracking-chrome text-ink-muted">
+      {title}
+      {dims && <span class="hidden md:inline"> — {dims}</span>}
+    </span>
+    <div class="ml-auto hidden items-center gap-3 text-2xs tracking-chrome text-ink-muted md:flex">
+      <slot name="chrome-meta" />
+    </div>
+    <div class="ml-auto md:hidden">
+      <NavSheet />
+    </div>
+  </div>
+
+  <slot name="tabs" />
+
+  <div class="p-4 sm:p-[30px]">
+    <slot />
+  </div>
+</div>

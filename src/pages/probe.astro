@@ -1,36 +1,32 @@
 ---
-import '../styles/global.css';
+import BaseLayout from '../layouts/BaseLayout.astro';
 ---
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>probe</title>
-    <link rel="preload" href="/fonts/DepartureMono-Regular.woff2" as="font" type="font/woff2" crossorigin />
-  </head>
-  <body class="bg-surface-page p-7">
-    <div class="border border-line-window bg-surface-window p-7">
-      <p class="text-2xs text-ink">2xs 11px — MMMM the quick brown fox 0123456789</p>
-      <p class="text-xs text-ink">xs 13px — MMMM the quick brown fox 0123456789</p>
-      <p class="text-sm text-ink">sm 15px — MMMM the quick brown fox 0123456789</p>
-      <p class="text-md text-ink">md 16.5px — MMMM the quick brown fox 0123456789</p>
-      <p class="text-lg text-ink">lg 22px — MMMM the quick brown fox</p>
-      <p class="text-xl text-ink">xl 27.5px — MMMM the quick</p>
-      <p class="text-2xl text-ink">2xl 33px — MMMM</p>
-      <p class="text-3xl text-ink">3xl 44px — MM</p>
 
-      <hr class="my-7 border-line" />
+<BaseLayout
+  title="probe — bpaulino.com"
+  description="Font and type-scale specimen for the CONSOLE design system."
+  path="/probe/"
+>
+  <p class="text-2xs text-ink">2xs 11px — MMMM the quick brown fox 0123456789</p>
+  <p class="text-xs text-ink">xs 13px — MMMM the quick brown fox 0123456789</p>
+  <p class="text-sm text-ink">sm 15px — MMMM the quick brown fox 0123456789</p>
+  <p class="text-md text-ink">md 16.5px — MMMM the quick brown fox 0123456789</p>
+  <p class="text-lg text-ink">lg 22px — MMMM the quick brown fox</p>
+  <p class="text-xl text-ink">xl 27.5px — MMMM the quick</p>
+  <p class="text-2xl text-ink">2xl 33px — MMMM</p>
+  <p class="text-3xl text-ink">3xl 44px — MM</p>
 
-      <p class="text-md text-ink">ink — headings, links, filenames</p>
-      <p class="text-md text-ink-body">ink-body — prose</p>
-      <p class="text-md text-ink-secondary">ink-secondary — prompts</p>
-      <p class="text-md text-ink-muted">ink-muted — 11px labels, dates, counts</p>
-      <p class="text-md text-ink-faint">ink-faint — code comments only</p>
+  <hr class="my-7 border-line" />
 
-      <hr class="my-7 border-line" />
+  <p class="text-md text-ink">ink — headings, links, filenames</p>
+  <p class="text-md text-ink-body">ink-body — prose</p>
+  <p class="text-md text-ink-secondary">ink-secondary — prompts</p>
+  <p class="text-md text-ink-muted">ink-muted — 11px labels, dates, counts</p>
+  <p class="text-md text-ink-faint">ink-faint — code comments only</p>
 
-      <p class="text-md text-accent-lift">accent as text — text-accent-lift</p>
-      <p class="inline-block bg-accent px-2 text-md text-on-accent">accent as fill — bg-accent</p>
-      <p class="text-md text-ink">glyphs: ░ ▒ ▓ █ ▲ ▼ ← → ↑ ↓ ↗ ⌘ § · ─ │ ┌ ┐ └ ┘ ├ ┤</p>
-    </div>
-  </body>
-</html>
+  <hr class="my-7 border-line" />
+
+  <p class="text-md text-accent-lift">accent as text — text-accent-lift</p>
+  <p class="inline-block bg-accent px-2 text-md text-on-accent">accent as fill — bg-accent</p>
+  <p class="text-md text-ink">glyphs: ░ ▒ ▓ █ ▲ ▼ ← → ↑ ↓ ↗ ⌘ § · ─ │ ┌ ┐ └ ┘ ├ ┤</p>
+</BaseLayout>

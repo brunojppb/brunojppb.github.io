@@ -48,3 +48,15 @@ test('rows are at least 44px tall at 390', async ({ page }, testInfo) => {
   expect(heights.length).toBeGreaterThan(0);
   for (const h of heights) expect(h).toBeGreaterThanOrEqual(44);
 });
+
+test('/src/ compact repo rows are at least 44px tall at 390', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile', 'mobile only');
+  await page.goto('/src/');
+  const heights = await page.locator('[data-repo-row]').evaluateAll((els) =>
+    els.map((e) => e.getBoundingClientRect().height)
+  );
+  // Asserted first, and exact, so a selector typo (matching zero rows)
+  // fails loudly here instead of passing the height loop vacuously.
+  expect(heights.length).toBe(4);
+  for (const h of heights) expect(h).toBeGreaterThanOrEqual(44);
+});

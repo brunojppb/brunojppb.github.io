@@ -21,10 +21,10 @@
 - slug: brunojppb/sanitisium
   pinned: true
   paragraphs:
-    - A secure PDF sanitization service written in Rust that eliminates threats by completely
+    - "A secure PDF sanitization service written in Rust that eliminates threats by completely
       regenerating documents. Instead of trying to parse and remove threats, Sanitisium takes a
-      unique approach — it converts PDF pages into 300 DPI bitmaps and creates entirely new PDFs
-      from those images.
+      unique approach: it converts PDF pages into 300 DPI bitmaps and creates entirely new PDFs
+      from those images."
     - This method removes all potential security threats including malicious JavaScript, exploit
       payloads, phishing links, and buffer overflow risks. The project includes a CLI tool, core
       library, and HTTP API with background job processing, all built with process isolation for

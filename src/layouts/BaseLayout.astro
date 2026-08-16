@@ -103,7 +103,9 @@ const windowTitle = `bruno@bpaulino: ${shellPath ?? derivedShellPath}`;
         <Fragment slot="chrome-meta">
           <slot name="chrome-meta" />
         </Fragment>
-        <slot />
+        <main>
+          <slot />
+        </main>
       </Window>
     </div>
     <script>

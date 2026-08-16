@@ -25,6 +25,20 @@ for (const route of ROUTES) {
   });
 }
 
+test('courses stat-strip numbers do not clip at 390', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile', 'mobile only');
+  await page.goto('/courses/');
+  await page.evaluate(() => document.fonts.ready);
+  // A cell's number can be wider than its own box without growing
+  // document.scrollWidth, so this checks each stat cell's own
+  // scrollWidth against its clientWidth, not page-level overflow.
+  const cells = await page.locator('.grid.grid-cols-3 > div > div:first-child').evaluateAll(
+    (els) => els.map((e) => ({ scrollWidth: e.scrollWidth, clientWidth: e.clientWidth }))
+  );
+  expect(cells.length).toBe(3);
+  for (const cell of cells) expect(cell.scrollWidth).toBeLessThanOrEqual(cell.clientWidth);
+});
+
 test('all six destinations are reachable at 390', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'mobile', 'mobile only');
   await page.goto('/probe/');

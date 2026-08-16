@@ -88,6 +88,26 @@ test('prev/next links meet the 44px tap target on mobile', async ({ page }, test
   for (const h of heights) expect(h).toBeGreaterThanOrEqual(44);
 });
 
+test('about profile links meet the 44px tap target on mobile', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile', 'mobile only');
+  await page.goto('/about/');
+  const heights = await page
+    .locator('nav[aria-label="profiles"] a')
+    .evaluateAll((els) => els.map((e) => e.getBoundingClientRect().height));
+  expect(heights.length).toBe(4);
+  for (const h of heights) expect(h).toBeGreaterThanOrEqual(44);
+});
+
+test('404 cd-links meet the 44px tap target on mobile', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile', 'mobile only');
+  await page.goto('/404');
+  const heights = await page
+    .locator('nav[aria-label="quick links"] a')
+    .evaluateAll((els) => els.map((e) => e.getBoundingClientRect().height));
+  expect(heights.length).toBe(4);
+  for (const h of heights) expect(h).toBeGreaterThanOrEqual(44);
+});
+
 test('every nav landmark on the post page has an accessible name', async ({ page }) => {
   await page.goto('/entries/distributed-lock-in-node-js/');
   const names = await page

@@ -24,7 +24,7 @@ const courses = defineCollection({
   loader: file('src/data/courses.yaml'),
   schema: z.object({
     title: z.string(),
-    url: z.string().url(),
+    url: z.url(),
     tags: z.array(z.string()),
     free: z.boolean(),
     thumbnail: z.string(),

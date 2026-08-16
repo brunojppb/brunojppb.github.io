@@ -1,18 +1,15 @@
 import { test, expect } from '@playwright/test';
 
 /**
- * `/gallery/` covers CodeBlock.astro directly. The other two are a real
- * post's markdown rendered through the rehype plugin (src/lib/rehype-code-
- * block.ts) — the post page itself doesn't exist until Task 7, so this is
- * a scratch route (src/pages/gallery/post/[slug].astro) that renders the
- * same content collection entry through the same pipeline. Auditing only
- * the gallery would prove nothing about what a reader of a real post gets;
- * that gap is exactly what broke this design once already.
+ * `/gallery/` covers CodeBlock.astro directly. The other two are the real
+ * post route (`src/pages/entries/[slug].astro`), so the audit checks the
+ * same rehype pipeline (src/lib/rehype-code-block.ts) a reader of a real
+ * post actually gets, not just the gallery specimens.
  */
 const ROUTES = [
   '/gallery/',
-  '/gallery/post/distributed-lock-in-node-js/',
-  '/gallery/post/https-for-your-homelab/',
+  '/entries/distributed-lock-in-node-js/', // 16 fences
+  '/entries/https-for-your-homelab/', // 19 fences
 ];
 
 for (const route of ROUTES) {
@@ -94,7 +91,7 @@ test('the copy button copies a markdown-derived block (rehype + static handler)'
   context,
 }) => {
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
-  await page.goto('/gallery/post/https-for-your-homelab/');
+  await page.goto('/entries/https-for-your-homelab/');
   const button = page.locator('[data-copy][data-copy-source]').first();
   await button.click();
   const copied = await page.evaluate(() => navigator.clipboard.readText());

@@ -1,0 +1,88 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Prose from '../../components/content/Prose.astro';
+import Outline from '../../components/content/Outline.astro';
+import PromptLine from '../../components/shell/PromptLine.astro';
+import { formatProseDate } from '../../lib/posts';
+
+export async function getStaticPaths() {
+  const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
+    (a, b) => b.data.date.getTime() - a.data.date.getTime()
+  );
+
+  return posts.map((post, i) => ({
+    params: { slug: post.id },
+    props: {
+      post,
+      newer: posts[i - 1] ?? null, // newer post; the listing is newest-first
+      older: posts[i + 1] ?? null,
+    },
+  }));
+}
+
+const { post, newer, older } = Astro.props;
+const { Content, headings } = await render(post);
+---
+
+<BaseLayout
+  title={`${post.data.title} — bpaulino.com`}
+  description={post.data.description}
+  path={`/entries/${post.id}/`}
+  shellPath={`~/posts/${post.id}.md`}
+  current="/posts/"
+  image={post.data.image}
+  lang={post.data.lang}
+>
+  <div class="min-[900px]:grid min-[900px]:grid-cols-[1fr_240px]">
+    <div class="min-[900px]:border-r min-[900px]:border-line-faint min-[900px]:pr-[30px]">
+      <PromptLine path="~/posts" command={`cat ${post.id}.md`} />
+
+      <!-- The h1 is the title. The prompt line above is decoration. -->
+      <h1
+        class="mt-6 max-w-[24ch] text-xl leading-tight text-ink md:text-2xl"
+        lang={post.data.lang}
+      >
+        {post.data.title}
+      </h1>
+      <div class="mt-3 flex flex-wrap items-center gap-4 text-2xs tracking-label text-ink-muted">
+        <span class="uppercase">{formatProseDate(post.data.date)}</span>
+        {post.data.tags.map((tag) => <span class="text-accent-lift">#{tag}</span>)}
+      </div>
+
+      <div class="mt-6 min-[900px]:hidden">
+        <Outline headings={headings} variant="disclosure" />
+      </div>
+
+      <article class="mt-7" lang={post.data.lang}>
+        <Prose><Content /></Prose>
+      </article>
+
+      <nav
+        aria-label="post navigation"
+        class="mt-8 flex items-start justify-between gap-6 border-t border-line-faint pt-4 text-xs"
+      >
+        {older ? (
+          <a href={`/entries/${older.id}/`} class="text-ink-secondary">
+            ← {older.data.title}
+          </a>
+        ) : <span />}
+        {newer ? (
+          <a href={`/entries/${newer.id}/`} class="text-right text-accent-lift">
+            {newer.data.title} →
+          </a>
+        ) : <span />}
+      </nav>
+
+      <div class="mt-8">
+        <PromptLine path="~/posts" command="cd" caret />
+      </div>
+    </div>
+
+    <aside class="hidden min-[900px]:block min-[900px]:pl-[22px]">
+      <div class="sticky top-8">
+        <Outline headings={headings} variant="rail" />
+      </div>
+    </aside>
+  </div>
+</BaseLayout>

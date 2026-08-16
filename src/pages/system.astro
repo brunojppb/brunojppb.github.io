@@ -1,0 +1,504 @@
+---
+import { readFileSync } from 'node:fs';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PromptLine from '../components/shell/PromptLine.astro';
+import Caret from '../components/shell/Caret.astro';
+import SectionRule from '../components/shell/SectionRule.astro';
+import FileRow from '../components/listing/FileRow.astro';
+import Tag from '../components/listing/Tag.astro';
+import Pagination from '../components/listing/Pagination.astro';
+import Callout from '../components/content/Callout.astro';
+import CodeBlock from '../components/content/CodeBlock.astro';
+import Outline from '../components/content/Outline.astro';
+import Prose from '../components/content/Prose.astro';
+import BookCover from '../components/media/BookCover.astro';
+import AsciiBanner from '../components/media/AsciiBanner.astro';
+import readingCover from '../assets/books/9780356500843.jpg';
+import finishedCover from '../assets/books/9781098179922.jpg';
+import { contrastRatio } from '../lib/contrast';
+import { getPosts, formatSize } from '../lib/posts';
+import { TAG_ORDER, tagCounts } from '../lib/tags';
+
+/**
+ * This page renders the live component gallery for CONSOLE, the design
+ * system the rest of the site is built from. Every swatch, ratio and
+ * component below is read from the same files and components every other
+ * route uses — nothing here is retyped, so it cannot drift from them.
+ */
+
+// The single source of truth for every colour and size below. Reading it
+// at build time (instead of retyping any value) is what keeps this page
+// from drifting the first time a token changes.
+const themeCss = readFileSync('src/styles/theme.css', 'utf-8');
+
+function token(name: string): string {
+  const match = themeCss.match(new RegExp(`--${name}:\\s*([^;]+);`));
+  if (!match) throw new Error(`token not found in theme.css: --${name}`);
+  return match[1].trim();
+}
+
+const WINDOW_HEX = token('color-surface-window');
+
+const surfaces = [
+  { name: '--color-surface-page', cls: 'bg-surface-page', hex: token('color-surface-page') },
+  { name: '--color-surface-window', cls: 'bg-surface-window', hex: WINDOW_HEX },
+  { name: '--color-surface-chrome', cls: 'bg-surface-chrome', hex: token('color-surface-chrome') },
+  { name: '--color-surface-code', cls: 'bg-surface-code', hex: token('color-surface-code') },
+];
+
+const inks = [
+  { name: '--color-ink', class: 'text-ink', hex: token('color-ink'), note: null as string | null },
+  { name: '--color-ink-body', class: 'text-ink-body', hex: token('color-ink-body'), note: null },
+  { name: '--color-ink-secondary', class: 'text-ink-secondary', hex: token('color-ink-secondary'), note: null },
+  { name: '--color-ink-muted', class: 'text-ink-muted', hex: token('color-ink-muted'), note: null },
+  { name: '--color-ink-faint', class: 'text-ink-faint', hex: token('color-ink-faint'), note: 'code only' },
+];
+
+const lines = [
+  { name: '--color-line-window', value: token('color-line-window'), class: 'bg-line-window', note: 'window border' },
+  { name: '--color-line-strong', value: token('color-line-strong'), class: 'bg-line-strong', note: 'chips, dividers' },
+  { name: '--color-line-hairline', value: token('color-line-hairline'), class: 'bg-line-hairline', note: 'tab strip, headers' },
+  { name: '--color-line-faint', value: token('color-line-faint'), class: 'bg-line-faint', note: 'row dividers' },
+];
+
+// `previewCls` renders the "use" column at the row's own size where a
+// sentence still fits a 390px column (up to --text-xl); above that, a
+// hero-sized description would only overflow, so the preview caps at
+// text-md and the TOKEN/SIZE columns carry the real number instead.
+const typeScale = [
+  { token: '--text-2xs', px: token('text-2xs'), lh: token('text-2xs--line-height'), cls: 'text-2xs', previewCls: 'text-2xs', use: 'Labels, meta, tags, chrome' },
+  { token: '--text-xs', px: token('text-xs'), lh: token('text-xs--line-height'), cls: 'text-xs', previewCls: 'text-xs', use: 'Dense rows, filenames, captions' },
+  { token: '--text-sm', px: token('text-sm'), lh: token('text-sm--line-height'), cls: 'text-sm', previewCls: 'text-sm', use: 'Code, callout body, secondary prose' },
+  { token: '--text-md', px: token('text-md'), lh: token('text-md--line-height'), cls: 'text-md', previewCls: 'text-md', use: 'Body copy. The default everywhere, mobile included.' },
+  { token: '--text-lg', px: token('text-lg'), lh: token('text-lg--line-height'), cls: 'text-lg', previewCls: 'text-lg', use: 'Section headings, card titles' },
+  { token: '--text-xl', px: token('text-xl'), lh: token('text-xl--line-height'), cls: 'text-xl', previewCls: 'text-xl', use: 'Stat cells, course titles, mobile h1' },
+  { token: '--text-2xl', px: token('text-2xl'), lh: token('text-2xl--line-height'), cls: 'text-2xl', previewCls: 'text-md', use: 'Page h1' },
+  { token: '--text-3xl', px: token('text-3xl'), lh: token('text-3xl--line-height'), cls: 'text-3xl', previewCls: 'text-md', use: 'On the scale — not yet used in a shipped layout' },
+  { token: '--text-hero', px: token('text-hero'), lh: token('text-hero--line-height'), cls: 'text-hero', previewCls: 'text-md', use: '404 digits only' },
+];
+
+// A real slice of theme.css, not a retyped one — the two CodeBlock
+// specimens below are the file that drives this whole page.
+const accentBlock = themeCss
+  .match(/ {2}--color-accent:[\s\S]*?--color-on-accent:[^\n]*\n/)?.[0]
+  .replace(/\n$/, '') ?? '';
+const keyframesBlock = themeCss
+  .match(/ {2}@keyframes console-blink[\s\S]*?@keyframes console-sweep[^\n]*\n/)?.[0]
+  .replace(/\n$/, '') ?? '';
+
+// Real posts and real tag counts, not invented ones — same data every
+// listing page on the site reads from.
+const posts = await getPosts();
+const newestPost = posts[0];
+const ptPost = posts.find((p) => p.data.lang === 'pt-BR')!;
+const counts = tagCounts(posts);
+const topTag = TAG_ORDER[0];
+const secondTag = TAG_ORDER[1];
+
+const FALLBACK_GLYPHS = ['●', '▶', '▚', '✓', '★', '⧉', '≡', '✕', '⚠'];
+
+const COMPONENTS = [
+  'PromptLine + Caret', 'SectionRule', 'Tag', 'FileRow', 'Pagination',
+  'CodeBlock', 'Callout', 'BookCover', 'AsciiBanner', 'Outline', 'Prose',
+  'Window · TabBar · Scanlines',
+];
+
+const outlineHeadings = [
+  { depth: 2, slug: 'the-frame', text: 'The frame' },
+  { depth: 3, slug: 'chrome-and-tabs', text: 'Chrome and tabs' },
+  { depth: 2, slug: 'reading-it-back', text: 'Reading it back' },
+];
+---
+
+<BaseLayout
+  title="system — bpaulino.com"
+  description="CONSOLE, the design system this site is built from — colour, type, components and glyphs, rendered live from the same code every other page uses."
+  path="/system/"
+  shellPath="~/system"
+  current="/system/"
+>
+  <Fragment slot="chrome-meta">
+    <span>{COMPONENTS.length} COMPONENTS · ASTRO + REACT</span>
+  </Fragment>
+
+  <PromptLine command="cat system/readme.md" />
+
+  <h1 class="mt-6 text-2xl leading-tight text-ink">CONSOLE</h1>
+  <p class="mt-3.5 max-w-[68ch] text-md text-ink-body">
+    The design system this site is built from, published at <span class="text-accent-lift">/system</span>{' '}
+    so it can't drift from what it describes. The rules live in <code class="bg-wash-code px-1.5 py-px text-accent-lift">docs/design-system.md</code>;
+    every value lives in <code class="bg-wash-code px-1.5 py-px text-accent-lift">src/styles/theme.css</code>.
+    Everything below reads from those two files and renders from the same components every other
+    page on the site imports — nothing here is a hand-drawn copy.
+  </p>
+  <div class="mt-4.5 flex flex-wrap gap-5.5 text-2xs tracking-label text-ink-muted">
+    <span>DARK ONLY</span>
+    <span>ONE FONT · ONE WEIGHT</span>
+    <span>RADIUS 0</span>
+    <span>NO SHADOWS</span>
+    <span>3 ANIMATIONS · 0 TRANSITIONS</span>
+  </div>
+
+  <!-- ============================================================ -->
+  <div class="mt-11">
+    <SectionRule
+      label="00 / COLOUR"
+      tone="accent"
+      meta={`${surfaces.length} SURFACES · ${inks.length} INKS · 1 ACCENT`}
+    />
+    <p class="mt-2 text-2xs tracking-chrome text-ink-faint">ratios measured against --color-surface-window</p>
+  </div>
+
+  <div class="mt-5 grid grid-cols-2 gap-3.5 sm:grid-cols-4">
+    {
+      surfaces.map((s) => (
+        <div class="border border-line">
+          <div class={`h-16 ${s.cls}`} />
+          <div class="border-t border-line px-3 py-2.5">
+            <div class="text-xs text-ink">{s.name}</div>
+            <div class="mt-[3px] text-2xs tracking-chrome text-ink-muted">{s.hex}</div>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="mt-3.5 grid grid-cols-2 gap-3.5 sm:grid-cols-5">
+    {
+      inks.map((ink) => {
+        const ratio = contrastRatio(ink.hex, WINDOW_HEX);
+        return (
+          <div class="border border-line px-3 py-3.5">
+            <div class={`text-lg leading-tight ${ink.class}`}>Aa</div>
+            <div class="mt-2.5 text-xs text-ink">{ink.name}</div>
+            <div class="mt-[3px] text-2xs tracking-chrome text-ink-muted">
+              {ink.hex} · {ink.note ?? `${ratio.toFixed(1)}:1`}
+            </div>
+          </div>
+        );
+      })
+    }
+  </div>
+
+  <div class="mt-3.5 grid grid-cols-1 gap-3.5 sm:grid-cols-3">
+    <div class="border border-line-accent">
+      <div class="flex h-16 items-center bg-accent px-3.5 text-xs text-on-accent">--color-on-accent</div>
+      <div class="border-t border-line-accent px-3 py-2.5">
+        <div class="text-xs text-ink">--color-accent</div>
+        <div class="mt-[3px] text-2xs tracking-chrome text-ink-muted">{token('color-accent')} · fills only</div>
+      </div>
+    </div>
+    <div class="border border-line px-3 py-3.5">
+      <div class="text-lg leading-tight text-accent-lift">Aa →</div>
+      <div class="mt-2.5 text-xs text-ink">--color-accent-lift</div>
+      <div class="mt-[3px] text-2xs tracking-chrome text-ink-muted">{token('color-accent-lift')} · accent as text</div>
+    </div>
+    <div class="border border-line px-3 py-3.5">
+      <div class="text-lg leading-tight text-accent-deep">~/path</div>
+      <div class="mt-2.5 text-xs text-ink">--color-accent-deep</div>
+      <div class="mt-[3px] text-2xs tracking-chrome text-ink-muted">{token('color-accent-deep')} · prompt path</div>
+    </div>
+  </div>
+
+  <div class="mt-3.5 grid grid-cols-2 gap-3.5 sm:grid-cols-4">
+    {
+      lines.map((line) => (
+        <div class="py-3">
+          <div class={`h-px ${line.class}`} />
+          <div class="mt-2.5 text-xs text-ink">{line.name}</div>
+          <div class="mt-[3px] text-2xs tracking-chrome text-ink-muted">{line.value} · {line.note}</div>
+        </div>
+      ))
+    }
+  </div>
+
+  <!-- ============================================================ -->
+  <div class="mt-11">
+    <SectionRule label="01 / TYPE" tone="accent" meta="DEPARTURE MONO · 400 · 11PX GRID" />
+  </div>
+
+  <div class="mt-5 border border-line">
+    <div class="grid grid-cols-[90px_90px_1fr] gap-4 border-b border-line-hairline px-4 py-3 text-2xs tracking-label text-ink-muted sm:grid-cols-[120px_100px_1fr]">
+      <span>TOKEN</span><span>SIZE</span><span>USE</span>
+    </div>
+    {
+      typeScale.map((row, i) => (
+        <div
+          class:list={[
+            'grid min-w-0 grid-cols-[90px_90px_1fr] items-baseline gap-4 px-4 py-3.5 sm:grid-cols-[120px_100px_1fr]',
+            i < typeScale.length - 1 && 'border-b border-line-faint',
+          ]}
+        >
+          <span class="text-xs text-accent-lift">{row.token}</span>
+          <span class="text-xs text-ink-muted">{row.px} / {row.lh}</span>
+          <span class={`min-w-0 break-words ${row.previewCls === 'text-2xs' || row.previewCls === 'text-xs' ? `${row.previewCls} tracking-label text-ink-muted` : `${row.previewCls} text-ink-body`}`}>
+            {row.use}
+          </span>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="mt-3.5 grid grid-cols-1 gap-3.5 sm:grid-cols-2">
+    <div class="border border-line p-4">
+      <div class="text-2xs tracking-label text-ink-muted">EMPHASIS — IN ORDER OF PREFERENCE</div>
+      <div class="mt-3 flex flex-col gap-2.5 text-sm text-ink-body">
+        <div>1&nbsp; colour → <span class="text-accent-lift">an accent run</span></div>
+        <div>2&nbsp; inversion → <span class="bg-accent px-1.75 text-on-accent">a filled run</span></div>
+        <div>3&nbsp; block prefix → <span class="text-accent-lift">█</span> a marked line</div>
+        <div>4&nbsp; <span class="text-2xs tracking-label">UPPERCASE + TRACKING</span></div>
+      </div>
+    </div>
+    <div class="border border-dashed border-line-accent p-4">
+      <div class="text-2xs tracking-label text-accent-lift">! NEVER</div>
+      <div class="mt-3 flex flex-col gap-2.5 text-sm text-ink-body">
+        <div>Bold — the font has one weight; browsers fake it badly</div>
+        <div>Sizes off the 11px grid — 14, 18 and 24 blur the pixels</div>
+        <div>Uppercase on a heading or a sentence</div>
+        <div>A second typeface, anywhere</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <div class="mt-11">
+    <SectionRule label="02 / COMPONENTS" tone="accent" meta={`${COMPONENTS.length} · ASTRO UNLESS MARKED`} />
+  </div>
+
+  <div class="grid gap-5 border-t border-line-hairline py-5 sm:grid-cols-[200px_1fr] [&>*]:min-w-0">
+    <div>
+      <div class="text-md text-ink">PromptLine + Caret</div>
+      <div class="mt-1.5 text-xs leading-snug text-ink-muted">path · command · caret. One caret per screen.</div>
+      <div class="mt-2 text-2xs tracking-chrome text-ink-faint">shell/PromptLine.astro + shell/Caret.astro</div>
+    </div>
+    <div class="flex flex-col gap-3 border border-line-hairline bg-surface-code px-5 py-4.5">
+      <PromptLine command="whoami" />
+      <PromptLine path="~/system" command="grep -c token theme.css" />
+      <p class="flex items-center gap-3 text-2xs text-ink-muted">
+        caret sizes: <Caret size="xs" /> <Caret />
+      </p>
+    </div>
+  </div>
+
+  <div class="grid gap-5 border-t border-line-hairline py-5 sm:grid-cols-[200px_1fr] [&>*]:min-w-0">
+    <div>
+      <div class="text-md text-ink">SectionRule</div>
+      <div class="mt-1.5 text-xs leading-snug text-ink-muted">label · rule · optional meta. `tone="accent"` for year and index headings.</div>
+      <div class="mt-2 text-2xs tracking-chrome text-ink-faint">shell/SectionRule.astro</div>
+    </div>
+    <div class="flex flex-col gap-4 border border-line-hairline bg-surface-code px-5 py-4.5">
+      <SectionRule label="all posts" meta={`${posts.length} FILES`} tone="muted" />
+      <SectionRule label={`${posts[0].data.date.getUTCFullYear()}/`} meta="01 FILE" tone="accent" />
+    </div>
+  </div>
+
+  <div class="grid gap-5 border-t border-line-hairline py-5 sm:grid-cols-[200px_1fr] [&>*]:min-w-0">
+    <div>
+      <div class="text-md text-ink">Tag</div>
+      <div class="mt-1.5 text-xs leading-snug text-ink-muted">Counts render inside the chip, read from the real post archive.</div>
+      <div class="mt-2 text-2xs tracking-chrome text-ink-faint">listing/Tag.astro</div>
+    </div>
+    <div class="flex flex-wrap items-center gap-2 border border-line-hairline bg-surface-code px-5 py-4.5">
+      <a href="/posts/" class="inline-block bg-accent px-2.75 py-1.25 text-2xs tracking-chrome text-on-accent">all {posts.length}</a>
+      <Tag label={topTag} count={counts.get(topTag) ?? 0} href={`/tags/${topTag}/`} />
+      <Tag label={secondTag} count={counts.get(secondTag) ?? 0} href={`/tags/${secondTag}/`} active />
+      <span class="ml-1.5 text-2xs tracking-chrome text-ink-faint">DEFAULT · DEFAULT · ACTIVE</span>
+    </div>
+  </div>
+
+  <div class="grid gap-5 border-t border-line-hairline py-5 sm:grid-cols-[200px_1fr] [&>*]:min-w-0">
+    <div>
+      <div class="text-md text-ink">FileRow</div>
+      <div class="mt-1.5 text-xs leading-snug text-ink-muted">The listing primitive. Desktop grid, mobile stack, 44px minimum tap target.</div>
+      <div class="mt-2 text-2xs tracking-chrome text-ink-faint">listing/FileRow.astro</div>
+    </div>
+    <div class="border border-line-hairline bg-surface-code px-5 py-2">
+      <FileRow
+        date={newestPost.data.date}
+        size={formatSize(newestPost.body?.length ?? 0)}
+        title={newestPost.data.title}
+        filename={`${newestPost.id}.md`}
+        tags={newestPost.data.tags}
+        href={`/entries/${newestPost.id}/`}
+      />
+      <FileRow
+        date={ptPost.data.date}
+        size={formatSize(ptPost.body?.length ?? 0)}
+        title={ptPost.data.title}
+        filename={`${ptPost.id}.md`}
+        tags={ptPost.data.tags}
+        href={`/entries/${ptPost.id}/`}
+        lang="pt-BR"
+      />
+    </div>
+  </div>
+
+  <div class="grid gap-5 border-t border-line-hairline py-5 sm:grid-cols-[200px_1fr] [&>*]:min-w-0">
+    <div>
+      <div class="text-md text-ink">Pagination</div>
+      <div class="mt-1.5 text-xs leading-snug text-ink-muted">One line: a shown/total count, and "load older" while there is more.</div>
+      <div class="mt-2 text-2xs tracking-chrome text-ink-faint">listing/Pagination.astro</div>
+    </div>
+    <div class="flex flex-col gap-3 border border-line-hairline bg-surface-code px-5 py-4.5">
+      <Pagination shown={8} total={posts.length} nextHref="/posts/" />
+      <Pagination shown={posts.length} total={posts.length} />
+    </div>
+  </div>
+
+  <div class="grid gap-5 border-t border-line-hairline py-5 sm:grid-cols-[200px_1fr] [&>*]:min-w-0">
+    <div>
+      <div class="text-md text-ink">CodeBlock</div>
+      <div class="mt-1.5 text-xs leading-snug text-ink-muted">One block element per line — a collapsed code block is the worst failure this design can have. Full-bleed on mobile.</div>
+      <div class="mt-2 text-2xs tracking-chrome text-ink-faint">content/CodeBlock.astro + islands/CopyButton.tsx</div>
+    </div>
+    <div class="flex flex-col gap-4">
+      <CodeBlock filename="theme.css" code={accentBlock} />
+      <CodeBlock code={keyframesBlock} showLineNumbers={false} />
+      <p class="text-sm text-ink-body">
+        A fenced code block in a post's markdown goes through a different path — the rehype plugin
+        in <code class="bg-wash-code px-1.5 py-px text-accent-lift">src/lib/rehype-code-block.ts</code>{' '}
+        builds the same header-and-line anatomy from Shiki's output, with no React involved. See it
+        live on <a href={`/entries/${newestPost.id}/`} class="text-accent-lift">a real post</a>.
+      </p>
+    </div>
+  </div>
+
+  <div class="grid gap-5 border-t border-line-hairline py-5 sm:grid-cols-[200px_1fr] [&>*]:min-w-0">
+    <div>
+      <div class="text-md text-ink">Callout</div>
+      <div class="mt-1.5 text-xs leading-snug text-ink-muted">Dashed border is what tells it apart from every other box. Keep it dashed.</div>
+      <div class="mt-2 text-2xs tracking-chrome text-ink-faint">content/Callout.astro</div>
+    </div>
+    <div class="flex flex-col gap-3">
+      <Callout>
+        Ratios on this page are computed against --color-surface-window at build time. Change the
+        token in theme.css and every ratio on this page moves with it.
+      </Callout>
+      <Callout tone="warn">
+        If a specimen here ever disagrees with the real component, the specimen is wrong — this
+        page is generated from the same code the rest of the site imports.
+      </Callout>
+    </div>
+  </div>
+
+  <div class="grid gap-5 border-t border-line-hairline py-5 sm:grid-cols-[200px_1fr] [&>*]:min-w-0">
+    <div>
+      <div class="text-md text-ink">BookCover</div>
+      <div class="mt-1.5 text-xs leading-snug text-ink-muted">2:3. Reading stays full opacity with an accent border; finished dims to 80%. No cover falls back to a dither placeholder.</div>
+      <div class="mt-2 text-2xs tracking-chrome text-ink-faint">media/BookCover.astro</div>
+    </div>
+    <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <BookCover src={readingCover} alt="a book currently being read" status="reading" />
+      <BookCover alt="a book with no cover on file yet" status="reading" />
+      <BookCover src={finishedCover} alt="a finished book" status="finished" />
+      <BookCover alt="a finished book with no cover on file" status="finished" />
+    </div>
+  </div>
+
+  <div class="grid gap-5 border-t border-line-hairline py-5 sm:grid-cols-[200px_1fr] [&>*]:min-w-0">
+    <div>
+      <div class="text-md text-ink">AsciiBanner</div>
+      <div class="mt-1.5 text-xs leading-snug text-ink-muted">Decorative block texture set as text, never drawn letterforms. `aria-hidden`. `sweep` is used once, on the 404.</div>
+      <div class="mt-2 text-2xs tracking-chrome text-ink-faint">media/AsciiBanner.astro</div>
+    </div>
+    <div class="flex flex-col gap-3 overflow-hidden border border-line-hairline bg-surface-code px-5 py-4">
+      <AsciiBanner rows={['░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░']} />
+      <AsciiBanner rows={['░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░']} animate="sweep" />
+    </div>
+  </div>
+
+  <div class="grid gap-5 border-t border-line-hairline py-5 sm:grid-cols-[200px_1fr] [&>*]:min-w-0">
+    <div>
+      <div class="text-md text-ink">Outline</div>
+      <div class="mt-1.5 text-xs leading-snug text-ink-muted">A post's table of contents. `rail` is the sticky desktop column; `disclosure` is the bordered `&lt;details&gt;` on narrow screens.</div>
+      <div class="mt-2 text-2xs tracking-chrome text-ink-faint">content/Outline.astro</div>
+    </div>
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div class="border border-line-hairline bg-surface-code px-5 py-4.5">
+        <Outline headings={outlineHeadings} variant="rail" />
+      </div>
+      <div class="border border-line-hairline bg-surface-code px-5 py-4.5">
+        <Outline headings={outlineHeadings} variant="disclosure" />
+      </div>
+    </div>
+  </div>
+
+  <div class="grid gap-5 border-t border-line-hairline py-5 sm:grid-cols-[200px_1fr] [&>*]:min-w-0">
+    <div>
+      <div class="text-md text-ink">Prose</div>
+      <div class="mt-1.5 text-xs leading-snug text-ink-muted">Wraps rendered markdown. Caps at 68ch. `##`/`###` prefixes come from CSS, not the source text.</div>
+      <div class="mt-2 text-2xs tracking-chrome text-ink-faint">content/Prose.astro</div>
+    </div>
+    <div class="border border-line-hairline bg-surface-code px-5 py-4.5">
+      <Prose>
+        <h2 id="the-frame">The frame</h2>
+        <p>A paragraph looks like this, capped at measure so a line never runs too wide to read.</p>
+        <ul>
+          <li>List markers are an en dash, not a bullet glyph</li>
+          <li>Inline code reads as <code>a value you'd copy</code></li>
+        </ul>
+        <blockquote><p>A blockquote takes a left accent rule instead of a border box.</p></blockquote>
+      </Prose>
+    </div>
+  </div>
+
+  <div class="grid gap-5 border-t border-line-hairline border-b border-line-hairline py-5 sm:grid-cols-[200px_1fr] [&>*]:min-w-0">
+    <div>
+      <div class="text-md text-ink">Window · TabBar · Scanlines</div>
+      <div class="mt-1.5 text-xs leading-snug text-ink-muted">The frame, the tab strip, and the ambient overlay. Not re-rendered here — this page is already inside one.</div>
+      <div class="mt-2 text-2xs tracking-chrome text-ink-faint">chrome/</div>
+    </div>
+    <p class="self-center text-sm text-ink-body">
+      The chrome bar above carries this page's own title and the <code class="bg-wash-code px-1.5 py-px text-accent-lift">{COMPONENTS.length} COMPONENTS</code> count;
+      the tab strip below it is highlighting <span class="text-accent-lift">system/</span> right now.
+      Squares, never circles — the third one is the accent.
+    </p>
+  </div>
+
+  <!-- ============================================================ -->
+  <div class="mt-11">
+    <SectionRule
+      label="03 / GLYPHS"
+      tone="accent"
+      meta={`775 IN THE FONT · ${FALLBACK_GLYPHS.length} FALL BACK`}
+    />
+  </div>
+
+  <div class="mt-5 grid grid-cols-1 gap-3.5 sm:grid-cols-2">
+    <div class="border border-line-accent p-4.5">
+      <div class="text-2xs tracking-label text-accent-lift">SAFE — IN DEPARTURE MONO</div>
+      <p class="mt-3.5 text-xl leading-loose text-ink [word-spacing:.3em]">░ ▒ ▓ █ ▲ ▼ ← → ↑ ↓ ↗ ⌘ § · ─ │ ┌ ┐ └ ┘</p>
+      <p class="mt-3.5 text-xs leading-snug text-ink-muted">Plus all Latin, Greek, small caps, old-style numerals and fractions.</p>
+    </div>
+    <div class="border border-dashed border-line-accent p-4.5">
+      <div class="text-2xs tracking-label text-accent-lift">! FALLS BACK TO SYSTEM SANS — NEVER USE</div>
+      <p class="mt-3.5 text-xl leading-loose text-ink-muted [word-spacing:.3em]" data-glyph-fallback>{FALLBACK_GLYPHS.join(' ')}</p>
+      <p class="mt-3.5 text-xs leading-snug text-ink-muted">
+        Substitutions: status dot → <span class="text-accent-lift">█</span> · done → <span class="text-accent-lift">[x]</span> ·
+        newest → <span class="text-accent-lift">&gt;&gt;</span> · section → <span class="text-accent-lift">▓▒░</span> ·
+        copy → <span class="text-accent-lift">[ COPY ]</span> · hamburger → three CSS bars.
+      </p>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <div class="mt-11">
+    <SectionRule label="04 / STILL OPEN" tone="accent" />
+  </div>
+
+  <div class="mt-5 flex flex-col gap-2.5 text-sm text-ink-body">
+    <div><span class="mr-2.5 text-2xs tracking-label text-ink-muted">DROPPED</span>The ⌘K command palette. Bruno's call — the hint came out of the tab bar and no overlay was built.</div>
+    <div><span class="mr-2.5 text-2xs tracking-label text-ink-muted">DECIDED</span>Repo stats on <span class="text-accent-lift">/src/</span> fetch at build time from the GitHub API, not hardcoded.</div>
+    <div><span class="mr-2.5 text-2xs tracking-label text-ink-muted">DECIDED</span>The about page carries Bruno's real employer history — the placeholder copy is gone.</div>
+  </div>
+
+  <p class="mt-5 max-w-[68ch] text-sm text-ink-muted">Genuinely open:</p>
+  <div class="mt-2.5 flex flex-col gap-2.5 text-sm text-ink-body">
+    <div><span class="mr-2.5 text-2xs text-ink-muted">01</span>No RSS feed exists yet — <span class="text-accent-lift">/</span> already links to <span class="text-accent-lift">/feed.xml</span>, which 404s.</div>
+    <div><span class="mr-2.5 text-2xs text-ink-muted">02</span><span class="text-accent-lift">Pagination</span> renders a "load older" link, but no listing page has enough posts to need one — the mechanism is undesigned past the label.</div>
+  </div>
+
+  <div class="mt-8.5 border-t border-line-hairline pt-4.5 text-sm text-ink-secondary">
+    <span class="text-accent">bruno@bpaulino</span>:<span class="text-accent-deep">~</span>$ <Caret size="xs" />
+  </div>
+</BaseLayout>

@@ -1,0 +1,50 @@
+---
+import { Image } from 'astro:assets';
+
+/**
+ * A 2:3 book cover box. With `src`, the image fills it, run through Astro's
+ * `<Image>` so it is optimised and dimensioned; without, a dither
+ * placeholder carries an 11px "COVER 2:3" label. `reading` covers stay at
+ * full opacity with an accent border and add a constant "READING" caption
+ * beneath — the only per-book caption BookCover owns, since the finished
+ * month is data BookCover's contract doesn't carry; the caller renders
+ * that alongside the title it already has.
+ */
+interface Props {
+  src?: ImageMetadata;
+  alt: string;
+  status: 'reading' | 'finished';
+}
+
+const { src, alt, status } = Astro.props;
+const reading = status === 'reading';
+
+// The grids cap a cover at ~241px (reading, 4-up) and ~156px (finished,
+// 6-up) inside the 1100px window. Without a width Astro emits the source at
+// full size — publisher art runs to 2400px, which is 13MB across the page.
+// These are those caps at 2x.
+const width = reading ? 480 : 320;
+---
+
+<div class="flex flex-col gap-3">
+  <div
+    class:list={[
+      'aspect-[2/3] border',
+      reading ? 'border-line-accent' : 'border-line-strong',
+      !reading && 'opacity-80',
+    ]}
+  >
+    {
+      src ? (
+        <Image src={src} alt={alt} width={width} class="block h-full w-full object-cover" />
+      ) : (
+        <div
+          class:list={['flex h-full w-full items-end p-2.5', reading ? 'dither' : 'dither-mute']}
+        >
+          <span class="text-2xs tracking-label text-accent-lift">COVER 2:3</span>
+        </div>
+      )
+    }
+  </div>
+  {reading && <span class="text-2xs tracking-chrome text-accent-lift">█ READING</span>}
+</div>

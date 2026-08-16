@@ -1,0 +1,25 @@
+---
+/**
+ * A dashed-border aside inside prose. Dashed is what distinguishes it from
+ * every other bordered box in the system — keep it dashed.
+ */
+interface Props {
+  label?: string;
+  tone?: 'note' | 'warn';
+}
+
+const { label, tone = 'note' } = Astro.props;
+const resolvedLabel = label ?? (tone === 'warn' ? '! WARN' : '! NOTE');
+---
+
+{/* §7.10's prose calls for uniform --space-4 padding, but both mockup
+    instances use asymmetric px/py (12/14 and 14/16); px-4 py-3.5 follows
+    the mockup deliberately. It is not a rounding slip to "fix" back to square. */}
+<div class="flex gap-3 border border-dashed border-line-accent px-4 py-3.5">
+  <span class="whitespace-nowrap pt-[3px] text-2xs tracking-label text-accent-lift">
+    {resolvedLabel}
+  </span>
+  <div class="text-sm text-ink-body">
+    <slot />
+  </div>
+</div>

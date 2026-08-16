@@ -1,0 +1,133 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Prose from '../../components/content/Prose.astro';
+import Outline from '../../components/content/Outline.astro';
+import PromptLine from '../../components/shell/PromptLine.astro';
+import { formatProseDate, formatReadingTime, formatListDate, relatedPosts } from '../../lib/posts';
+
+export async function getStaticPaths() {
+  const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
+    (a, b) => b.data.date.getTime() - a.data.date.getTime()
+  );
+
+  return posts.map((post, i) => ({
+    params: { slug: post.id },
+    props: {
+      post,
+      newer: posts[i - 1] ?? null, // newer post; the listing is newest-first
+      older: posts[i + 1] ?? null,
+      related: relatedPosts(post, posts),
+    },
+  }));
+}
+
+const { post, newer, older, related } = Astro.props;
+const { Content, headings } = await render(post);
+
+const readingTime = formatReadingTime(post.body ?? '');
+
+// This repo's real remote is brunojppb/brunojppb.github.io, not
+// "brunojppb/blog" — verified against `git remote -v` rather than assumed.
+// Master still has posts under content/articles/, not src/content/posts/,
+// so this link resolves once this branch merges, same as every /entries/
+// URL this task ships.
+const rawUrl = `https://github.com/brunojppb/brunojppb.github.io/blob/master/src/content/posts/${post.id}.md`;
+---
+
+<BaseLayout
+  title={`${post.data.title} — bpaulino.com`}
+  description={post.data.description}
+  path={`/entries/${post.id}/`}
+  shellPath={`~/posts/${post.id}.md`}
+  current="/posts/"
+  image={post.data.image}
+>
+  <Fragment slot="chrome-meta">
+    <span>{readingTime} · {formatListDate(post.data.date)}</span>
+  </Fragment>
+
+  <div class="min-[900px]:grid min-[900px]:grid-cols-[minmax(0,1fr)_240px]">
+    <div class="min-[900px]:border-r min-[900px]:border-line-faint min-[900px]:pr-[30px]">
+      <PromptLine path="~/posts" command={`cat ${post.id}.md`} />
+
+      <!-- The h1 is the title. The prompt line above is decoration. -->
+      <h1
+        class="mt-6 max-w-[24ch] text-xl leading-tight text-ink md:text-2xl"
+        lang={post.data.lang}
+      >
+        {post.data.title}
+      </h1>
+      <div class="mt-3 flex flex-wrap items-center gap-4 text-2xs tracking-label text-ink-muted">
+        <span class="uppercase">{formatProseDate(post.data.date)}</span>
+        <nav aria-label="tags" class="flex flex-wrap gap-4">
+          {post.data.tags.map((tag) => (
+            <a href={`/tags/${tag}/`} class="text-accent-lift">
+              #{tag}
+            </a>
+          ))}
+        </nav>
+      </div>
+
+      <div class="mt-6 min-[900px]:hidden">
+        <Outline headings={headings} variant="disclosure" />
+      </div>
+
+      <!-- The document stays English (BaseLayout's default `lang`) even on
+           pt-BR posts — the surrounding chrome (nav, tab bar, prompts) is
+           always English, so only the title and the post body itself are
+           tagged with the post's own language. -->
+      <article class="mt-7" lang={post.data.lang}>
+        <Prose><Content /></Prose>
+      </article>
+
+      <p class="mt-8 text-xs">
+        <a href={rawUrl} target="_blank" rel="noopener noreferrer" class="text-accent-lift">
+          ↗ view raw .md
+        </a>
+      </p>
+
+      <nav
+        aria-label="post navigation"
+        class="mt-4 flex items-stretch justify-between gap-6 border-t border-line-faint pt-4 text-xs"
+      >
+        {older ? (
+          <a href={`/entries/${older.id}/`} class="flex min-h-11 items-center text-ink-secondary">
+            ← {older.data.title}
+          </a>
+        ) : <span />}
+        {newer ? (
+          <a
+            href={`/entries/${newer.id}/`}
+            class="flex min-h-11 items-center justify-end text-right text-accent-lift"
+          >
+            {newer.data.title} →
+          </a>
+        ) : <span />}
+      </nav>
+
+      <div class="mt-8">
+        <PromptLine path="~/posts" command="cd" caret />
+      </div>
+    </div>
+
+    <aside class="hidden min-[900px]:block min-[900px]:pl-[22px]">
+      <div class="sticky top-8 flex flex-col gap-6.5">
+        <Outline headings={headings} variant="rail" />
+
+        {related.length > 0 && (
+          <div class="flex flex-col gap-2">
+            <span class="text-2xs tracking-label text-ink-muted">RELATED</span>
+            <nav aria-label="related posts" class="flex flex-col gap-2">
+              {related.map((r) => (
+                <a href={`/entries/${r.id}/`} class="text-xs text-ink-secondary">
+                  {r.id}.md
+                </a>
+              ))}
+            </nav>
+          </div>
+        )}
+      </div>
+    </aside>
+  </div>
+</BaseLayout>

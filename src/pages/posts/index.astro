@@ -1,0 +1,69 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PromptLine from '../../components/shell/PromptLine.astro';
+import SectionRule from '../../components/shell/SectionRule.astro';
+import FileRow from '../../components/listing/FileRow.astro';
+import Tag from '../../components/listing/Tag.astro';
+import Pagination from '../../components/listing/Pagination.astro';
+import { getPosts, postSize, totalPostSize, groupByYear } from '../../lib/posts';
+import { TAG_ORDER, tagCounts } from '../../lib/tags';
+
+const posts = await getPosts();
+const years = groupByYear(posts);
+const counts = tagCounts(posts);
+
+const totalSize = totalPostSize(posts);
+---
+
+<BaseLayout
+  title="posts — bpaulino.com"
+  description="Every post, newest first."
+  path="/posts/"
+  shellPath="~/posts"
+  dims="132×48"
+  current="/posts/"
+>
+  <Fragment slot="chrome-meta">
+    <span>{posts.length} FILES · {totalSize}</span>
+  </Fragment>
+
+  <PromptLine command="ls posts/ --sort=date" />
+
+  <nav aria-label="tags" class="mt-5 flex flex-wrap gap-2">
+    <!-- Not a real tag — no data-tag, so the 14-chip cross-check in
+         listing.spec.ts counts only genuine tags from TAG_ORDER. -->
+    <a href="/posts/" class="inline-block bg-accent px-2.75 py-1.25 text-2xs tracking-chrome text-on-accent">
+      all {posts.length}
+    </a>
+    {TAG_ORDER.map((tag) => <Tag label={`${tag} ${counts.get(tag) ?? 0}`} href={`/tags/${tag}/`} />)}
+  </nav>
+
+  {
+    years.map(({ year, posts: yearPosts }) => (
+      <>
+        <div class="mt-8">
+          <SectionRule
+            label={`${year}/`}
+            meta={`${String(yearPosts.length).padStart(2, '0')} FILE${yearPosts.length === 1 ? '' : 'S'}`}
+            tone="accent"
+          />
+        </div>
+        {yearPosts.map((post) => (
+          <FileRow
+            date={post.data.date}
+            size={postSize(post)}
+            title={post.data.title}
+            filename={`${post.id}.md`}
+            tags={post.data.tags}
+            href={`/entries/${post.id}/`}
+            lang={post.data.lang}
+          />
+        ))}
+      </>
+    ))
+  }
+
+  <div class="mt-6">
+    <Pagination shown={posts.length} total={posts.length} />
+  </div>
+</BaseLayout>

@@ -1,0 +1,135 @@
+---
+import '../styles/global.css';
+import Scanlines from '../components/chrome/Scanlines.astro';
+import Window from '../components/chrome/Window.astro';
+import TabBar from '../components/chrome/TabBar.astro';
+
+/**
+ * The shell every page renders inside: html head, page void, scanlines,
+ * window chrome, tab strip, then the page's own content.
+ */
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  shellPath?: string;
+  dims?: string;
+  current?: string;
+  image?: string;
+  lang?: string;
+}
+
+const {
+  title,
+  description,
+  path,
+  shellPath,
+  dims,
+  current,
+  image = '/assets/images/home_cover.jpg',
+  lang = 'en',
+} = Astro.props;
+
+const SITE_URL = 'https://bpaulino.com';
+const KEYWORDS =
+  'programming,development,web,javascript,backend,scala,frontend,ios,api,rest';
+
+const canonicalUrl = `${SITE_URL}${path}`;
+const imageUrl = image.startsWith('http') ? image : `${SITE_URL}${image}`;
+
+// The chrome bar shows the page as a shell path. Most pages want the literal
+// URL segment ("/posts/" -> "~/posts"), but the path a page shows and the
+// section it belongs to can diverge (the home page reads "~/posts", not
+// "~") — callers state that explicitly via `shellPath` rather than have it
+// guessed.
+const derivedShellPath = path === '/' ? '~' : `~${path.replace(/\/$/, '')}`;
+const windowTitle = `bruno@bpaulino: ${shellPath ?? derivedShellPath}`;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="author" content="Bruno Paulino" />
+    <meta name="description" content={description} />
+    <meta name="keywords" content={KEYWORDS} />
+    <meta name="theme-color" content="#0d0d12" />
+
+    <title>{title}</title>
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={imageUrl} />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:domain" content="bpaulino.com" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageUrl} />
+    <meta name="twitter:url" content={canonicalUrl} />
+    <meta name="twitter:creator" content="@bpaulino0" />
+    <meta name="twitter:label1" content="Created by" />
+    <meta name="twitter:data1" content="Bruno Paulino" />
+    <meta name="twitter:label2" content="Twitter" />
+    <meta name="twitter:data2" content="@bpaulino0" />
+
+    <link rel="shortcut icon" href="/assets/favicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png" />
+    <link rel="alternate" type="application/rss+xml" title="bpaulino.com RSS Feed" href="/feed.xml" />
+
+    <link
+      rel="preload"
+      href="/fonts/DepartureMono-Regular.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+  </head>
+  <body class="bg-surface-page">
+    <div class="relative mx-auto max-w-window p-[10px] sm:p-7">
+      <Scanlines />
+      <Window title={windowTitle} dims={dims} current={current}>
+        <Fragment slot="tabs">
+          <TabBar current={current} />
+        </Fragment>
+        <Fragment slot="chrome-meta">
+          <slot name="chrome-meta" />
+        </Fragment>
+        <main>
+          <slot />
+        </main>
+      </Window>
+    </div>
+    <script>
+      // Copy control for markdown-derived code blocks (src/lib/rehype-code-block.ts).
+      // CodeBlock.astro's own copy button is a React island (see
+      // src/components/islands/CopyButton.tsx) and handles its own click;
+      // this delegated listener only ever matches the plain buttons the
+      // rehype plugin emits, marked with data-copy-source. Both read the
+      // label pair and timeout from src/lib/copy-button.ts.
+      import { COPIED_LABEL, COPY_RESET_MS } from '../lib/copy-button';
+
+      document.addEventListener('click', (event) => {
+        const target = event.target as HTMLElement | null;
+        const button = target?.closest<HTMLButtonElement>('[data-copy][data-copy-source]');
+        if (!button) return;
+        const code = button.dataset.code ?? '';
+        navigator.clipboard.writeText(code).then(() => {
+          const label = button.textContent;
+          button.textContent = COPIED_LABEL;
+          window.setTimeout(() => {
+            button.textContent = label;
+          }, COPY_RESET_MS);
+        });
+      });
+    </script>
+  </body>
+</html>

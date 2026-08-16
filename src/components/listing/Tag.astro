@@ -1,0 +1,25 @@
+---
+/**
+ * A tag chip. Used in the tag cloud and as the active/inactive filter
+ * control on tag pages.
+ */
+interface Props {
+  label: string;
+  count?: number;
+  href: string;
+  active?: boolean;
+}
+
+const { label, count, href, active = false } = Astro.props;
+---
+
+<a
+  href={href}
+  data-tag
+  class:list={[
+    'inline-block px-2.75 py-1.25 text-2xs tracking-chrome',
+    active ? 'bg-accent text-on-accent' : 'border border-line-strong text-ink-secondary',
+  ]}
+>
+  {label}{count !== undefined && ` ${count}`}
+</a>

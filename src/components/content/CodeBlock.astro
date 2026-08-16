@@ -1,0 +1,38 @@
+---
+import CopyButton from '../islands/CopyButton.tsx';
+import { codeBlockClasses as c } from '../../lib/code-block-classes';
+
+/**
+ * A hand-authored code snippet: header strip (filename or language, plus a
+ * copy control) over a line-numbered body. `code` is plain text — this
+ * component does not tokenise it. Fenced code blocks in post markdown go
+ * through the rehype plugin instead (`src/lib/rehype-code-block.ts`), which
+ * restructures Shiki's already-highlighted output into this same anatomy.
+ */
+interface Props {
+  filename?: string;
+  lang?: string;
+  code: string;
+  showLineNumbers?: boolean;
+}
+
+const { filename, lang, code, showLineNumbers = true } = Astro.props;
+const label = filename ?? (lang ? lang.toUpperCase() : '');
+
+// Trim exactly one trailing newline (the fence's closing line), not all
+// trailing whitespace — a genuinely blank last line must still count.
+const lines = code.replace(/\n$/, '').split('\n');
+---
+
+<figure class={c.figure}>
+  <figcaption class={c.header}>
+    <span class={c.label}>{label}</span>
+    <CopyButton client:visible text={code} />
+  </figcaption>
+  <pre class={c.pre}><code>{lines.map((line, i) => (
+    <div class={c.line}>
+      {showLineNumbers && <span class={c.lineNumber}>{i + 1}</span>}
+      <span>{line === '' ? '\u00A0' : line}</span>
+    </div>
+  ))}</code></pre>
+</figure>

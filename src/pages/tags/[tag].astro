@@ -1,0 +1,66 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PromptLine from '../../components/shell/PromptLine.astro';
+import FileRow from '../../components/listing/FileRow.astro';
+import Tag from '../../components/listing/Tag.astro';
+import { getPosts, postSize } from '../../lib/posts';
+import { TAG_ORDER, tagCounts, type Tag as TagName } from '../../lib/tags';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  const counts = tagCounts(posts);
+  return [...counts.keys()].map((tag) => ({
+    params: { tag },
+    props: { tag, posts: posts.filter((p) => p.data.tags.includes(tag as TagName)) },
+  }));
+}
+
+const { tag, posts } = Astro.props as { tag: TagName; posts: Awaited<ReturnType<typeof getPosts>> };
+const allPosts = await getPosts();
+const counts = tagCounts(allPosts);
+---
+
+<BaseLayout
+  title={`#${tag} — bpaulino.com`}
+  description={`${posts.length} posts tagged ${tag}.`}
+  path={`/tags/${tag}/`}
+  shellPath="~/posts"
+  dims="grep"
+  current="/posts/"
+>
+  <Fragment slot="chrome-meta">
+    <span>{posts.length} MATCH{posts.length === 1 ? '' : 'ES'}</span>
+  </Fragment>
+
+  <PromptLine command={`grep -rl "#${tag}" posts/`} />
+
+  <h1 class="mt-6 text-xl leading-tight text-ink md:text-2xl">#{tag}</h1>
+  <p class="mt-3 text-sm text-ink-muted">
+    {posts.length} posts tagged {tag}. <a href="/posts/" class="text-accent-lift">← back to all posts</a>
+  </p>
+
+  <div class="mt-7">
+    {
+      posts.map((post) => (
+        <FileRow
+          date={post.data.date}
+          size={postSize(post)}
+          title={post.data.title}
+          filename={`${post.id}.md`}
+          tags={post.data.tags}
+          href={`/entries/${post.id}/`}
+          lang={post.data.lang}
+        />
+      ))
+    }
+  </div>
+
+  <nav aria-label="tags" class="mt-7 flex flex-wrap items-baseline gap-2">
+    <span class="mr-1 text-2xs tracking-label text-ink-muted">ALL TAGS</span>
+    {
+      TAG_ORDER.map((t) => (
+        <Tag label={`${t} ${counts.get(t) ?? 0}`} href={`/tags/${t}/`} active={t === tag} />
+      ))
+    }
+  </nav>
+</BaseLayout>

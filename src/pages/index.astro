@@ -1,0 +1,73 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PromptLine from '../components/shell/PromptLine.astro';
+import FileRow from '../components/listing/FileRow.astro';
+import { getPosts, postSize, totalPostSize } from '../lib/posts';
+
+const posts = await getPosts();
+const latest = posts.slice(0, 5);
+
+const totalSize = totalPostSize(posts);
+
+// Reproduced word for word from content/pages/about.md — this is Bruno's
+// own bio copy, not marketing copy written for this rebuild.
+const bio =
+  "I am originally from Brazil and currently based in Spain. I am a passionate " +
+  'Software Engineer who loves crafting solutions that can help ease our lives ' +
+  'and make it more fun.';
+const description =
+  'I am a passionate Software Engineer who loves crafting solutions that can help ease our lives and make it more fun.';
+---
+
+<BaseLayout
+  title="Bruno Paulino — bpaulino.com"
+  description={description}
+  path="/"
+  shellPath="~/posts"
+  dims="132×48"
+  current="/posts/"
+>
+  <Fragment slot="chrome-meta">
+    <span>UTF-8 · TTY1</span>
+  </Fragment>
+
+  <PromptLine command="whoami" />
+
+  <div class="mt-5 max-w-measure pl-0.5">
+    <h1 class="text-xl leading-tight text-ink md:text-2xl">Bruno Paulino</h1>
+    <p class="mt-3 text-ink-secondary">{bio}</p>
+
+    {/* No email link: the only address in the repo is inside a git-config
+        tutorial example (10-automating-your-work-with-github-actions.md),
+        not a stated contact channel. about.md lists GitHub, Stack
+        Overflow, Twitter and LinkedIn, but no email. */}
+    <div class="mt-4 flex flex-wrap items-center gap-5 text-2xs tracking-chrome text-ink-muted">
+      <a href="https://github.com/brunojppb" class="text-accent-lift">GITHUB ↗</a>
+      <a href="/feed.xml" class="text-accent-lift sm:hidden">RSS ↗</a>
+    </div>
+  </div>
+
+  <div class="mt-8">
+    <PromptLine path="~/posts" command="ls -lt posts/ | head -5" caret />
+  </div>
+
+  <div class="mt-4">
+    {
+      latest.map((post) => (
+        <FileRow
+          date={post.data.date}
+          size={postSize(post)}
+          title={post.data.title}
+          filename={`${post.id}.md`}
+          tags={post.data.tags}
+          href={`/entries/${post.id}/`}
+          lang={post.data.lang}
+        />
+      ))
+    }
+  </div>
+
+  <p class="mt-5 text-sm text-ink-muted">
+    {posts.length} files · {totalSize} · <a href="/posts/" class="text-accent-lift">ls posts/ --all</a>
+  </p>
+</BaseLayout>

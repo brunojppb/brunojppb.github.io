@@ -1,0 +1,43 @@
+---
+import { TABS } from './TabBar.astro';
+
+/**
+ * The mobile menu. A native `<details>` so it works with no JavaScript.
+ * The summary is three CSS bars, never a glyph — `≡` is not in Departure
+ * Mono and would fall back to a system sans next to pixel type.
+ */
+interface Props {
+  current?: string;
+}
+
+const { current } = Astro.props;
+---
+
+<details class="relative md:hidden">
+  <summary
+    class="flex cursor-pointer list-none flex-col gap-[3px] p-1 marker:hidden [&::-webkit-details-marker]:hidden"
+    aria-label="menu"
+  >
+    <span class="block h-[2px] w-[14px] bg-ink-secondary"></span>
+    <span class="block h-[2px] w-[14px] bg-ink-secondary"></span>
+    <span class="block h-[2px] w-[14px] bg-ink-secondary"></span>
+  </summary>
+  <nav
+    aria-label="site"
+    class="absolute right-0 top-full z-20 mt-1 flex min-w-[160px] flex-col border border-line-window bg-surface-window"
+  >
+    {
+      TABS.map((tab) => (
+        <a
+          href={tab.href}
+          class:list={[
+            'border-b border-line-faint px-4 py-3 text-2xs tracking-label last:border-b-0',
+            current === tab.href ? 'bg-accent text-on-accent' : 'text-ink-secondary',
+          ]}
+        >
+          {tab.label}
+        </a>
+      ))
+    }
+  </nav>
+</details>

@@ -1,0 +1,19 @@
+---
+import Caret from './Caret.astro';
+
+/**
+ * The heading device of the whole site: a fake shell prompt and command.
+ * One per section; the last one on a page may carry the caret.
+ */
+interface Props {
+  path?: string;
+  command: string;
+  caret?: boolean;
+}
+
+const { path = '~', command, caret = false } = Astro.props;
+---
+
+<p class="text-xs text-ink-secondary sm:text-md">
+  <span class="text-accent">bruno@bpaulino</span>:<span class="text-accent-deep">{path}</span>{'$ '}{command}{caret && <Caret />}
+</p>

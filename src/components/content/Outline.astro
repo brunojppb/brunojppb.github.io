@@ -1,0 +1,66 @@
+---
+/**
+ * The post's table of contents (§7.13), built from the heading list Astro's
+ * markdown pipeline already collects (`render(post)` returns `headings`,
+ * `id`s already sit on the matching elements in `Content`, since Astro adds
+ * both from the same slugger run).
+ *
+ * Two anatomies, one component: `rail` is the sticky desktop column, called
+ * from the outline aside; `disclosure` is the bordered `<details>` under the
+ * title on narrow screens. The route places each at the DOM position its
+ * layout needs and lets CSS show only the one that matches the width —
+ * there is no scroll-spy, so neither variant carries an active state.
+ */
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+  variant?: 'rail' | 'disclosure';
+}
+
+const { headings, variant = 'rail' } = Astro.props;
+const entries = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+---
+
+{
+  entries.length > 0 && variant === 'rail' && (
+    <div class="flex flex-col gap-2.5">
+      <span class="text-2xs tracking-label text-ink-muted">OUTLINE</span>
+      <nav aria-label="post outline" class="flex flex-col gap-2">
+        {entries.map((h) => (
+          <a
+            href={`#${h.slug}`}
+            class:list={['text-xs text-ink-secondary', h.depth === 3 && 'pl-3']}
+          >
+            {'#'.repeat(h.depth)} {h.text}
+          </a>
+        ))}
+      </nav>
+    </div>
+  )
+}
+
+{
+  entries.length > 0 && variant === 'disclosure' && (
+    <details class="border border-line px-3.5 py-3">
+      <summary class="flex cursor-pointer list-none items-center justify-between text-2xs tracking-chrome text-ink-muted marker:hidden [&::-webkit-details-marker]:hidden">
+        <span>OUTLINE</span>
+        <span aria-hidden="true">▼</span>
+      </summary>
+      <nav aria-label="post outline" class="mt-2.5 flex flex-col gap-2">
+        {entries.map((h) => (
+          <a
+            href={`#${h.slug}`}
+            class:list={['text-xs text-ink-secondary', h.depth === 3 && 'pl-3']}
+          >
+            {'#'.repeat(h.depth)} {h.text}
+          </a>
+        ))}
+      </nav>
+    </details>
+  )
+}

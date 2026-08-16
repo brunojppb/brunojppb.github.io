@@ -1,0 +1,65 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PromptLine from '../components/shell/PromptLine.astro';
+import AsciiBanner from '../components/media/AsciiBanner.astro';
+
+// One unit from the 404 mockup, repeated to clear the ≥134-column guidance
+// in docs/design-system.md §7.15 for a 1100px container.
+const sweepUnit =
+  '░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░';
+const sweepRow = sweepUnit + sweepUnit;
+
+const links = [
+  { label: '~/', href: '/' },
+  { label: '~/posts', href: '/posts/' },
+  { label: '~/about.md', href: '/about/' },
+  { label: '~/src', href: '/src/' },
+];
+---
+
+<BaseLayout
+  title="404 — bpaulino.com"
+  description="Could not find this page."
+  path="/404"
+  shellPath="~ — 404"
+>
+  <Fragment slot="chrome-meta">
+    <span>EXIT 1</span>
+  </Fragment>
+
+  <div class="flex items-baseline gap-5.5">
+    <h1 class="text-hero leading-none text-accent">404</h1>
+    <div class="min-w-0 flex-1 overflow-hidden" aria-hidden="true">
+      <AsciiBanner rows={[sweepRow]} animate="sweep" />
+    </div>
+  </div>
+
+  <div class="mt-7">
+    <PromptLine command="cat posts/this-one.md" />
+  </div>
+  <p class="mt-2.5 text-md text-ink">cat: posts/this-one.md: No such file or directory</p>
+
+  <p class="mt-6 max-w-measure text-md text-ink-body">
+    The page isn't here. It may have been renamed, or it never existed — I do move things around.
+  </p>
+
+  <div class="mt-7">
+    <PromptLine command="cd" caret />
+  </div>
+
+  <nav aria-label="quick links" class="mt-5 flex flex-wrap gap-2.5">
+    {
+      links.map((link, i) => (
+        <a
+          href={link.href}
+          class:list={[
+            'flex min-h-11 items-center px-3.5 text-xs tracking-chrome',
+            i === 0 ? 'bg-accent text-on-accent' : 'border border-line-strong text-ink-body',
+          ]}
+        >
+          {link.label}
+        </a>
+      ))
+    }
+  </nav>
+</BaseLayout>

@@ -1,0 +1,149 @@
+---
+/**
+ * Wraps rendered markdown (§7.16). This is the one place descendant
+ * styling is right — markdown output has no class hooks of its own, so
+ * every rule below reaches through `:global()` from the scoped `.prose`
+ * wrapper instead of matching a component-authored element.
+ *
+ * Fenced code blocks are excluded on purpose: the rehype plugin
+ * (`src/lib/rehype-code-block.ts`) already gives them the full CodeBlock
+ * anatomy and its own Tailwind classes before this component ever sees
+ * them, so the generic `code`/`pre` rules here only ever target inline
+ * code and raw HTML the writer dropped straight into a post.
+ */
+---
+
+<div class="prose" data-prose>
+  <slot />
+</div>
+
+<style>
+  .prose {
+    max-width: 68ch;
+    overflow-wrap: break-word;
+  }
+
+  .prose > :global(*) {
+    margin-top: calc(var(--spacing) * 5);
+  }
+
+  .prose > :global(*:first-child) {
+    margin-top: 0;
+  }
+
+  .prose :global(p) {
+    color: var(--color-ink-body);
+  }
+
+  .prose :global(h2) {
+    margin-top: calc(var(--spacing) * 9);
+    font-size: var(--text-lg);
+    line-height: var(--text-lg--line-height);
+    color: var(--color-accent-lift);
+  }
+
+  .prose :global(h2)::before {
+    content: '## ';
+  }
+
+  .prose :global(h3) {
+    margin-top: calc(var(--spacing) * 7);
+    font-size: var(--text-md);
+    line-height: var(--text-md--line-height);
+    color: var(--color-accent-lift);
+  }
+
+  .prose :global(h3)::before {
+    content: '### ';
+  }
+
+  .prose :global(h4) {
+    margin-top: calc(var(--spacing) * 6);
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    color: var(--color-ink-muted);
+  }
+
+  .prose :global(h4)::before {
+    content: '#### ';
+  }
+
+  .prose :global(a) {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    text-decoration-color: var(--color-line-accent);
+  }
+
+  .prose :global(a):hover {
+    text-decoration-color: var(--color-accent-lift);
+  }
+
+  .prose :global(ul),
+  .prose :global(ol) {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--spacing) * 2);
+  }
+
+  .prose :global(ul li),
+  .prose :global(ol li) {
+    position: relative;
+    padding-left: 1.6em;
+    color: var(--color-ink-body);
+  }
+
+  .prose :global(ul li)::before {
+    content: '–';
+    position: absolute;
+    left: 0;
+    color: var(--color-ink-muted);
+  }
+
+  .prose :global(ol) {
+    counter-reset: prose-ol;
+  }
+
+  .prose :global(ol li) {
+    counter-increment: prose-ol;
+    padding-left: 2.2em;
+  }
+
+  .prose :global(ol li)::before {
+    content: counter(prose-ol, decimal-leading-zero) '.';
+    position: absolute;
+    left: 0;
+    color: var(--color-ink-muted);
+  }
+
+  .prose :global(blockquote) {
+    border-left: 2px solid var(--color-accent);
+    padding-left: calc(var(--spacing) * 4);
+    color: var(--color-ink-body);
+  }
+
+  .prose :global(blockquote p) {
+    margin-top: 0;
+  }
+
+  .prose :global(p code),
+  .prose :global(li code),
+  .prose :global(h2 code),
+  .prose :global(h3 code),
+  .prose :global(h4 code),
+  .prose :global(blockquote code) {
+    background: var(--color-wash-code);
+    color: var(--color-accent-lift);
+    padding: 1px 6px;
+    border-radius: 0;
+  }
+
+  .prose :global(img) {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border: 1px solid var(--color-line);
+  }
+</style>

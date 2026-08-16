@@ -1,0 +1,25 @@
+---
+/**
+ * The one blinking cursor on a screen. Sizes itself to the adjacent text.
+ * `animate={false}` renders a static block — for a specimen showing
+ * geometry (e.g. comparing sizes) rather than the live prompt caret,
+ * so a page never ends up with two carets blinking at once. `.caret`
+ * stays on the element either way, so the reduced-motion rule in
+ * theme.css still applies to it.
+ */
+interface Props {
+  size?: 'md' | 'xs';
+  animate?: boolean;
+}
+
+const { size = 'md', animate = true } = Astro.props;
+---
+
+<span
+  class:list={[
+    'caret inline-block bg-accent align-[-2px]',
+    animate && 'animate-blink',
+    size === 'xs' ? 'h-[14px] w-[7px]' : 'h-[14px] w-[7px] sm:h-[17px] sm:w-[9px] sm:align-[-3px]',
+  ]}
+  aria-hidden="true"
+></span>

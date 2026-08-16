@@ -1,0 +1,27 @@
+---
+/**
+ * A block of decorative texture set as text, never as drawn letterforms —
+ * Departure Mono is already a pixel face. `aria-hidden`; `data-ascii` marks
+ * it as the one `<pre>` this design allows to overflow its container.
+ */
+interface Props {
+  rows: string[];
+  animate?: 'sweep';
+}
+
+const { rows, animate } = Astro.props;
+---
+
+<pre
+  data-ascii
+  aria-hidden="true"
+  class:list={[
+    // The 404 mockup hardcodes the fill hex at opacity:.45; text-accent-lift
+    // at opacity-40 stays in §7.15's 30-50% range and matches the lift
+    // convention used elsewhere, though this element is decorative and
+    // aria-hidden so the 11px-contrast reasoning behind that convention
+    // doesn't strictly apply here — either hue would read fine.
+    'overflow-hidden whitespace-pre text-xs leading-none text-accent-lift opacity-40',
+    animate === 'sweep' && 'animate-sweep',
+  ]}
+>{rows.join('\n')}</pre>

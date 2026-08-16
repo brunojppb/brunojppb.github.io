@@ -1,0 +1,43 @@
+---
+/**
+ * The six destinations of the site, in tab order. Shared with NavSheet so
+ * the mobile menu never drifts from the tab strip.
+ */
+export const TABS = [
+  { label: 'posts/', href: '/posts/' },
+  { label: 'about.md', href: '/about/' },
+  { label: 'src/', href: '/src/' },
+  { label: 'reading/', href: '/reading/' },
+  { label: 'courses/', href: '/courses/' },
+  { label: 'system/', href: '/system/' },
+] as const;
+
+interface Props {
+  current?: string;
+}
+
+const { current } = Astro.props;
+---
+
+<div
+  data-tabbar
+  class="flex overflow-x-auto border-b border-line-hairline bg-surface-tabbar [scrollbar-width:none]"
+>
+  {
+    TABS.map((tab, i) => {
+      const active = current === tab.href;
+      return (
+        <a
+          href={tab.href}
+          class:list={[
+            'flex-none whitespace-nowrap px-[13px] py-[11px] text-2xs tracking-label sm:px-4 sm:py-[9px]',
+            i < TABS.length - 1 && 'border-r border-line-faint',
+            active ? 'bg-accent text-on-accent' : 'text-ink-secondary',
+          ]}
+        >
+          {tab.label}
+        </a>
+      );
+    })
+  }
+</div>

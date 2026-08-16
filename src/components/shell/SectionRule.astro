@@ -1,0 +1,29 @@
+---
+/**
+ * A labelled hairline that separates listing sections. Year headings on
+ * the archive use tone="accent"; the label there is the directory itself
+ * (e.g. "2026/"), so a leading four-digit year is exposed as `data-year`
+ * for later tasks to group and test against.
+ */
+interface Props {
+  label: string;
+  meta?: string;
+  tone?: 'accent' | 'muted';
+}
+
+const { label, meta, tone = 'muted' } = Astro.props;
+const year = label.match(/\d{4}/)?.[0];
+---
+
+<div class="flex items-center gap-3.5" data-year={year}>
+  <span
+    class:list={[
+      'text-2xs tracking-section',
+      tone === 'accent' ? 'text-accent-lift' : 'text-ink-muted',
+    ]}
+  >
+    {label}
+  </span>
+  <span class="h-px flex-1 bg-line" aria-hidden="true"></span>
+  {meta && <span class="text-2xs tracking-chrome text-ink-muted">{meta}</span>}
+</div>

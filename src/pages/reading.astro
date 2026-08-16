@@ -1,0 +1,75 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PromptLine from '../components/shell/PromptLine.astro';
+import SectionRule from '../components/shell/SectionRule.astro';
+import BookCover from '../components/media/BookCover.astro';
+import { coverImage, finishedLabel, sortFinished, type Book } from '../lib/books';
+
+const books = await getCollection('books');
+const reading = books.filter((b) => b.data.status === 'reading').map((b) => b.data);
+const finished: Book[] = sortFinished(
+  books.filter((b) => b.data.status === 'finished').map((b) => ({ ...b.data, id: b.id }))
+);
+
+const description = "What I'm currently reading on my Kindle and xteink x3";
+---
+
+<BaseLayout
+  title="Reading — bpaulino.com"
+  description={description}
+  path="/reading/"
+  shellPath="~/reading"
+  current="/reading/"
+>
+  <Fragment slot="chrome-meta">
+    <span>
+      {String(reading.length).padStart(2, '0')} OPEN · {String(finished.length).padStart(2, '0')} CLOSED
+    </span>
+  </Fragment>
+
+  <PromptLine command="ls reading/ --status=open" />
+
+  <h1 class="mt-6 text-xl leading-tight text-ink md:text-2xl">Reading</h1>
+  <p class="mt-3.5 max-w-measure text-md text-ink-body">{description}</p>
+
+  <div class="mt-8">
+    <SectionRule label="█ CURRENTLY READING" tone="accent" meta={String(reading.length).padStart(2, '0')} />
+  </div>
+  <div class="mt-5 grid grid-cols-2 gap-5 sm:grid-cols-4 sm:gap-6">
+    {
+      reading.map((book) => (
+        <div class="flex flex-col gap-3">
+          <BookCover src={coverImage(book)} alt={`${book.title} cover`} status="reading" />
+          <div>
+            <div class="leading-snug text-md text-ink">{book.title}</div>
+            <div class="mt-1.25 text-xs text-ink-muted">{book.author}</div>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="mt-10">
+    <SectionRule label="[x] FINISHED" tone="muted" meta={String(finished.length).padStart(2, '0')} />
+  </div>
+  {
+    finished.length === 0 ? (
+      <p class="mt-4.5 text-sm text-ink-muted">no books finished yet</p>
+    ) : (
+      <div class="mt-5 grid grid-cols-3 gap-4 sm:grid-cols-6 sm:gap-5">
+        {finished.map((book) => (
+          <div class="flex flex-col gap-2.5">
+            <BookCover src={coverImage(book)} alt={`${book.title} cover`} status="finished" />
+            <div class="text-xs leading-snug text-ink-secondary">
+              {book.title}
+              <span class="mt-1 block text-2xs tracking-label text-ink-muted">
+                [x] {finishedLabel(book.finished!)}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  }
+</BaseLayout>

@@ -10,12 +10,20 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: dtolnay/rust-toolchain@stable
+      # Node comes from mise.toml, so CI runs the version the repo declares.
+      - uses: jdx/mise-action@v4
 
-      - uses: Swatinem/rust-cache@v2
+      # mise-action caches the toolchain, not the package store. setup-node's
+      # `cache: npm` went away with it, so the npm cache is restored here.
+      - uses: actions/cache@v6
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-${{ runner.os }}-
 
-      - name: Install Maudit CLI
-        run: cargo install maudit-cli
-
-      - name: Build site
-        run: maudit build
+      - run: node --version
+      - run: npm ci
+      - run: npm run check
+      - run: npm test
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e

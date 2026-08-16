@@ -1,0 +1,137 @@
+---
+import { readFileSync, writeFileSync } from 'node:fs';
+import { parse } from 'yaml';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PromptLine from '../components/shell/PromptLine.astro';
+import SectionRule from '../components/shell/SectionRule.astro';
+import Tag from '../components/listing/Tag.astro';
+import { getRepoStats, type RepoStats } from '../lib/github';
+
+// Repos shown here are a judgment call, not derived from any API query —
+// see src/data/projects.yaml for the list and why curso-react-para-iniciantes,
+// rails_contact_list, brunojppb.github.io and markitdown-ui are excluded.
+interface ProjectEntry {
+  slug: string;
+  pinned: boolean;
+  paragraphs?: string[];
+}
+
+const YAML_PATH = 'src/data/projects.yaml';
+const LOCK_PATH = 'src/data/projects.lock.json';
+
+const projects = parse(readFileSync(YAML_PATH, 'utf-8')) as ProjectEntry[];
+const lock = JSON.parse(readFileSync(LOCK_PATH, 'utf-8')) as Record<string, RepoStats>;
+
+const slugs = projects.map((p) => p.slug);
+const { stats, stale } = await getRepoStats(slugs, lock);
+
+// Never overwrite good committed values with stale ones. Guarding on DEV
+// means the lock file refreshes while Bruno works locally and is committed
+// by hand — a production build on Cloudflare never writes to the source tree.
+if (stale.length === 0 && import.meta.env.DEV) {
+  writeFileSync(LOCK_PATH, JSON.stringify(stats, null, 2) + '\n');
+}
+
+const pinned = projects.filter((p) => p.pinned);
+const compact = projects.filter((p) => !p.pinned);
+const totalStars = Object.values(stats).reduce((sum, s) => sum + s.stars, 0);
+
+const repoUrl = (slug: string) => `https://github.com/${slug}`;
+const repoName = (slug: string) => slug.split('/')[1];
+
+const description =
+  "Open-source projects I maintain, from a Rust build cache server to a handful of smaller tools.";
+---
+
+<BaseLayout
+  title="Open Source — bpaulino.com"
+  description={description}
+  path="/src/"
+  shellPath="~/src"
+  current="/src/"
+>
+  <Fragment slot="chrome-meta">
+    <span>{String(projects.length).padStart(2, '0')} REPOS · {totalStars} STARS</span>
+  </Fragment>
+
+  <PromptLine command="git remote -v" />
+
+  <h1 class="mt-6 text-xl leading-tight text-ink md:text-2xl">Open source</h1>
+  <p class="mt-3.5 max-w-measure text-md text-ink-body">
+    Some of the open-source projects I've been working on. I like building tools that solve
+    real-world problems and sharing them with the community.
+  </p>
+
+  <nav aria-label="pinned repositories" class="mt-7 grid gap-4 sm:grid-cols-2">
+    {
+      pinned.map((project) => {
+        const s = stats[project.slug];
+        return (
+          <div class="border border-line-accent bg-wash-accent px-5.5 py-5.5">
+            <div class="flex items-center justify-between text-2xs tracking-label text-accent-lift">
+              <span>PINNED</span>
+              {s.license && <span>{s.license}</span>}
+            </div>
+            <a href={repoUrl(project.slug)} class="mt-3 block text-lg text-ink">
+              {repoName(project.slug)}
+            </a>
+            {project.paragraphs?.map((p) => (
+              <p class="mt-2.5 max-w-measure text-sm text-ink-body">{p}</p>
+            ))}
+            <div class="mt-4 flex flex-wrap items-center gap-3">
+              {s.language && <Tag label={s.language} href={repoUrl(project.slug)} />}
+              <span class="text-2xs tracking-chrome text-ink-muted">{s.stars} STARS</span>
+            </div>
+          </div>
+        );
+      })
+    }
+  </nav>
+
+  <div class="mt-8">
+    <SectionRule label="EVERYTHING ELSE" meta={`${compact.length} REPOS`} />
+  </div>
+
+  <nav aria-label="other repositories" class="mt-1">
+    <div class="hidden border-b border-line-faint py-2 text-2xs tracking-chrome text-ink-muted sm:grid sm:grid-cols-[1fr_110px_90px] sm:gap-4">
+      <span>REPO</span>
+      <span>LANG</span>
+      <span>STARS</span>
+    </div>
+    {
+      compact.map((project, i) => {
+        const s = stats[project.slug];
+        return (
+          <div
+            data-repo-row
+            class:list={[
+              'flex flex-col gap-1.5 py-3.5 sm:grid sm:grid-cols-[1fr_110px_90px] sm:items-baseline sm:gap-4',
+              i < compact.length - 1 && 'border-b border-line-faint',
+            ]}
+          >
+            <span>
+              <a href={repoUrl(project.slug)} class="text-ink">
+                {repoName(project.slug)}
+              </a>
+              {s.description && (
+                <span class="mt-1 block text-xs text-ink-muted">{s.description}</span>
+              )}
+            </span>
+            {s.language && <Tag label={s.language} href={repoUrl(project.slug)} />}
+            <span class="text-xs text-ink-muted">{s.stars} STARS</span>
+          </div>
+        );
+      })
+    }
+  </nav>
+
+  <p class="mt-6.5">
+    <a href="https://github.com/brunojppb" class="text-sm text-accent-lift">
+      ↗ all repositories on github
+    </a>
+  </p>
+
+  <div class="mt-2">
+    <PromptLine command="" caret />
+  </div>
+</BaseLayout>

@@ -1,9 +1,18 @@
-# Maudit / Rust
 dist/
-target/
+
+# Astro / Node
+node_modules/
+.astro/
+test-results/
+playwright-report/
+playwright/.cache/
+.playwright-mcp/
 
 # IDE
 .vscode
 
 # OS
 *.DS_Store
+
+# Design handoff, not part of the site
+handoff/

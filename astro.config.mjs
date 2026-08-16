@@ -1,0 +1,29 @@
+import { defineConfig } from 'astro/config';
+import react from '@astrojs/react';
+import sitemap from '@astrojs/sitemap';
+import tailwindcss from '@tailwindcss/vite';
+import { unified } from '@astrojs/markdown-remark';
+import { rehypeCodeBlock } from './src/lib/rehype-code-block.ts';
+
+export default defineConfig({
+  site: 'https://bpaulino.com',
+  output: 'static',
+  // The old site served every URL with or without a trailing slash, and those
+  // URLs are indexed and linked. 'always' would make the dev server reject the
+  // slashless form and misrepresent what production accepts.
+  trailingSlash: 'ignore',
+  integrations: [react(), sitemap()],
+  vite: { plugins: [tailwindcss()] },
+  markdown: {
+    // 'css-variables' emits `var(--astro-code-*)` instead of hex colours,
+    // so token colour can be remapped onto CONSOLE's ink/accent scale in
+    // src/styles/code-vars.css instead of fighting inline hex values.
+    shikiConfig: { theme: 'css-variables' },
+    // `unified({...})` is the non-deprecated way to run a rehype plugin —
+    // top-level `markdown.rehypePlugins` only works on the unified
+    // processor, and Astro warns on every build if you reach it that way.
+    // Runs after Shiki has tokenised and coloured the code — see
+    // src/lib/rehype-code-block.ts for what it restructures and why.
+    processor: unified({ rehypePlugins: [rehypeCodeBlock] }),
+  },
+});

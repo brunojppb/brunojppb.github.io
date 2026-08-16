@@ -20,6 +20,20 @@ export function formatProseDate(d: Date): string {
   return `${d.getUTCFullYear()} ${MONTHS[d.getUTCMonth()]} ${day}`;
 }
 
+// 220 wpm — the middle of the conventional 200-230 wpm silent-reading
+// range. Not tuned to match any particular post's placeholder mockup value.
+const WORDS_PER_MINUTE = 220;
+
+/** Renders a post's raw markdown body as a reading time, e.g. `11 MIN`. */
+export function formatReadingTime(body: string): string {
+  const words = body
+    .replace(/```[\s\S]*?```/g, '') // code reads at a different pace than prose
+    .split(/\s+/)
+    .filter(Boolean).length;
+  const minutes = Math.max(1, Math.round(words / WORDS_PER_MINUTE));
+  return `${minutes} MIN`;
+}
+
 /** Groups posts into years, newest year first, newest post first inside each year. */
 export function groupByYear<T extends { data: { date: Date } }>(posts: T[]) {
   const byYear = new Map<number, T[]>();

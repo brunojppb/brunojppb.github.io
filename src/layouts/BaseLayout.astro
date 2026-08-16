@@ -100,6 +100,9 @@ const windowTitle = `bruno@bpaulino: ${shellPath ?? derivedShellPath}`;
         <Fragment slot="tabs">
           <TabBar current={current} />
         </Fragment>
+        <Fragment slot="chrome-meta">
+          <slot name="chrome-meta" />
+        </Fragment>
         <slot />
       </Window>
     </div>

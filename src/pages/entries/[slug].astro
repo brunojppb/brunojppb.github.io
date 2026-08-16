@@ -4,7 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Prose from '../../components/content/Prose.astro';
 import Outline from '../../components/content/Outline.astro';
 import PromptLine from '../../components/shell/PromptLine.astro';
-import { formatProseDate } from '../../lib/posts';
+import { formatProseDate, formatReadingTime, formatListDate } from '../../lib/posts';
 
 export async function getStaticPaths() {
   const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
@@ -23,6 +23,15 @@ export async function getStaticPaths() {
 
 const { post, newer, older } = Astro.props;
 const { Content, headings } = await render(post);
+
+const readingTime = formatReadingTime(post.body ?? '');
+
+// This repo's real remote is brunojppb/brunojppb.github.io, not
+// "brunojppb/blog" — verified against `git remote -v` rather than assumed.
+// Master still has posts under content/articles/, not src/content/posts/,
+// so this link resolves once this branch merges, same as every /entries/
+// URL this task ships.
+const rawUrl = `https://github.com/brunojppb/brunojppb.github.io/blob/master/src/content/posts/${post.id}.md`;
 ---
 
 <BaseLayout
@@ -32,8 +41,11 @@ const { Content, headings } = await render(post);
   shellPath={`~/posts/${post.id}.md`}
   current="/posts/"
   image={post.data.image}
-  lang={post.data.lang}
 >
+  <Fragment slot="chrome-meta">
+    <span>{readingTime} · {formatListDate(post.data.date)}</span>
+  </Fragment>
+
   <div class="min-[900px]:grid min-[900px]:grid-cols-[1fr_240px]">
     <div class="min-[900px]:border-r min-[900px]:border-line-faint min-[900px]:pr-[30px]">
       <PromptLine path="~/posts" command={`cat ${post.id}.md`} />
@@ -54,21 +66,34 @@ const { Content, headings } = await render(post);
         <Outline headings={headings} variant="disclosure" />
       </div>
 
+      <!-- The document stays English (BaseLayout's default `lang`) even on
+           pt-BR posts — the surrounding chrome (nav, tab bar, prompts) is
+           always English, so only the title and the post body itself are
+           tagged with the post's own language. -->
       <article class="mt-7" lang={post.data.lang}>
         <Prose><Content /></Prose>
       </article>
 
+      <p class="mt-8 text-xs">
+        <a href={rawUrl} target="_blank" rel="noopener noreferrer" class="text-accent-lift">
+          ↗ view raw .md
+        </a>
+      </p>
+
       <nav
         aria-label="post navigation"
-        class="mt-8 flex items-start justify-between gap-6 border-t border-line-faint pt-4 text-xs"
+        class="mt-4 flex items-stretch justify-between gap-6 border-t border-line-faint pt-4 text-xs"
       >
         {older ? (
-          <a href={`/entries/${older.id}/`} class="text-ink-secondary">
+          <a href={`/entries/${older.id}/`} class="flex min-h-11 items-center text-ink-secondary">
             ← {older.data.title}
           </a>
         ) : <span />}
         {newer ? (
-          <a href={`/entries/${newer.id}/`} class="text-right text-accent-lift">
+          <a
+            href={`/entries/${newer.id}/`}
+            class="flex min-h-11 items-center justify-end text-right text-accent-lift"
+          >
             {newer.data.title} →
           </a>
         ) : <span />}

@@ -57,6 +57,17 @@
     content: '### ';
   }
 
+  .prose :global(h4) {
+    margin-top: calc(var(--spacing) * 6);
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    color: var(--color-ink-muted);
+  }
+
+  .prose :global(h4)::before {
+    content: '#### ';
+  }
+
   .prose :global(a) {
     text-decoration: underline;
     text-decoration-thickness: 1px;
@@ -121,6 +132,7 @@
   .prose :global(li code),
   .prose :global(h2 code),
   .prose :global(h3 code),
+  .prose :global(h4 code),
   .prose :global(blockquote code) {
     background: var(--color-wash-code);
     color: var(--color-accent-lift);

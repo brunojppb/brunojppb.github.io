@@ -37,18 +37,13 @@ const description =
     <h1 class="text-xl leading-tight text-ink md:text-2xl">Bruno Paulino</h1>
     <p class="mt-3 text-ink-secondary">{bio}</p>
 
-    <!-- No email link: the only address in the repo is inside a git-config
-         tutorial example (10-automating-your-work-with-github-actions.md),
-         not a stated contact channel. about.md lists GitHub, Stack
-         Overflow, Twitter and LinkedIn — no email. -->
-    <div class="mt-4 hidden flex-wrap items-center gap-5 text-2xs tracking-chrome text-ink-muted sm:flex">
-      <span>SPAIN · REMOTE</span>
-      <span>ASTRO + CLOUDFLARE</span>
+    {/* No email link: the only address in the repo is inside a git-config
+        tutorial example (10-automating-your-work-with-github-actions.md),
+        not a stated contact channel. about.md lists GitHub, Stack
+        Overflow, Twitter and LinkedIn, but no email. */}
+    <div class="mt-4 flex flex-wrap items-center gap-5 text-2xs tracking-chrome text-ink-muted">
       <a href="https://github.com/brunojppb" class="text-accent-lift">GITHUB ↗</a>
-    </div>
-    <div class="mt-4 flex flex-wrap items-center gap-5 text-2xs tracking-chrome text-ink-muted sm:hidden">
-      <a href="https://github.com/brunojppb" class="text-accent-lift">GITHUB ↗</a>
-      <a href="/feed.xml" class="text-accent-lift">RSS ↗</a>
+      <a href="/feed.xml" class="text-accent-lift sm:hidden">RSS ↗</a>
     </div>
   </div>
 

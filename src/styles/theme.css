@@ -81,10 +81,15 @@
   --animate-blink: console-blink 1.1s steps(1) infinite;
   --animate-scan:  console-scan 1.6s linear infinite;
   --animate-sweep: console-sweep 3.4s ease-in-out infinite;
+  /* AsciiBanner's vertical-loop variant. Not in tokens.css; §7.15's own
+     instruction (repeat the field twice, translate by -50%) implies this
+     motion but never names it, so it is added here to match that recipe. */
+  --animate-drift: console-drift 12s linear infinite;
 
   @keyframes console-blink { 0%, 49% { opacity: 1 } 50%, 100% { opacity: 0 } }
   @keyframes console-scan  { from { transform: translateY(0) } to { transform: translateY(8px) } }
   @keyframes console-sweep { 0%, 100% { opacity: .30 } 50% { opacity: .62 } }
+  @keyframes console-drift { from { transform: translateY(0) } to { transform: translateY(-50%) } }
 }
 
 /* ============================================================

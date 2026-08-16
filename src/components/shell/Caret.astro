@@ -1,0 +1,18 @@
+---
+/**
+ * The one blinking cursor on a screen. Sizes itself to the adjacent text.
+ */
+interface Props {
+  size?: 'md' | 'xs';
+}
+
+const { size = 'md' } = Astro.props;
+---
+
+<span
+  class:list={[
+    'caret inline-block animate-blink bg-accent align-[-2px]',
+    size === 'xs' ? 'h-[14px] w-[7px]' : 'h-[14px] w-[7px] sm:h-[17px] sm:w-[9px] sm:align-[-3px]',
+  ]}
+  aria-hidden="true"
+></span>

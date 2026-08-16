@@ -1,0 +1,51 @@
+---
+import { formatListDate } from '../../lib/posts';
+
+/**
+ * The listing row used by the archive, tag pages and the home feed. The
+ * whole row is the link; desktop lays it out as four grid columns, mobile
+ * collapses it to a single stacked column at least 44px tall.
+ */
+interface Props {
+  date: Date;
+  size: string;
+  title: string;
+  filename: string;
+  tags: string[];
+  href: string;
+  lang?: 'en' | 'pt-BR';
+}
+
+const { date, size, title, filename, tags, href, lang } = Astro.props;
+const isPt = lang === 'pt-BR';
+const dateStr = formatListDate(date);
+---
+
+<a
+  href={href}
+  data-filerow
+  class="group block min-h-11 border-b border-line-faint py-3 sm:grid sm:grid-cols-[120px_60px_1fr_auto] sm:items-baseline sm:gap-4"
+>
+  <div class="flex justify-between text-2xs text-ink-muted sm:hidden">
+    <span>{dateStr}</span>
+    <span>
+      {size}
+      {isPt && <span class="ml-1 uppercase tracking-label">PT</span>}
+    </span>
+  </div>
+
+  <span class="hidden text-xs text-ink-muted sm:block">{dateStr}</span>
+  <span class="hidden text-xs text-ink-muted sm:flex sm:items-center sm:gap-1">
+    {size}
+    {isPt && <span class="text-2xs uppercase tracking-label">PT</span>}
+  </span>
+
+  <div class="mt-1 sm:mt-0">
+    <span class="block text-md text-ink group-hover:text-accent-lift" lang={isPt ? 'pt-BR' : undefined}>
+      {title}
+    </span>
+    <span class="mt-[3px] block text-xs text-ink-muted">{filename}</span>
+  </div>
+
+  <div class="mt-1.5 text-2xs tracking-label text-accent-lift sm:mt-0">{tags.join(' ')}</div>
+</a>

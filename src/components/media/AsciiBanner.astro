@@ -1,0 +1,36 @@
+---
+/**
+ * A block of decorative texture set as text, never as drawn letterforms —
+ * Departure Mono is already a pixel face. `aria-hidden`; `data-ascii` marks
+ * it as the one `<pre>` this design allows to overflow its container.
+ */
+interface Props {
+  rows: string[];
+  animate?: 'drift' | 'sweep';
+}
+
+const { rows, animate } = Astro.props;
+---
+
+{
+  animate === 'drift' ? (
+    // Crop window is exactly one field's height (leading-none => 13px per
+    // row at text-xs), so translating the doubled field by -50% loops
+    // seamlessly per §7.15's recipe.
+    <div class="overflow-hidden" style={`height:${rows.length * 13}px`} aria-hidden="true">
+      <pre
+        data-ascii
+        class="animate-drift whitespace-pre text-xs leading-none text-accent-lift opacity-40"
+      >{[...rows, ...rows].join('\n')}</pre>
+    </div>
+  ) : (
+    <pre
+      data-ascii
+      aria-hidden="true"
+      class:list={[
+        'overflow-hidden whitespace-pre text-xs leading-none text-accent-lift opacity-40',
+        animate === 'sweep' && 'animate-sweep',
+      ]}
+    >{rows.join('\n')}</pre>
+  )
+}

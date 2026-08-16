@@ -1,0 +1,17 @@
+---
+/**
+ * The single-line "showing N of M" control at the foot of a listing.
+ */
+interface Props {
+  shown: number;
+  total: number;
+  nextHref?: string;
+}
+
+const { shown, total, nextHref } = Astro.props;
+---
+
+<div class="flex items-center justify-between text-sm text-ink-muted">
+  <span>showing {shown} of {total}</span>
+  {nextHref && <a href={nextHref} class="text-accent-lift">load older ↓</a>}
+</div>

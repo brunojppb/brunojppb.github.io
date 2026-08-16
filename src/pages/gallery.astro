@@ -1,0 +1,113 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PromptLine from '../components/shell/PromptLine.astro';
+import Caret from '../components/shell/Caret.astro';
+import SectionRule from '../components/shell/SectionRule.astro';
+import FileRow from '../components/listing/FileRow.astro';
+import Tag from '../components/listing/Tag.astro';
+import Pagination from '../components/listing/Pagination.astro';
+import Callout from '../components/content/Callout.astro';
+import BookCover from '../components/media/BookCover.astro';
+import AsciiBanner from '../components/media/AsciiBanner.astro';
+
+const sweepRow = '░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░';
+const driftRows = [
+  '░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░',
+  '▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░',
+  '▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒',
+];
+---
+
+<BaseLayout
+  title="gallery — bpaulino.com"
+  description="Scratch component gallery for the CONSOLE design system. Deleted before launch."
+  path="/gallery/"
+  shellPath="~/gallery"
+>
+  <div class="flex flex-col gap-8">
+    <section class="flex flex-col gap-3">
+      <SectionRule label="PromptLine + Caret" meta="7.5 / 7.6" />
+      <PromptLine command="whoami" />
+      <PromptLine path="~/posts" command="ls --sort=date" />
+      <PromptLine path="~/posts" command="cd" caret />
+      <p class="flex items-center gap-4 text-2xs text-ink-muted">
+        caret sizes:
+        <Caret />
+        <Caret size="xs" />
+      </p>
+    </section>
+
+    <section class="flex flex-col gap-3">
+      <SectionRule label="SectionRule" meta="7.7" />
+      <SectionRule label="all posts" meta="24 FILES" tone="muted" />
+      <SectionRule label="2026/" meta="01 FILE" tone="accent" />
+    </section>
+
+    <section class="flex flex-col gap-1">
+      <SectionRule label="FileRow" meta="7.8" />
+      <FileRow
+        date={new Date('2026-04-19')}
+        size="14k"
+        title="HTTPS for your homelab, at local network speeds"
+        filename="https-for-your-homelab.md"
+        tags={['dns', 'tls']}
+        href="#"
+      />
+      <FileRow
+        date={new Date('2019-05-11')}
+        size="4k"
+        title="Arquitetura de branching para desenvolvimento com Git"
+        filename="arquitetura-de-branching.md"
+        tags={['git']}
+        href="#"
+        lang="pt-BR"
+      />
+      <FileRow
+        date={new Date('2023-07-23')}
+        size="18k"
+        title="Distributed locks in Node.js"
+        filename="distributed-locks-node.md"
+        tags={['node', 'redis', 'architecture']}
+        href="#"
+      />
+      <div class="mt-3">
+        <Pagination shown={8} total={24} nextHref="#" />
+      </div>
+      <div class="mt-1">
+        <Pagination shown={24} total={24} />
+      </div>
+    </section>
+
+    <section class="flex flex-col gap-3">
+      <SectionRule label="Tag" meta="7.11" />
+      <div class="flex flex-wrap gap-2">
+        <Tag label="platform" count={7} href="#" />
+        <Tag label="dns" count={2} href="#" active />
+        <Tag label="books" href="#" />
+      </div>
+    </section>
+
+    <section class="flex flex-col gap-3">
+      <SectionRule label="Callout" meta="7.10" />
+      <Callout>Your resolver has to be authoritative for the whole zone, or you get a very confusing half-working setup.</Callout>
+      <Callout tone="warn">This step is destructive — take a snapshot first.</Callout>
+    </section>
+
+    <section class="flex flex-col gap-3">
+      <SectionRule label="BookCover" meta="7.12" />
+      <div class="grid grid-cols-2 gap-5 sm:grid-cols-4">
+        <BookCover status="reading" src="/assets/images/me.jpg" alt="Designing Data-Intensive Applications" />
+        <BookCover status="reading" alt="Crafting Interpreters" />
+        <BookCover status="finished" src="/assets/images/me.jpg" alt="Dare to Lead" />
+        <BookCover status="finished" alt="Staff Engineer" />
+      </div>
+    </section>
+
+    <section class="flex flex-col gap-3">
+      <SectionRule label="AsciiBanner" meta="7.15" />
+      <AsciiBanner rows={[sweepRow]} />
+      <AsciiBanner rows={[sweepRow]} animate="sweep" />
+      <AsciiBanner rows={driftRows} animate="drift" />
+    </section>
+  </div>
+</BaseLayout>

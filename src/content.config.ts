@@ -2,6 +2,7 @@ import { defineCollection } from 'astro:content';
 import { file, glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { TAG_ORDER } from './lib/tags';
+import { parseBooks } from './lib/books';
 
 const posts = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/posts' }),
@@ -32,4 +33,21 @@ const courses = defineCollection({
   }),
 });
 
-export const collections = { posts, courses };
+// Hand-maintained reading list. src/data/books.yaml holds two flat arrays,
+// reading and finished; parseBooks stamps each entry's status and id.
+const books = defineCollection({
+  loader: file('src/data/books.yaml', {
+    parser: (text) => parseBooks(text) as unknown as Record<string, unknown>[],
+  }),
+  schema: z.object({
+    title: z.string(),
+    author: z.string(),
+    status: z.enum(['reading', 'finished']),
+    isbn: z.string().optional(),
+    edition: z.string().optional(),
+    cover_url: z.url().optional(),
+    finished: z.string().regex(/^\d{4}-\d{2}$/).optional(),
+  }),
+});
+
+export const collections = { posts, courses, books };

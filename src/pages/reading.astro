@@ -1,0 +1,84 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PromptLine from '../components/shell/PromptLine.astro';
+import SectionRule from '../components/shell/SectionRule.astro';
+import BookCover from '../components/media/BookCover.astro';
+import { coverImage, finishedMonth, groupFinishedByYear, type Book } from '../lib/books';
+
+const books = await getCollection('books');
+const reading = books.filter((b) => b.data.status === 'reading').map((b) => b.data);
+const finished: Book[] = books
+  .filter((b) => b.data.status === 'finished')
+  .map((b) => ({ ...b.data, id: b.id }));
+const finishedYears = groupFinishedByYear(finished);
+---
+
+<BaseLayout
+  title="Reading — bpaulino.com"
+  description="What's on the desk and what got finished. No ratings, no reviews — just whether I got to the end."
+  path="/reading/"
+  shellPath="~/reading"
+  current="/reading/"
+>
+  <Fragment slot="chrome-meta">
+    <span>
+      {String(reading.length).padStart(2, '0')} OPEN · {String(finished.length).padStart(2, '0')} CLOSED
+    </span>
+  </Fragment>
+
+  <PromptLine command="ls reading/ --status=open" />
+
+  <h1 class="mt-6 text-2xl leading-tight text-ink">Reading</h1>
+  <p class="mt-3.5 max-w-[62ch] text-md text-ink-body">
+    What's on the desk and what got finished. No ratings, no reviews — just whether I got to the
+    end.
+  </p>
+
+  <div class="mt-8">
+    <SectionRule label="█ CURRENTLY READING" tone="accent" meta={String(reading.length).padStart(2, '0')} />
+  </div>
+  <div class="mt-5 grid grid-cols-2 gap-5 sm:grid-cols-4 sm:gap-6">
+    {
+      reading.map((book) => (
+        <div class="flex flex-col gap-3">
+          <BookCover src={coverImage(book)} alt={`${book.title} cover`} status="reading" />
+          <div>
+            <div class="leading-snug text-md text-ink">{book.title}</div>
+            <div class="mt-1.25 text-xs text-ink-muted">{book.author}</div>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="mt-10">
+    <SectionRule label="[x] FINISHED" tone="muted" meta={String(finished.length).padStart(2, '0')} />
+  </div>
+  {
+    finishedYears.length === 0 ? (
+      <p class="mt-4.5 text-sm text-ink-muted">no books finished yet</p>
+    ) : (
+      finishedYears.map(({ year, books: yearBooks }) => (
+        <>
+          <div class="mt-6">
+            <SectionRule label={`${year}`} tone="accent" meta={String(yearBooks.length).padStart(2, '0')} />
+          </div>
+          <div class="mt-5 grid grid-cols-3 gap-4 sm:grid-cols-6 sm:gap-5">
+            {yearBooks.map((book) => (
+              <div class="flex flex-col gap-2.5">
+                <BookCover src={coverImage(book)} alt={`${book.title} cover`} status="finished" />
+                <div class="text-xs leading-snug text-ink-secondary">
+                  {book.title}
+                  <span class="mt-1 block text-2xs tracking-label text-ink-muted">
+                    [x] {finishedMonth(book.finished!)}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      ))
+    )
+  }
+</BaseLayout>

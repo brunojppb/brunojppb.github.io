@@ -11,6 +11,7 @@ const ROUTES = [
   '/tags/leadership/',
   '/about/',
   '/courses/',
+  '/reading/',
   '/404',
 ];
 

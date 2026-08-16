@@ -10,6 +10,7 @@ import Callout from '../components/content/Callout.astro';
 import CodeBlock from '../components/content/CodeBlock.astro';
 import BookCover from '../components/media/BookCover.astro';
 import AsciiBanner from '../components/media/AsciiBanner.astro';
+import sampleCover from '../assets/books/9780356500843.jpg';
 
 const sweepRow = '░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░';
 
@@ -110,9 +111,9 @@ sudo systemctl status nginx
     <section class="flex flex-col gap-3">
       <SectionRule label="BookCover" meta="7.12" />
       <div class="grid grid-cols-2 gap-5 sm:grid-cols-4">
-        <BookCover status="reading" src="/assets/images/me.jpg" alt="Designing Data-Intensive Applications" />
+        <BookCover status="reading" src={sampleCover} alt="Designing Data-Intensive Applications" />
         <BookCover status="reading" alt="Crafting Interpreters" />
-        <BookCover status="finished" src="/assets/images/me.jpg" alt="Dare to Lead" />
+        <BookCover status="finished" src={sampleCover} alt="Dare to Lead" />
         <BookCover status="finished" alt="Staff Engineer" />
       </div>
     </section>

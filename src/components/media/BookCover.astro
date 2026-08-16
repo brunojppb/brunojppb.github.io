@@ -1,6 +1,9 @@
 ---
+import { Image } from 'astro:assets';
+
 /**
- * A 2:3 book cover box. With `src`, the image fills it; without, a dither
+ * A 2:3 book cover box. With `src`, the image fills it, run through Astro's
+ * `<Image>` so it is optimised and dimensioned; without, a dither
  * placeholder carries an 11px "COVER 2:3" label. `reading` covers stay at
  * full opacity with an accent border and add a constant "READING" caption
  * beneath — the only per-book caption BookCover owns, since the finished
@@ -8,7 +11,7 @@
  * that alongside the title it already has.
  */
 interface Props {
-  src?: string;
+  src?: ImageMetadata;
   alt: string;
   status: 'reading' | 'finished';
 }
@@ -27,7 +30,7 @@ const reading = status === 'reading';
   >
     {
       src ? (
-        <img src={src} alt={alt} class="block h-full w-full object-cover" />
+        <Image src={src} alt={alt} class="block h-full w-full object-cover" />
       ) : (
         <div
           class:list={['flex h-full w-full items-end p-2.5', reading ? 'dither' : 'dither-mute']}

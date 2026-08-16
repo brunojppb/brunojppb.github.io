@@ -1,0 +1,17 @@
+# Books I am reading and books I have finished.
+# Add an isbn and run `npm run books:covers` to pull the cover.
+# If Open Library has no cover for your edition, set cover_url to the publisher's.
+
+reading:
+  - title: Ender's Game
+    author: Orson Scott Card
+    isbn: "9780356500843"
+
+  - title: "Observability Engineering: Achieving Production Excellence"
+    author: Charity Majors, Liz Fong-Jones
+    edition: 2nd
+    isbn: "9781098179922"
+    # Open Library has no cover for the 2nd edition. This is the publisher's.
+    cover_url: https://www.oreilly.com/covers/urn:orm:book:9781098179915/250w/
+
+finished: []

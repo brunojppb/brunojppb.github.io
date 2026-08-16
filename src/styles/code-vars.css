@@ -1,0 +1,28 @@
+/* ============================================================
+   Shiki token colour → CONSOLE tokens.
+
+   `astro.config.mjs` sets shikiConfig.theme to 'css-variables', a special
+   Shiki theme that emits `var(--astro-code-*)` instead of hex colours in
+   the highlighted markup. Defining those variables here — instead of a
+   real theme file — keeps every fenced code block on the same ink/accent
+   scale as the rest of the site, with no hex values fighting the design
+   system. See docs/design-system.md §7.9: comments are text-ink-faint,
+   string/value runs are text-accent-lift, everything else is text-ink-body.
+   ============================================================ */
+
+.astro-code {
+  --astro-code-background: var(--color-surface-code);
+  --astro-code-foreground: var(--color-ink-body);
+
+  --astro-code-token-comment: var(--color-ink-faint);
+
+  --astro-code-token-string: var(--color-accent-lift);
+  --astro-code-token-string-expression: var(--color-accent-lift);
+  --astro-code-token-constant: var(--color-accent-lift);
+  --astro-code-token-link: var(--color-accent-lift);
+
+  --astro-code-token-keyword: var(--color-ink-body);
+  --astro-code-token-function: var(--color-ink-body);
+  --astro-code-token-parameter: var(--color-ink-body);
+  --astro-code-token-punctuation: var(--color-ink-body);
+}

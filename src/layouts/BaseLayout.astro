@@ -103,5 +103,24 @@ const windowTitle = `bruno@bpaulino: ${shellPath ?? derivedShellPath}`;
         <slot />
       </Window>
     </div>
+    <script>
+      // Copy control for markdown-derived code blocks (src/lib/rehype-code-block.ts).
+      // CodeBlock.astro's own copy button is a React island and handles its
+      // own click; this delegated listener only ever matches the plain
+      // buttons the rehype plugin emits, marked with data-copy-source.
+      document.addEventListener('click', (event) => {
+        const target = event.target as HTMLElement | null;
+        const button = target?.closest<HTMLButtonElement>('[data-copy][data-copy-source]');
+        if (!button) return;
+        const code = button.dataset.code ?? '';
+        navigator.clipboard.writeText(code).then(() => {
+          const label = button.textContent;
+          button.textContent = '[ COPIED ]';
+          window.setTimeout(() => {
+            button.textContent = label;
+          }, 1400);
+        });
+      });
+    </script>
   </body>
 </html>

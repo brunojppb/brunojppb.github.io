@@ -7,10 +7,23 @@ import FileRow from '../components/listing/FileRow.astro';
 import Tag from '../components/listing/Tag.astro';
 import Pagination from '../components/listing/Pagination.astro';
 import Callout from '../components/content/Callout.astro';
+import CodeBlock from '../components/content/CodeBlock.astro';
 import BookCover from '../components/media/BookCover.astro';
 import AsciiBanner from '../components/media/AsciiBanner.astro';
 
 const sweepRow = '░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░';
+
+const withFilename = `import { readFile } from 'node:fs/promises';
+
+const contents = await readFile('config.json', 'utf8');
+
+export default JSON.parse(contents);
+`;
+
+const bareSnippet = `sudo systemctl restart nginx
+
+sudo systemctl status nginx
+`;
 ---
 
 <BaseLayout
@@ -86,6 +99,12 @@ const sweepRow = '░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓█�
       <SectionRule label="Callout" meta="7.10" />
       <Callout>Your resolver has to be authoritative for the whole zone, or you get a very confusing half-working setup.</Callout>
       <Callout tone="warn">This step is destructive — take a snapshot first.</Callout>
+    </section>
+
+    <section class="flex flex-col gap-3">
+      <SectionRule label="CodeBlock" meta="7.9" />
+      <CodeBlock filename="config.js" lang="javascript" code={withFilename} />
+      <CodeBlock code={bareSnippet} showLineNumbers={false} />
     </section>
 
     <section class="flex flex-col gap-3">

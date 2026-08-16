@@ -75,6 +75,7 @@
 
   /* ---- layout ---------------------------------------------- */
   --container-window: 1100px;   /* max-w-window */
+  --container-measure: 68ch;    /* max-w-measure; prose line length */
   --spacing: 4px;               /* p-1 = 4px, p-7 = 28px, p-9 = 36px … */
 
   /* ---- motion ---------------------------------------------- */

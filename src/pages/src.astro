@@ -56,8 +56,8 @@ const description =
 
   <PromptLine command="git remote -v" />
 
-  <h1 class="mt-6 text-2xl leading-tight text-ink">Open source</h1>
-  <p class="mt-3.5 max-w-[66ch] text-md text-ink-body">
+  <h1 class="mt-6 text-xl leading-tight text-ink md:text-2xl">Open source</h1>
+  <p class="mt-3.5 max-w-measure text-md text-ink-body">
     Some of the open-source projects I've been working on. I like building tools that solve
     real-world problems and sharing them with the community.
   </p>
@@ -76,7 +76,7 @@ const description =
               {repoName(project.slug)}
             </a>
             {project.paragraphs?.map((p) => (
-              <p class="mt-2.5 max-w-[60ch] text-sm text-ink-body">{p}</p>
+              <p class="mt-2.5 max-w-measure text-sm text-ink-body">{p}</p>
             ))}
             <div class="mt-4 flex flex-wrap items-center gap-3">
               {s.language && <Tag label={s.language} href={repoUrl(project.slug)} />}

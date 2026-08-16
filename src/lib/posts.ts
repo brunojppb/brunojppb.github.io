@@ -9,6 +9,16 @@ export function formatSize(bytes: number): string {
   return `${Math.max(1, Math.round(bytes / 1024))}k`;
 }
 
+/** Renders a post's raw markdown body length as the fake file size shown in listings. */
+export function postSize(post: Pick<Post, 'body'>): string {
+  return formatSize(post.body?.length ?? 0);
+}
+
+/** Renders the combined body length of every post, same form as postSize. */
+export function totalPostSize(posts: Pick<Post, 'body'>[]): string {
+  return formatSize(posts.reduce((sum, p) => sum + (p.body?.length ?? 0), 0));
+}
+
 /** Renders a date as YYYY-MM-DD, the form used in listings and chrome. */
 export function formatListDate(d: Date): string {
   return d.toISOString().slice(0, 10);

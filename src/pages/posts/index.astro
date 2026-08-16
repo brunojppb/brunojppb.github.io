@@ -5,15 +5,14 @@ import SectionRule from '../../components/shell/SectionRule.astro';
 import FileRow from '../../components/listing/FileRow.astro';
 import Tag from '../../components/listing/Tag.astro';
 import Pagination from '../../components/listing/Pagination.astro';
-import { getPosts, formatSize, groupByYear } from '../../lib/posts';
+import { getPosts, postSize, totalPostSize, groupByYear } from '../../lib/posts';
 import { TAG_ORDER, tagCounts } from '../../lib/tags';
 
 const posts = await getPosts();
 const years = groupByYear(posts);
 const counts = tagCounts(posts);
 
-const totalBytes = posts.reduce((sum, p) => sum + (p.body?.length ?? 0), 0);
-const totalSize = formatSize(totalBytes);
+const totalSize = totalPostSize(posts);
 ---
 
 <BaseLayout
@@ -52,7 +51,7 @@ const totalSize = formatSize(totalBytes);
         {yearPosts.map((post) => (
           <FileRow
             date={post.data.date}
-            size={formatSize(post.body?.length ?? 0)}
+            size={postSize(post)}
             title={post.data.title}
             filename={`${post.id}.md`}
             tags={post.data.tags}

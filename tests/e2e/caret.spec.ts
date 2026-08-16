@@ -1,21 +1,5 @@
 import { test, expect } from '@playwright/test';
-
-// Same route list as layout.spec.ts's overflow sweep — every distinct
-// template on the site.
-const ROUTES = [
-  '/entries/distributed-lock-in-node-js/',
-  '/entries/modern-webapps-with-elixir-phoenix-typescript-react/',
-  '/entries/https-for-your-homelab/',
-  '/',
-  '/posts/',
-  '/tags/leadership/',
-  '/about/',
-  '/courses/',
-  '/reading/',
-  '/src/',
-  '/system/',
-  '/404',
-];
+import { ROUTES } from './routes';
 
 // §7.6: "Never more than one [caret] visible at a time." A `.caret` element
 // can exist without animating (Caret's `animate={false}` renders a static

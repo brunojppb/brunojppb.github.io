@@ -16,7 +16,7 @@ import AsciiBanner from '../components/media/AsciiBanner.astro';
 import readingCover from '../assets/books/9780356500843.jpg';
 import finishedCover from '../assets/books/9781098179922.jpg';
 import { contrastRatio } from '../lib/contrast';
-import { getPosts, formatSize } from '../lib/posts';
+import { getPosts, postSize } from '../lib/posts';
 import { TAG_ORDER, tagCounts } from '../lib/tags';
 
 /**
@@ -123,8 +123,8 @@ const outlineHeadings = [
 
   <PromptLine command="cat system/readme.md" />
 
-  <h1 class="mt-6 text-2xl leading-tight text-ink">CONSOLE</h1>
-  <p class="mt-3.5 max-w-[68ch] text-md text-ink-body">
+  <h1 class="mt-6 text-xl leading-tight text-ink md:text-2xl">CONSOLE</h1>
+  <p class="mt-3.5 max-w-measure text-md text-ink-body">
     The design system this site is built from, published at <span class="text-accent-lift">/system</span>{' '}
     so it can't drift from what it describes. The rules live in <code class="bg-wash-code px-1.5 py-px text-accent-lift">docs/design-system.md</code>;
     every value lives in <code class="bg-wash-code px-1.5 py-px text-accent-lift">src/styles/theme.css</code>.
@@ -146,7 +146,7 @@ const outlineHeadings = [
       tone="accent"
       meta={`${surfaces.length} SURFACES · ${inks.length} INKS · 1 ACCENT`}
     />
-    <p class="mt-2 text-2xs tracking-chrome text-ink-faint">ratios measured against --color-surface-window</p>
+    <p class="mt-2 text-2xs tracking-chrome text-ink-muted">ratios measured against --color-surface-window</p>
   </div>
 
   <div class="mt-5 grid grid-cols-2 gap-3.5 sm:grid-cols-4">
@@ -269,7 +269,7 @@ const outlineHeadings = [
     <div>
       <div class="text-md text-ink">PromptLine + Caret</div>
       <div class="mt-1.5 text-xs leading-snug text-ink-muted">path · command · caret. One caret per screen.</div>
-      <div class="mt-2 text-2xs tracking-chrome text-ink-faint">shell/PromptLine.astro + shell/Caret.astro</div>
+      <div class="mt-2 text-2xs tracking-chrome text-ink-muted">shell/PromptLine.astro + shell/Caret.astro</div>
     </div>
     <div class="flex flex-col gap-3 border border-line-hairline bg-surface-code px-5 py-4.5">
       <PromptLine command="whoami" />
@@ -284,7 +284,7 @@ const outlineHeadings = [
     <div>
       <div class="text-md text-ink">SectionRule</div>
       <div class="mt-1.5 text-xs leading-snug text-ink-muted">label · rule · optional meta. `tone="accent"` for year and index headings.</div>
-      <div class="mt-2 text-2xs tracking-chrome text-ink-faint">shell/SectionRule.astro</div>
+      <div class="mt-2 text-2xs tracking-chrome text-ink-muted">shell/SectionRule.astro</div>
     </div>
     <div class="flex flex-col gap-4 border border-line-hairline bg-surface-code px-5 py-4.5">
       <SectionRule label="all posts" meta={`${posts.length} FILES`} tone="muted" />
@@ -296,13 +296,13 @@ const outlineHeadings = [
     <div>
       <div class="text-md text-ink">Tag</div>
       <div class="mt-1.5 text-xs leading-snug text-ink-muted">Counts render inside the chip, read from the real post archive.</div>
-      <div class="mt-2 text-2xs tracking-chrome text-ink-faint">listing/Tag.astro</div>
+      <div class="mt-2 text-2xs tracking-chrome text-ink-muted">listing/Tag.astro</div>
     </div>
     <div class="flex flex-wrap items-center gap-2 border border-line-hairline bg-surface-code px-5 py-4.5">
       <a href="/posts/" class="inline-block bg-accent px-2.75 py-1.25 text-2xs tracking-chrome text-on-accent">all {posts.length}</a>
       <Tag label={topTag} count={counts.get(topTag) ?? 0} href={`/tags/${topTag}/`} />
       <Tag label={secondTag} count={counts.get(secondTag) ?? 0} href={`/tags/${secondTag}/`} active />
-      <span class="ml-1.5 text-2xs tracking-chrome text-ink-faint">DEFAULT · DEFAULT · ACTIVE</span>
+      <span class="ml-1.5 text-2xs tracking-chrome text-ink-muted">DEFAULT · DEFAULT · ACTIVE</span>
     </div>
   </div>
 
@@ -310,12 +310,12 @@ const outlineHeadings = [
     <div>
       <div class="text-md text-ink">FileRow</div>
       <div class="mt-1.5 text-xs leading-snug text-ink-muted">The listing primitive. Desktop grid, mobile stack, 44px minimum tap target.</div>
-      <div class="mt-2 text-2xs tracking-chrome text-ink-faint">listing/FileRow.astro</div>
+      <div class="mt-2 text-2xs tracking-chrome text-ink-muted">listing/FileRow.astro</div>
     </div>
     <div class="border border-line-hairline bg-surface-code px-5 py-2">
       <FileRow
         date={newestPost.data.date}
-        size={formatSize(newestPost.body?.length ?? 0)}
+        size={postSize(newestPost)}
         title={newestPost.data.title}
         filename={`${newestPost.id}.md`}
         tags={newestPost.data.tags}
@@ -323,7 +323,7 @@ const outlineHeadings = [
       />
       <FileRow
         date={ptPost.data.date}
-        size={formatSize(ptPost.body?.length ?? 0)}
+        size={postSize(ptPost)}
         title={ptPost.data.title}
         filename={`${ptPost.id}.md`}
         tags={ptPost.data.tags}
@@ -337,7 +337,7 @@ const outlineHeadings = [
     <div>
       <div class="text-md text-ink">Pagination</div>
       <div class="mt-1.5 text-xs leading-snug text-ink-muted">One line: a shown/total count, and "load older" while there is more.</div>
-      <div class="mt-2 text-2xs tracking-chrome text-ink-faint">listing/Pagination.astro</div>
+      <div class="mt-2 text-2xs tracking-chrome text-ink-muted">listing/Pagination.astro</div>
     </div>
     <div class="flex flex-col gap-3 border border-line-hairline bg-surface-code px-5 py-4.5">
       <Pagination shown={8} total={posts.length} nextHref="/posts/" />
@@ -349,7 +349,7 @@ const outlineHeadings = [
     <div>
       <div class="text-md text-ink">CodeBlock</div>
       <div class="mt-1.5 text-xs leading-snug text-ink-muted">One block element per line — a collapsed code block is the worst failure this design can have. Full-bleed on mobile.</div>
-      <div class="mt-2 text-2xs tracking-chrome text-ink-faint">content/CodeBlock.astro + islands/CopyButton.tsx</div>
+      <div class="mt-2 text-2xs tracking-chrome text-ink-muted">content/CodeBlock.astro + islands/CopyButton.tsx</div>
     </div>
     <div class="flex flex-col gap-4">
       <CodeBlock filename="theme.css" code={accentBlock} />
@@ -367,7 +367,7 @@ const outlineHeadings = [
     <div>
       <div class="text-md text-ink">Callout</div>
       <div class="mt-1.5 text-xs leading-snug text-ink-muted">Dashed border is what tells it apart from every other box. Keep it dashed.</div>
-      <div class="mt-2 text-2xs tracking-chrome text-ink-faint">content/Callout.astro</div>
+      <div class="mt-2 text-2xs tracking-chrome text-ink-muted">content/Callout.astro</div>
     </div>
     <div class="flex flex-col gap-3">
       <Callout>
@@ -385,7 +385,7 @@ const outlineHeadings = [
     <div>
       <div class="text-md text-ink">BookCover</div>
       <div class="mt-1.5 text-xs leading-snug text-ink-muted">2:3. Reading stays full opacity with an accent border; finished dims to 80%. No cover falls back to a dither placeholder.</div>
-      <div class="mt-2 text-2xs tracking-chrome text-ink-faint">media/BookCover.astro</div>
+      <div class="mt-2 text-2xs tracking-chrome text-ink-muted">media/BookCover.astro</div>
     </div>
     <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
       <BookCover src={readingCover} alt="a book currently being read" status="reading" />
@@ -399,7 +399,7 @@ const outlineHeadings = [
     <div>
       <div class="text-md text-ink">AsciiBanner</div>
       <div class="mt-1.5 text-xs leading-snug text-ink-muted">Decorative block texture set as text, never drawn letterforms. `aria-hidden`. `sweep` is used once, on the 404.</div>
-      <div class="mt-2 text-2xs tracking-chrome text-ink-faint">media/AsciiBanner.astro</div>
+      <div class="mt-2 text-2xs tracking-chrome text-ink-muted">media/AsciiBanner.astro</div>
     </div>
     <div class="flex flex-col gap-3 overflow-hidden border border-line-hairline bg-surface-code px-5 py-4">
       <AsciiBanner rows={['░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░░▒▒▓▓██▓▓▒▒░░']} />
@@ -411,7 +411,7 @@ const outlineHeadings = [
     <div>
       <div class="text-md text-ink">Outline</div>
       <div class="mt-1.5 text-xs leading-snug text-ink-muted">A post's table of contents. `rail` is the sticky desktop column; `disclosure` is the bordered `&lt;details&gt;` on narrow screens.</div>
-      <div class="mt-2 text-2xs tracking-chrome text-ink-faint">content/Outline.astro</div>
+      <div class="mt-2 text-2xs tracking-chrome text-ink-muted">content/Outline.astro</div>
     </div>
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
       <div class="border border-line-hairline bg-surface-code px-5 py-4.5">
@@ -427,7 +427,7 @@ const outlineHeadings = [
     <div>
       <div class="text-md text-ink">Prose</div>
       <div class="mt-1.5 text-xs leading-snug text-ink-muted">Wraps rendered markdown. Caps at 68ch. `##`/`###` prefixes come from CSS, not the source text.</div>
-      <div class="mt-2 text-2xs tracking-chrome text-ink-faint">content/Prose.astro</div>
+      <div class="mt-2 text-2xs tracking-chrome text-ink-muted">content/Prose.astro</div>
     </div>
     <div class="border border-line-hairline bg-surface-code px-5 py-4.5">
       <Prose>
@@ -446,7 +446,7 @@ const outlineHeadings = [
     <div>
       <div class="text-md text-ink">Window · TabBar · Scanlines</div>
       <div class="mt-1.5 text-xs leading-snug text-ink-muted">The frame, the tab strip, and the ambient overlay. Not re-rendered here — this page is already inside one.</div>
-      <div class="mt-2 text-2xs tracking-chrome text-ink-faint">chrome/</div>
+      <div class="mt-2 text-2xs tracking-chrome text-ink-muted">chrome/</div>
     </div>
     <p class="self-center text-sm text-ink-body">
       The chrome bar above carries this page's own title and the <code class="bg-wash-code px-1.5 py-px text-accent-lift">{COMPONENTS.length} COMPONENTS</code> count;
@@ -493,7 +493,7 @@ const outlineHeadings = [
     <div><span class="mr-2.5 text-2xs tracking-label text-ink-muted">SHIPPED</span><span class="text-accent-lift">/feed.xml</span> carries all {posts.length} posts, byte-identical to the old site's feed.</div>
   </div>
 
-  <p class="mt-5 max-w-[68ch] text-sm text-ink-muted">Genuinely open:</p>
+  <p class="mt-5 max-w-measure text-sm text-ink-muted">Genuinely open:</p>
   <div class="mt-2.5 flex flex-col gap-2.5 text-sm text-ink-body">
     <div><span class="mr-2.5 text-2xs text-ink-muted">01</span><span class="text-accent-lift">Pagination</span> renders a "load older" link, but no listing page has enough posts to need one — the mechanism is undesigned past the label.</div>
   </div>

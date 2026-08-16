@@ -65,7 +65,14 @@ block scrolls sideways.
 }));
 ```
 
-`distinctBaselines` must equal `lines`. Nothing may overflow except a deliberate ASCII banner.
+`distinctBaselines` must equal `lines`.
+
+A `<pre>` MAY scroll horizontally inside its own box — `CodeBlock.astro` sets `overflow-x-auto` on
+purpose, and the corpus has a 334-character line (a prose comment in an old post, not code anyone
+must read unbroken). Wrapping it would break shell commands mid-flag, so `overflows` above is not
+an assertion; it's informational. The check that protects the reading experience is check 3: the
+page itself must never scroll sideways, at any width. A deliberate ASCII banner is the one other
+element allowed to run wide, and only inside its own box, same as a `<pre>`.
 
 **3. No horizontal overflow, any width.**
 

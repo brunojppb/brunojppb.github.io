@@ -19,8 +19,8 @@ const courses = await getCollection('courses');
 
   <PromptLine command="ls -l courses/" />
 
-  <h1 class="mt-6 text-2xl leading-tight text-ink">Courses</h1>
-  <p class="mt-3.5 max-w-[62ch] text-md text-ink-body">
+  <h1 class="mt-6 text-xl leading-tight text-ink md:text-2xl">Courses</h1>
+  <p class="mt-3.5 max-w-measure text-md text-ink-body">
     Programming courses I've created and published on Udemy. Together, they have over 50,000
     enrolled students.
   </p>
@@ -85,7 +85,7 @@ const courses = await getCollection('courses');
                 </span>
               ))}
             </div>
-            <p class="mt-4.5 max-w-[66ch] text-md text-ink-body">{course.data.description}</p>
+            <p class="mt-4.5 max-w-measure text-md text-ink-body">{course.data.description}</p>
             <a
               href={course.data.url}
               target="_blank"

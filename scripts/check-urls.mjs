@@ -18,7 +18,14 @@ function routes(root) {
 
 const OLD = process.env.OLD_DIST ?? '/tmp/dist-old';
 if (!existsSync(OLD)) {
-  console.error(`No old build at ${OLD}. Run ./build.sh and copy dist/ there first.`);
+  console.error(
+    `No old build at ${OLD}.\n` +
+      'This is a local diagnostic, not a CI gate: it compares this build against a copy of the ' +
+      'pre-migration Rust site (Maudit), snapshotted to /tmp/dist-old before the Astro cutover. ' +
+      "That snapshot lives only on the machine that ran the migration — build.sh is gone, so a " +
+      'fresh clone has no way to reproduce it. If you need to re-run this check, restore your own ' +
+      'copy of the old dist/ output to that path, or point OLD_DIST at wherever you kept it.'
+  );
   process.exit(1);
 }
 

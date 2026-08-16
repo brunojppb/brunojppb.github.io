@@ -1,19 +1,5 @@
 import { test, expect } from '@playwright/test';
-
-const ROUTES = [
-  '/entries/distributed-lock-in-node-js/', // 25k, the longest
-  '/entries/modern-webapps-with-elixir-phoenix-typescript-react/', // 23k
-  '/entries/https-for-your-homelab/', // 20k
-  '/',
-  '/posts/',
-  '/tags/leadership/',
-  '/about/',
-  '/courses/',
-  '/reading/',
-  '/src/',
-  '/system/',
-  '/404',
-];
+import { ROUTES } from './routes';
 
 for (const route of ROUTES) {
   test(`${route}: no horizontal overflow`, async ({ page }) => {

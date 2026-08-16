@@ -1,6 +1,7 @@
 import { visit } from 'unist-util-visit';
 import type { Element, ElementContent, Root, RootContent } from 'hast';
 import { codeBlockClasses as c } from './code-block-classes';
+import { COPY_LABEL } from './copy-button';
 
 /**
  * Restructures Shiki's markdown output into the CodeBlock anatomy (§7.9):
@@ -91,7 +92,7 @@ export function rehypeCodeBlock() {
                   dataCopySource: '',
                   dataCode: rawSource,
                 },
-                children: [{ type: 'text', value: '[ COPY ]' }],
+                children: [{ type: 'text', value: COPY_LABEL }],
               },
             ],
           },

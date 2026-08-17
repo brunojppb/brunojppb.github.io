@@ -139,8 +139,13 @@
    in markup; they live here because a repeating-gradient with a
    token stop is not worth an arbitrary-value utility. */
 @utility scanlines {
-  position: absolute;
-  inset: 0;
+  /* Fixed to the viewport, not to the window column: the texture is the
+     screen the console sits on, so it covers the glass at every width and
+     stays put while the page scrolls. The 8px of negative top offset is the
+     travel of console-scan — without it the animation uncovers a strip at
+     the top of the screen. */
+  position: fixed;
+  inset: -8px 0 0 0;
   pointer-events: none;
   background: repeating-linear-gradient(
     180deg,

@@ -18,9 +18,13 @@
 </div>
 
 <style>
+  /* The reading surface, and the only place on the site that is not
+     Departure Mono. The headings below opt back out, so a post reads as
+     JetBrains Mono prose under console-voice headings. */
   .prose {
     max-width: 68ch;
     overflow-wrap: break-word;
+    font-family: var(--font-prose);
   }
 
   .prose > :global(*) {
@@ -33,6 +37,12 @@
 
   .prose :global(p) {
     color: var(--color-ink-body);
+  }
+
+  .prose :global(h2),
+  .prose :global(h3),
+  .prose :global(h4) {
+    font-family: var(--font-mono);
   }
 
   .prose :global(h2) {

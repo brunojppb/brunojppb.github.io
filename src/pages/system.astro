@@ -210,10 +210,29 @@ const outlineHeadings = [
 
   <!-- ============================================================ -->
   <div class="mt-11">
-    <SectionRule label="01 / TYPE" tone="accent" meta="DEPARTURE MONO · 400 · 11PX GRID" />
+    <SectionRule label="01 / TYPE" tone="accent" meta="TWO FACES · 400 · 11PX GRID" />
   </div>
 
-  <div class="mt-5 border border-line">
+  <div class="mt-5 grid grid-cols-1 gap-3.5 sm:grid-cols-2">
+    <div class="border border-line p-4">
+      <div class="text-2xs tracking-label text-ink-muted">FONT-MONO · DEPARTURE MONO</div>
+      <p class="mt-3 text-lg text-ink">The console voice</p>
+      <p class="mt-2.5 text-xs leading-snug text-ink-muted">
+        Chrome, tab bar, prompts, headings, listing rows, 11px labels, ASCII art.
+        Advances 63.64 at 100px.
+      </p>
+    </div>
+    <div class="border border-line p-4">
+      <div class="text-2xs tracking-label text-ink-muted">FONT-PROSE · JETBRAINS MONO</div>
+      <p class="mt-3 font-prose text-lg text-ink">The reading surface</p>
+      <p class="mt-2.5 font-prose text-xs leading-snug text-ink-muted">
+        Post body, inline code, code blocks. Everywhere someone reads a long stretch of text.
+        Advances 60 at 100px.
+      </p>
+    </div>
+  </div>
+
+  <div class="mt-3.5 border border-line">
     <div class="grid grid-cols-[90px_90px_1fr] gap-4 border-b border-line-hairline px-4 py-3 text-2xs tracking-label text-ink-muted sm:grid-cols-[120px_100px_1fr]">
       <span>TOKEN</span><span>SIZE</span><span>USE</span>
     </div>
@@ -248,10 +267,11 @@ const outlineHeadings = [
     <div class="border border-dashed border-line-accent p-4">
       <div class="text-2xs tracking-label text-accent-lift">! NEVER</div>
       <div class="mt-3 flex flex-col gap-2.5 text-sm text-ink-body">
-        <div>Bold: the font has one weight and browsers fake it badly</div>
+        <div>Bold: each face ships one weight and browsers fake it badly</div>
         <div>Sizes off the 11px grid: 14, 18 and 24 blur the pixels</div>
         <div>Uppercase on a heading or a sentence</div>
-        <div>A second typeface, anywhere</div>
+        <div>A third typeface, or a second weight of either</div>
+        <div>Code ligatures: <span class="text-accent-lift">=&gt;</span> is two characters</div>
       </div>
     </div>
   </div>
@@ -463,6 +483,10 @@ const outlineHeadings = [
   <div class="mt-5 grid grid-cols-1 gap-3.5 sm:grid-cols-2">
     <div class="border border-line-accent p-4.5">
       <div class="text-2xs tracking-label text-accent-lift">SAFE · IN DEPARTURE MONO</div>
+      <p class="mt-3.5 text-xs leading-snug text-ink-muted">
+        JetBrains Mono has none of these, so in post copy they fall through to Departure Mono, which sits
+        second in the prose stack.
+      </p>
       <p class="mt-3.5 text-xl leading-loose text-ink [word-spacing:.3em]">░ ▒ ▓ █ ▲ ▼ ← → ↑ ↓ ↗ ⌘ § · ─ │ ┌ ┐ └ ┘</p>
       <p class="mt-3.5 text-xs leading-snug text-ink-muted">Plus all Latin, Greek, small caps, old-style numerals and fractions.</p>
     </div>

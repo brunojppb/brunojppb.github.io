@@ -57,7 +57,9 @@ test('prose caps at 68ch', async ({ page }, testInfo) => {
   const width = await page.locator('[data-prose] p').first().evaluate((el) => el.clientWidth);
   const chWidth = await page.evaluate(() => {
     const s = document.createElement('span');
-    s.style.cssText = 'font:16.5px "Departure Mono";position:absolute;visibility:hidden';
+    // Prose is JetBrains Mono, so the `ch` the 68ch cap resolves against is
+    // JetBrains Mono's advance, not Departure's.
+    s.style.cssText = 'font:16.5px "JetBrains Mono";position:absolute;visibility:hidden';
     s.textContent = '0';
     document.body.append(s);
     const w = s.getBoundingClientRect().width;

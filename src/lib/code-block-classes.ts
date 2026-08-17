@@ -15,6 +15,9 @@ export const codeBlockClasses = {
   header: 'flex items-center justify-between border-b border-line-hairline bg-surface-chrome px-4 py-2 font-mono',
   label: 'text-2xs uppercase tracking-chrome text-ink-muted',
   copyButton: 'text-2xs uppercase tracking-chrome text-ink-muted hover:text-accent-lift',
+  // The body scrolls sideways, so it needs `tabindex="0"` to be reachable by
+  // keyboard. Shiki already emits it on a fenced block; `CodeBlock.astro` sets
+  // it by hand so both paths behave the same.
   pre: 'overflow-x-auto bg-surface-code p-4 text-sm text-ink-body',
   line: 'flex whitespace-pre',
   lineNumber: 'mr-4 inline-block w-10 shrink-0 select-none text-right text-ink-muted',

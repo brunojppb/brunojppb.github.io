@@ -89,6 +89,13 @@ Nine surfaces and inks, one accent. Names and values live in `tokens.css`.
 - **Lines** are the workhorse. Four weights of hairline separate everything; borders do the job
   that shadows and radii do elsewhere.
 
+**Links in body copy are underlined.** A 1px rule at `--border-accent-soft`, 2px below the text,
+going solid accent on hover. This holds in a post and in page copy alike, so the rule lives in
+theme.css's base layer rather than in `Prose.astro`. Colour cannot carry a link on its own here:
+the accent is 1.17:1 against the prose it interrupts, and no colour fixes that, since reaching the
+3:1 WCAG asks for would need a lightness above white or one dark enough to fail 4.5:1 against the
+page. Chrome, nav, the tab strip and listing rows are not body copy and carry no underline.
+
 **Radii are zero everywhere. Shadows do not exist.** The only depth cue is the 1px window border.
 
 Minimum contrast: no text below 4.5:1 against its own surface. Measured against
@@ -308,9 +315,9 @@ and the 404 art collapses into JetBrains Mono.
 
 ### 7.16 `Prose.astro`
 Wraps rendered markdown. Caps at `--measure`. Styles `h2` as `--text-lg --text-accent` prefixed with
-`##`, `p` as `--text-body` with `--space-5` between, `a` as `--text-accent` with a 1px underline that
-becomes solid accent on hover, `ul/ol` with `–` and `01.` markers, `blockquote` with a left 2px
-accent rule.
+`##`, `p` as `--text-body` with `--space-5` between, `ul/ol` with `–` and `01.` markers,
+`blockquote` with a left 2px accent rule. Links are `--text-accent` with a 1px underline that becomes
+solid accent on hover, but that rule is not in this component: see §3.
 
 Sets `--font-prose` on the wrapper, then puts `h2/h3/h4` back to `--font-mono`. That pairing is the
 whole reading experience: console-voice headings with their `##` prefixes over JetBrains Mono

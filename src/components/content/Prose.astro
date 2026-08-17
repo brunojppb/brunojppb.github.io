@@ -78,16 +78,8 @@
     content: '#### ';
   }
 
-  .prose :global(a) {
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 2px;
-    text-decoration-color: var(--color-line-accent);
-  }
-
-  .prose :global(a):hover {
-    text-decoration-color: var(--color-accent-lift);
-  }
+  /* Link underlines are not here. They cover page copy outside this component
+     too, so the one rule lives in theme.css's base layer. */
 
   .prose :global(ul),
   .prose :global(ol) {

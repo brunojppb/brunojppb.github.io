@@ -85,6 +85,12 @@ compute to 14.8 / 11.3 / 7.4 / 5.4. `--color-ink-faint` is permitted only inside
 carries the least headroom of any pair in the system: 4.8:1 against `--color-surface-code`. Measure it
 on that surface, not on the window, and treat any change to either value as a contrast change.
 
+`tests/e2e/axe.spec.ts` runs this check, and the rest of WCAG 2.1 A/AA, over every template at 1440
+and 390. It uses the axe engine, which is what Lighthouse scores accessibility with, so a green run
+here is the same answer Lighthouse gives. Note what it cannot judge: axe returns "incomplete", not a
+pass, for text over a gradient, which covers the `COVER 2:3` labels on the dither placeholders on
+`/reading/`. Those need an eye. Roughly 1.4% of text nodes land in that bucket; the rest are decided.
+
 **5. Tap targets at 390.** Every link inside a listing row ≥ 44px tall.
 
 **6. Reduced motion.** With `prefers-reduced-motion: reduce`, the scanline overlay must be static and

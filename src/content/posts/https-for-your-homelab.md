@@ -81,7 +81,7 @@ exist only on the LAN.
 
 Before we move along, here is a little diagram showing how this all works together:
 
-![Network topology diagram](/assets/images/posts/homelab-topology-diagram.jpg)
+![Network topology diagram](/assets/images/posts/homelab-topology.webp)
 
 ## What you’ll need
 

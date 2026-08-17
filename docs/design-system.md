@@ -95,7 +95,8 @@ Minimum contrast: no text below 4.5:1 against its own surface. Measured against
 `--surface-window` (#101017): `--text-primary` 14.8:1, `--text-body` 11.3:1, `--text-secondary`
 7.4:1, `--text-muted` 5.4:1. `--text-muted` at 11px is the floor; do not invent anything fainter
 for text. `--text-faint` is
-permitted only inside code blocks where it labels comments, never for UI copy.
+permitted only inside code blocks where it labels comments, never for UI copy. It is measured
+against `--surface-code` instead, where it reaches 4.8:1.
 
 ---
 

@@ -30,7 +30,7 @@
   --color-ink-body:        #c9c6d4;  /* text-ink-body  — prose                      */
   --color-ink-secondary:   #a3a0b0;  /* prompts                                     */
   --color-ink-muted:       #8b8799;  /* 11px labels, dates, counts                  */
-  --color-ink-faint:       #767386;  /* code comments ONLY                          */
+  --color-ink-faint:       #7e7b8e;  /* code comments ONLY; 4.78:1 on surface-code  */
 
   --color-accent:          #a98bf5;  /* fills: bg-accent + text-on-accent           */
   --color-accent-lift:     #c2adfa;  /* accent used as text: text-accent-lift       */

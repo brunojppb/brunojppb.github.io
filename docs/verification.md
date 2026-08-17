@@ -81,7 +81,9 @@ document.documentElement.scrollWidth <= document.documentElement.clientWidth
 ```
 
 **4. Contrast.** Every text/surface pair ≥ 4.5:1. Against `--color-surface-window` the design's inks
-compute to 14.8 / 11.3 / 7.4 / 5.4. `--color-ink-faint` is permitted only inside code blocks.
+compute to 14.8 / 11.3 / 7.4 / 5.4. `--color-ink-faint` is permitted only inside code blocks, and it
+carries the least headroom of any pair in the system: 4.8:1 against `--color-surface-code`. Measure it
+on that surface, not on the window, and treat any change to either value as a contrast change.
 
 **5. Tap targets at 390.** Every link inside a listing row ≥ 44px tall.
 

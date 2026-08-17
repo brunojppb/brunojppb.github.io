@@ -2,16 +2,16 @@ import { describe, it, expect } from 'vitest';
 import { formatSize, formatListDate, formatProseDate, groupByYear, relatedPosts } from '../../src/lib/posts';
 
 describe('formatSize', () => {
-  it('renders whole kilobytes with a k suffix', () => {
-    expect(formatSize(14_336)).toBe('14k');
-    expect(formatSize(6_144)).toBe('6k');
+  it('renders whole kilobytes with a KB suffix', () => {
+    expect(formatSize(14_336)).toBe('14KB');
+    expect(formatSize(6_144)).toBe('6KB');
   });
-  it('never renders 0k — the smallest post is 1k', () => {
-    expect(formatSize(200)).toBe('1k');
-    expect(formatSize(0)).toBe('1k');
+  it('never renders 0KB. The smallest post is 1KB', () => {
+    expect(formatSize(200)).toBe('1KB');
+    expect(formatSize(0)).toBe('1KB');
   });
   it('rounds to nearest', () => {
-    expect(formatSize(1_600)).toBe('2k');
+    expect(formatSize(1_600)).toBe('2KB');
   });
 });
 

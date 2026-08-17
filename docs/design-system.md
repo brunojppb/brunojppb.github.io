@@ -278,10 +278,15 @@ Props: `src` (optional), `alt`, `status` (`reading` | `finished`).
 Grid: 4-up desktop / 2-up mobile for reading; 6-up desktop / 3-up mobile for finished.
 
 ### 7.13 `Outline.astro`
-Props: `headings` (`{depth, text, slug}[]`), `activeSlug`.
+Props: `headings` (`{depth, text, slug}[]`), `variant` (`rail` | `disclosure`).
 Desktop: sticky rail, 11px `OUTLINE` label, entries rendered with their markdown prefix — `## The
 problem` — active entry in `--text-accent`.
 Mobile: a bordered disclosure under the post title, collapsed by default.
+The active entry is the section the reader is in, not a build-time prop: a hoisted script marks it
+with `aria-current="location"` as the page scrolls. A heading becomes current once it passes a line
+a quarter down the viewport, so the highlight follows the text on screen. Nothing is marked above
+the first heading; the end of the page belongs to the last one. Colour only, no marker glyph and no
+transition.
 
 ### 7.14 `Pagination.astro`
 Props: `shown`, `total`, `nextHref`.

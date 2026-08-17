@@ -25,5 +25,7 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm test
-      - run: npx playwright install --with-deps chromium
+      # WebKit is for the `safari` project alone (tests/e2e/aspect.spec.ts),
+      # which guards a layout behaviour Chromium does not have.
+      - run: npx playwright install --with-deps chromium webkit
       - run: npm run test:e2e

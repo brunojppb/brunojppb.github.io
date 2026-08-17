@@ -6,8 +6,14 @@ export default defineConfig({
   reporter: 'list',
   use: { baseURL: 'http://localhost:4321' },
   projects: [
-    { name: 'desktop', use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } } },
-    { name: 'mobile',  use: { ...devices['Desktop Chrome'], viewport: { width: 390,  height: 844 } } },
+    // aspect.spec.ts is scoped out of the Chromium projects: it guards a
+    // WebKit layout behaviour Chromium does not have, so there it would
+    // pass whether the bug is present or not.
+    { name: 'desktop', testIgnore: ['aspect.spec.ts'], use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } } },
+    { name: 'mobile',  testIgnore: ['aspect.spec.ts'], use: { ...devices['Desktop Chrome'], viewport: { width: 390,  height: 844 } } },
+    // The iPhone the growing-image bug came from. Scoped to the one spec
+    // that needs a second engine — the rest of the suite is Chromium.
+    { name: 'safari',  testMatch: ['aspect.spec.ts'], use: { ...devices['iPhone 14'] } },
     // docs/verification.md's sweep names 390/768/1024/1440. 768 and 1024
     // have no bespoke design and most specs assert against the two
     // primary widths above, so these two are scoped via testMatch to the

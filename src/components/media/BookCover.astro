@@ -29,7 +29,10 @@ const width = reading ? 480 : 320;
 <div class="flex flex-col gap-3">
   <div
     class:list={[
-      'aspect-[2/3] border',
+      // `w-full` is load-bearing: without a stated width, WebKit derives
+      // this box's width from the height the ratio gave it, adds the border
+      // twice, and the cover grows on every relayout.
+      'aspect-[2/3] w-full border',
       reading ? 'border-line-accent' : 'border-line-strong',
       !reading && 'opacity-80',
     ]}

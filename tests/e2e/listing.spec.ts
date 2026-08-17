@@ -1,4 +1,13 @@
+import { readFileSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
+import { parse } from 'yaml';
+
+// The compact list on /src/ is whatever projects.yaml does not pin, so the
+// count comes from the same file the page builds from. Hard-coding it means
+// every repo added or pinned breaks this test for no real reason.
+const COMPACT_REPO_COUNT = (
+  parse(readFileSync('src/data/projects.yaml', 'utf-8')) as { pinned: boolean }[]
+).filter((p) => !p.pinned).length;
 
 test('the home page shows between three and five posts', async ({ page }) => {
   await page.goto('/');
@@ -57,6 +66,8 @@ test('/src/ compact repo rows are at least 44px tall at 390', async ({ page }, t
   );
   // Asserted first, and exact, so a selector typo (matching zero rows)
   // fails loudly here instead of passing the height loop vacuously.
-  expect(heights.length).toBe(4);
+  // Guards the guard: a count of zero would make the line below vacuous too.
+  expect(COMPACT_REPO_COUNT).toBeGreaterThan(0);
+  expect(heights.length).toBe(COMPACT_REPO_COUNT);
   for (const h of heights) expect(h).toBeGreaterThanOrEqual(44);
 });

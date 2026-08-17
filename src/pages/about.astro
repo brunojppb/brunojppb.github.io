@@ -2,11 +2,11 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PromptLine from '../components/shell/PromptLine.astro';
 
-// Every string on this page is reproduced word for word from
-// content/pages/about.md — Bruno's own bio and role history, not copy
-// written for this rebuild. Only punctuation that isn't in Departure Mono
-// (the "•" bullet in each role's meta line) was swapped for the allowed
-// "·" middot; no word was added, removed or reordered.
+// The intro is new copy, written with Bruno. The role history below is
+// reproduced word for word from content/pages/about.md. Only punctuation
+// that isn't in Departure Mono (the "•" bullet in each role's meta line)
+// was swapped for the allowed "·" middot; no word was added, removed or
+// reordered in those.
 
 interface Segment {
   text: string;
@@ -87,12 +87,11 @@ const roles: Role[] = [
   },
 ];
 
-// The stack sentence from about.md: "I have been writing web applications
-// using Scala, Elixir, JavaScript and TypeScript."
-const STACK = ['Scala', 'Elixir', 'JavaScript', 'TypeScript'];
+// Matches the closing line of the intro.
+const STACK = ['Scala', 'Elixir', 'JavaScript', 'TypeScript', 'Rust'];
 
 const description =
-  'I am a passionate Software Engineer who loves crafting solutions that can help ease our lives and make it more fun.';
+  'Brazilian software engineer based in Spain. I build open source tools in my spare time, and some of them run at Cursor, SpaceX, BBC, N26 and Buffer.';
 ---
 
 <BaseLayout
@@ -111,14 +110,22 @@ const description =
   <div class="mt-6 grid gap-9 sm:grid-cols-[1fr_200px] sm:items-start">
     <div>
       <h1 class="text-xl leading-tight text-ink md:text-2xl">Bruno Paulino</h1>
-      <p class="mt-3.5 max-w-measure text-md text-ink-body">Hi There, Bruno Paulino here.</p>
+      <p class="mt-3.5 max-w-measure text-md text-ink-body">Hi there, Bruno Paulino here.</p>
       <p class="mt-3.5 max-w-measure text-md text-ink-body">
-        I am originally from Brazil and currently based in Spain. I am a passionate Software
-        Engineer who loves crafting solutions that can help ease our lives and make it more fun.
+        Brazilian, living in Spain, writing web software for long enough to have opinions about
+        build times.
       </p>
       <p class="mt-3.5 max-w-measure text-md text-ink-body">
-        I am mainly interested in Web development and programming languages these days. I have
-        been writing web applications using Scala, Elixir, JavaScript and TypeScript.
+        I also enjoy building open source tools in my spare time. Some of them now run at{' '}
+        <a href="/src/" class="text-accent-lift">Cursor, SpaceX, BBC, N26 and Buffer</a>. Somewhere
+        a rocket company waits a little less for a build.
+      </p>
+      <p class="mt-3.5 max-w-measure text-md text-ink-body">
+        Along the way I've worked in banking, e-commerce and aviation. Internet banking, bikes for
+        kids, and private jets. I still commute by bike.
+      </p>
+      <p class="mt-3.5 max-w-measure text-md text-ink-body">
+        Scala, Elixir, TypeScript, and Rust when the problem earns it.
       </p>
       <nav aria-label="profiles" class="mt-3 flex flex-wrap gap-1 text-2xs tracking-chrome">
         <a href="https://github.com/brunojppb" class="flex min-h-11 items-center pr-3.5 text-accent-lift">

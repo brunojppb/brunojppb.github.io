@@ -29,7 +29,7 @@ const lines = code.replace(/\n$/, '').split('\n');
     <span class={c.label}>{label}</span>
     <CopyButton client:visible text={code} />
   </figcaption>
-  <pre class={c.pre}><code>{lines.map((line, i) => (
+  <pre class={c.pre} tabindex="0"><code>{lines.map((line, i) => (
     <div class={c.line}>
       {showLineNumbers && <span class={c.lineNumber}>{i + 1}</span>}
       <span>{line === '' ? '\u00A0' : line}</span>

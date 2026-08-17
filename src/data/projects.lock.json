@@ -5,6 +5,12 @@
     "license": "MIT",
     "description": "Blazingly fast Turborepo remote cache server written in Rust as a Github Action with Docker support for Linux and MacOS"
   },
+  "brunojppb/rush-cache-server": {
+    "stars": 2,
+    "language": "Rust",
+    "license": "MIT",
+    "description": "Rush distributed caching server for your CI builds"
+  },
   "brunojppb/sanitisium": {
     "stars": 5,
     "language": "Rust",

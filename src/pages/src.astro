@@ -7,8 +7,8 @@ import SectionRule from '../components/shell/SectionRule.astro';
 import Tag from '../components/listing/Tag.astro';
 import { getRepoStats, type RepoStats } from '../lib/github';
 
-// Repos shown here are a judgment call, not derived from any API query —
-// see src/data/projects.yaml for the list and why curso-react-para-iniciantes,
+// Repos shown here are a judgment call, not derived from any API query.
+// See src/data/projects.yaml for the list and why curso-react-para-iniciantes,
 // rails_contact_list, brunojppb.github.io and markitdown-ui are excluded.
 interface ProjectEntry {
   slug: string;
@@ -40,7 +40,7 @@ const repoUrl = (slug: string) => `https://github.com/${slug}`;
 const repoName = (slug: string) => slug.split('/')[1];
 
 const description =
-  "Open-source projects I maintain, from a Rust build cache server to a handful of smaller tools.";
+  "Open-source projects I maintain, from two Rust build cache servers to a handful of smaller tools.";
 ---
 
 <BaseLayout

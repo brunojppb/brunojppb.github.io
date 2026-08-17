@@ -3,32 +3,28 @@
 # with Bruno's own prose (paragraphs, below); everything else renders as a
 # row in the compact list, using the GitHub API's own description field.
 #
-# curso-react-para-iniciantes and rails_contact_list are excluded on purpose
-# — Bruno's two highest-starred repos, but both are course companion repos
-# that belong with /courses/, not here. brunojppb.github.io (this site) and
-# markitdown-ui (named in the old page's meta description but not among his
-# public non-fork repos) are excluded too.
+# The two cache servers are pinned. Everything else is a row, sanitisium
+# included.
+#
+# curso-react-para-iniciantes and rails_contact_list are excluded on purpose.
+# They are Bruno's two highest-starred repos, but both are course companion
+# repos that belong with /courses/, not here. brunojppb.github.io (this site)
+# and markitdown-ui (named in the old page's meta description but not among
+# his public non-fork repos) are excluded too.
 - slug: brunojppb/turbo-cache-server
   pinned: true
   paragraphs:
-    - A blazingly fast Turborepo remote cache server written in Rust. This self-hosted solution
-      accelerates monorepo build processes by caching and reusing build artifacts, dramatically
-      reducing build times in CI/CD pipelines.
-    - The server is compatible with S3-compatible storage services like AWS S3, Cloudflare R2, and
-      Minio, making it flexible for different deployment scenarios. It can be deployed as a GitHub
-      Action or Docker container, supporting various CI environments including GitHub and GitLab.
+    - A Turborepo remote cache in Rust. Self-hosted, works with any S3-compatible store, and runs
+      as a GitHub Action or a Docker container.
 
-- slug: brunojppb/sanitisium
+- slug: brunojppb/rush-cache-server
   pinned: true
   paragraphs:
-    - "A secure PDF sanitization service written in Rust that eliminates threats by completely
-      regenerating documents. Instead of trying to parse and remove threats, Sanitisium takes a
-      unique approach: it converts PDF pages into 300 DPI bitmaps and creates entirely new PDFs
-      from those images."
-    - This method removes all potential security threats including malicious JavaScript, exploit
-      payloads, phishing links, and buffer overflow risks. The project includes a CLI tool, core
-      library, and HTTP API with background job processing, all built with process isolation for
-      maximum security and performance.
+    - A build cache for Rush monorepos, also in Rust. It sits between Rush and a private S3
+      bucket, so the bucket never has to be public.
+
+- slug: brunojppb/sanitisium
+  pinned: false
 
 - slug: brunojppb/node-distributed-lock
   pinned: false

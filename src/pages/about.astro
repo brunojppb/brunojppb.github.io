@@ -140,7 +140,10 @@ const description =
     </div>
 
     <div class="order-first flex flex-col gap-2 sm:order-last">
-      <div class="relative aspect-square border border-line-accent">
+      <!-- `w-full` is load-bearing: without a stated width, WebKit derives
+           this box's width from the height `aspect-square` gave it, adds the
+           border twice, and the picture grows on every relayout. -->
+      <div class="relative aspect-square w-full border border-line-accent">
         <img
           src="/assets/images/bpaulino.jpg"
           alt="Bruno Paulino smiling"

@@ -6,7 +6,7 @@ const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV
 
 /** Renders a byte count as the fake file size shown in listings. */
 export function formatSize(bytes: number): string {
-  return `${Math.max(1, Math.round(bytes / 1024))}k`;
+  return `${Math.max(1, Math.round(bytes / 1024))}KB`;
 }
 
 /** Renders a post's raw markdown body length as the fake file size shown in listings. */

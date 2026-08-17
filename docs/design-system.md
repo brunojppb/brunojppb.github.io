@@ -205,11 +205,11 @@ optional right-aligned 11px meta (`04`, `24 FILES`). Year headings on the archiv
 
 ### 7.8 `FileRow.astro`
 The listing primitive — used by the archive, tag pages and the home feed.
-Props: `date` (ISO), `size` (string), `title`, `filename`, `tags` (string[]), `href`.
+Props: `date` (ISO), `size` (string), `title`, `description`, `tags` (string[]), `href`.
 Desktop: `grid-template-columns: 120px 60px 1fr auto`, `--space-4` gap, `--space-3` vertical
-padding, bottom border `--border-faint`. Title in `--text-primary` at `--text-md`, filename beneath
-in `--text-xs --text-muted`, tags right in 11px `--text-accent`.
-Mobile: one column — a date/size row in 11px, then title, then filename, then tags. Tap target is
+padding, bottom border `--border-faint`. Title in `--text-primary` at `--text-md`, the post's
+`description` beneath in `--text-xs --text-muted`, tags right in 11px `--text-accent`.
+Mobile: one column — a date/size row in 11px, then title, then description, then tags. Tap target is
 the whole row, minimum 44px tall.
 Hover: title → `--text-accent`. No background change, no transform.
 

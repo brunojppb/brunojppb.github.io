@@ -10,13 +10,13 @@ interface Props {
   date: Date;
   size: string;
   title: string;
-  filename: string;
+  description: string;
   tags: string[];
   href: string;
   lang?: 'en' | 'pt-BR';
 }
 
-const { date, size, title, filename, tags, href, lang } = Astro.props;
+const { date, size, title, description, tags, href, lang } = Astro.props;
 const isPt = lang === 'pt-BR';
 const dateStr = formatListDate(date);
 ---
@@ -44,7 +44,9 @@ const dateStr = formatListDate(date);
     <span class="block text-md text-ink group-hover:text-accent-lift" lang={isPt ? 'pt-BR' : undefined}>
       {title}
     </span>
-    <span class="mt-[3px] block text-xs text-ink-muted">{filename}</span>
+    <span class="mt-[3px] block text-xs leading-snug text-ink-muted" lang={isPt ? 'pt-BR' : undefined}>
+      {description}
+    </span>
   </div>
 
   <div class="mt-1.5 text-2xs tracking-label text-accent-lift sm:mt-0">{tags.join(' ')}</div>

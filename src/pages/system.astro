@@ -313,7 +313,7 @@ const outlineHeadings = [
         date={newestPost.data.date}
         size={postSize(newestPost)}
         title={newestPost.data.title}
-        filename={`${newestPost.id}.md`}
+        description={newestPost.data.description}
         tags={newestPost.data.tags}
         href={`/entries/${newestPost.id}/`}
       />
@@ -321,7 +321,7 @@ const outlineHeadings = [
         date={ptPost.data.date}
         size={postSize(ptPost)}
         title={ptPost.data.title}
-        filename={`${ptPost.id}.md`}
+        description={ptPost.data.description}
         tags={ptPost.data.tags}
         href={`/entries/${ptPost.id}/`}
         lang="pt-BR"

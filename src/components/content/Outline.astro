@@ -8,8 +8,11 @@
  * Two anatomies, one component: `rail` is the sticky desktop column, called
  * from the outline aside; `disclosure` is the bordered `<details>` under the
  * title on narrow screens. The route places each at the DOM position its
- * layout needs and lets CSS show only the one that matches the width —
- * there is no scroll-spy, so neither variant carries an active state.
+ * layout needs and lets CSS show only the one that matches the width.
+ *
+ * The entry for the section the reader is in carries `aria-current="location"`,
+ * set by the script below. Both variants read it, so the disclosure highlights
+ * too while it is open.
  */
 interface Heading {
   depth: number;
@@ -34,7 +37,11 @@ const entries = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
         {entries.map((h) => (
           <a
             href={`#${h.slug}`}
-            class:list={['text-xs text-ink-secondary', h.depth === 3 && 'pl-3']}
+            data-outline-link
+            class:list={[
+              'text-xs text-ink-secondary aria-[current=location]:text-accent-lift',
+              h.depth === 3 && 'pl-3',
+            ]}
           >
             {'#'.repeat(h.depth)} {h.text}
           </a>
@@ -55,7 +62,11 @@ const entries = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
         {entries.map((h) => (
           <a
             href={`#${h.slug}`}
-            class:list={['text-xs text-ink-secondary', h.depth === 3 && 'pl-3']}
+            data-outline-link
+            class:list={[
+              'text-xs text-ink-secondary aria-[current=location]:text-accent-lift',
+              h.depth === 3 && 'pl-3',
+            ]}
           >
             {'#'.repeat(h.depth)} {h.text}
           </a>
@@ -64,3 +75,61 @@ const entries = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
     </details>
   )
 }
+
+<script>
+  // Marks the outline entry for the section the reader is in. Astro hoists and
+  // bundles this once per page, so both variants share the one listener.
+  const headings = [
+    ...document.querySelectorAll<HTMLElement>('[data-prose] :is(h2, h3)[id]'),
+  ];
+  const links = new Map<string, HTMLAnchorElement[]>();
+
+  for (const link of document.querySelectorAll<HTMLAnchorElement>('[data-outline-link]')) {
+    const slug = decodeURIComponent((link.getAttribute('href') ?? '').slice(1));
+    if (!slug) continue;
+    const group = links.get(slug);
+    if (group) group.push(link);
+    else links.set(slug, [link]);
+  }
+
+  if (headings.length > 0 && links.size > 0) {
+    let active: string | null = null;
+    let frame = 0;
+
+    const sync = () => {
+      frame = 0;
+
+      // The line sits a quarter down the viewport, so the entry tracks the
+      // section that owns the text the reader is looking at rather than the
+      // heading that happens to be on screen.
+      const line = window.innerHeight * 0.25;
+      let next: string | null = null;
+
+      for (const heading of headings) {
+        if (heading.getBoundingClientRect().top > line) break;
+        next = heading.id;
+      }
+
+      // A short last section never reaches the line, so the end of the page
+      // belongs to the last heading.
+      const bottom = window.scrollY + window.innerHeight;
+      if (bottom >= document.documentElement.scrollHeight - 2) {
+        next = headings[headings.length - 1].id;
+      }
+
+      if (next === active) return;
+
+      for (const link of links.get(active ?? '') ?? []) link.removeAttribute('aria-current');
+      for (const link of links.get(next ?? '') ?? []) link.setAttribute('aria-current', 'location');
+      active = next;
+    };
+
+    const schedule = () => {
+      if (frame === 0) frame = requestAnimationFrame(sync);
+    };
+
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule, { passive: true });
+    sync();
+  }
+</script>

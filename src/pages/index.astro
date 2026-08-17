@@ -12,9 +12,7 @@ const totalSize = totalPostSize(posts);
 // Reproduced word for word from content/pages/about.md — this is Bruno's
 // own bio copy, not marketing copy written for this rebuild.
 const bio =
-  "I am originally from Brazil and currently based in Spain. I am a passionate " +
-  'Software Engineer who loves crafting solutions that can help ease our lives ' +
-  'and make it more fun.';
+  "Software engineer. I build platforms, run too much infrastructure at home, and write the posts I wish I had found first.";
 const description =
   'I am a passionate Software Engineer who loves crafting solutions that can help ease our lives and make it more fun.';
 ---
@@ -37,13 +35,9 @@ const description =
     <h1 class="text-xl leading-tight text-ink md:text-2xl">Bruno Paulino</h1>
     <p class="mt-3 text-ink-secondary">{bio}</p>
 
-    {/* No email link: the only address in the repo is inside a git-config
-        tutorial example (10-automating-your-work-with-github-actions.md),
-        not a stated contact channel. about.md lists GitHub, Stack
-        Overflow, Twitter and LinkedIn, but no email. */}
     <div class="mt-4 flex flex-wrap items-center gap-5 text-2xs tracking-chrome text-ink-muted">
       <a href="https://github.com/brunojppb" class="text-accent-lift">GITHUB ↗</a>
-      <a href="/feed.xml" class="text-accent-lift sm:hidden">RSS ↗</a>
+      <a href="/feed.xml" class="text-accent-lift">RSS ↗</a>
     </div>
   </div>
 

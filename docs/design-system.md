@@ -152,7 +152,9 @@ transitions longer than 0ms — hovers change colour immediately.
 Build in this order. Everything is `.astro` unless marked **island**.
 
 ### 7.1 `Scanlines.astro`
-Absolutely positioned overlay, `inset: 0`, `pointer-events: none`, `aria-hidden`.
+Viewport-fixed overlay, `pointer-events: none`, `aria-hidden`. It covers the whole screen at every
+width — it is the glass the console sits behind, not a texture on the window column — and it does
+not scroll with the page.
 `repeating-linear-gradient(180deg, var(--wash-scanline) 0 1px, transparent 1px var(--scan-pitch))`
 animated with `console-scan`. Rendered once per page by `BaseLayout`, above the page background and
 below the window. No props.

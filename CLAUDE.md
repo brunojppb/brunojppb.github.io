@@ -1,19 +1,19 @@
-# CLAUDE.md — bpaulino.com
+# CLAUDE.md, bpaulino.com
 
-Personal blog. Astro, static, Tailwind v4, Cloudflare Pages. The visual language is **CONSOLE** —
+Personal blog. Astro, static, Tailwind v4, Cloudflare Pages. The visual language is **CONSOLE**:
 a dark, monospaced, terminal-shaped design system. The full spec is in `docs/design-system.md`;
 the values are in `src/styles/theme.css`.
 
 ## Standing rules
 
-**The design is decided.** Reproduce it; do not improve it. If something is missing, ask — do not
+**The design is decided.** Reproduce it; do not improve it. If something is missing, ask. Do not
 improvise in a different visual language.
 
 **One font, one weight.** Departure Mono, 400. No `font-bold`, no `<strong>` styled heavier, no
 second typeface. Emphasis is `text-accent-lift`, an inverted fill, a leading `█`, or uppercase with
 `tracking-label`.
 
-**Type sizes are multiples of 11 or 5.5** — the pixel grid the face is drawn on. Use the `text-*`
+**Type sizes are multiples of 11 or 5.5**, the pixel grid the face is drawn on. Use the `text-*`
 tokens. Never 14, 18 or 24px.
 
 **Radius 0, no shadows.** Depth is a 1px border. Both Tailwind scales are deleted on purpose.
@@ -36,7 +36,7 @@ third island needs a reason.
 
 **Body copy is 16.5px at every width.** The frame shrinks on mobile; the text does not.
 
-**Motion is two ambient animations** — the scanline overlay and the caret — and both stop under
+**Motion is two ambient animations**, the scanline overlay and the caret, and both stop under
 `prefers-reduced-motion: reduce`. No page transitions, no scroll animation, no hover transitions.
 
 **Dark only.** There is no theme toggle. The old site had one; this one does not.
@@ -45,8 +45,13 @@ third island needs a reason.
 
 First person, plain, specific. Sentence case for prose; lowercase for anything imitating shell
 output; uppercase only for 11px labels. Counts are always shown. No emoji, no exclamation marks,
-no marketing voice. The user's own copy — course descriptions, post text — is reproduced verbatim
+no marketing voice. The user's own copy (course descriptions, post text) is reproduced verbatim
 and never rewritten or shortened.
+
+**Never use an em dash.** Not in page copy, not in code comments, not in commit messages, PR
+descriptions, docs, or chat. This holds for everything written for this project, with no
+exceptions. Use a full stop, a comma, a colon, or brackets instead. The character is `—`; search
+for it before you commit.
 
 ## Working
 
@@ -56,5 +61,5 @@ npm run build && npx serve dist -p 4321   # verify against the build, not the de
 astro check
 ```
 
-Verify visually at all four test viewports — 390, 768, 1024, 1440 — with Playwright before calling
+Verify visually at all four test viewports (390, 768, 1024, 1440) with Playwright before calling
 any page done. The full check list is in `docs/verification.md`.

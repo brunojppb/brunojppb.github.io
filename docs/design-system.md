@@ -15,7 +15,7 @@ and this document explains how to use it.
 3. Read §8 (Page recipes) and assemble the routes.
 4. Obey §4 (Typography rules) and §11 (Glyph allowlist) literally. Both have bitten this design already.
 
-Do not introduce a UI library, a CSS framework, an icon set, or a second font.
+Do not introduce a UI library, a CSS framework, an icon set, or a third font.
 The system is deliberately small enough to hold in your head.
 
 ---
@@ -26,8 +26,10 @@ The system is deliberately small enough to hold in your head.
 The archive is `ls`, prose is `cat`, tag pages are `grep`, the 404 is a real `cat:` error. If a new
 page has no plausible command, it probably doesn't belong.
 
-**One weight, one font, one accent.** Departure Mono has a single weight. Emphasis is colour,
-inversion, or a leading block glyph. Never synthesise bold.
+**Two faces, one weight, one accent.** Departure Mono is the console voice. JetBrains Mono is the
+reading surface, and it appears only where someone reads a long stretch of text: post body and code.
+Each face ships in a single weight. Emphasis is colour, inversion, or a leading block glyph. Never
+synthesise bold.
 
 **Texture is ambient, never content.** Scanlines and the dither in placeholders sit behind or
 beside information. They never carry meaning and they always survive being switched off.
@@ -99,18 +101,41 @@ permitted only inside code blocks where it labels comments, never for UI copy.
 
 ## 4. Typography rules
 
-- One family: `--font-mono`. No pairing, no fallback face in the design.
+- Two families, and the split is by reading distance, not by component. `--font-mono` (Departure
+  Mono) is the console voice: chrome, tab bar, prompts, headings, listing rows, 11px labels, ASCII
+  art. `--font-prose` (JetBrains Mono) is the reading surface: post body, inline code, code blocks.
+  Departure carries the identity; JetBrains Mono carries the paragraphs. Nothing else is added.
 - **Sizes are multiples of 11 or 5.5.** Departure Mono is a pixel face and renders crisply on that
-  grid. Do not use 14px, 18px or 24px.
+  grid. Do not use 14px, 18px or 24px. JetBrains Mono is not bound to the grid, but it shares the
+  same tokens so the two faces stay on one scale. Measured at 100px, the two x-heights are 55 and
+  54.5, so a given size reads at the same apparent size in either face. That is why adding the
+  second face needed no change to the scale.
+- **No ligatures, ever.** JetBrains Mono ships code ligatures and draws `=>` as one arrow, `!=` as
+  `≠`, `<=` as `≤` and `|>` as `▷`. Two of those are on the banned list in §11, and none of them are
+  what the file says. `font-variant-ligatures: none` in the base layer turns them off everywhere, on
+  the same `*` rule that refuses synthetic bold. It is one property, not a per-block choice, and
+  Departure Mono has no ligatures so it only ever binds on the reading face. Copy and paste was never
+  affected: the copy control carries the source text.
 - **No bold, ever.** No `font-weight`, no `<strong>` styled heavier. For emphasis use, in order of
   preference: `--text-accent`, inversion (accent fill + `--text-on-accent`), a leading `█` or
   `▓▒░`, or uppercase with `--tracking-label`.
 - Uppercase is reserved for 11px labels, tags, and chrome. Never uppercase a heading or a sentence.
 - Headings are `--leading-tight` with `--tracking-tight`; body is `--leading-body`; code is
   `--leading-code`.
-- Prose is capped at `--measure` (68ch). Listing rows and tables are not.
+- Prose is capped at `--measure` (68ch). Listing rows and tables are not. `ch` resolves against
+  JetBrains Mono inside a post, so the same 68ch is about 6% narrower in pixels than it was on
+  Departure alone.
 - Filenames, paths, commands and hostnames appear in running text as plain type — the whole page is
   already monospace, so `<code>` is reserved for values you would copy (see §7.9).
+- **How the switch is wired, because it is not where you would look for it.** Tailwind's preflight
+  styles `code`, `kbd`, `samp` and `pre` from `--default-mono-font-family`, and that beats inheriting
+  from a wrapper class. `theme.css` points that variable at `--font-prose`, which is what puts every
+  code block and every inline chip on JetBrains Mono with no class on the element. Two consequences:
+  a `pre` that is texture rather than text must ask for `font-mono` back (§7.15), and the `.prose`
+  wrapper has to put `h2/h3/h4` back to `--font-mono` explicitly (§7.16).
+- Departure Mono sits second in the `--font-prose` stack, ahead of the system fallbacks. JetBrains
+  Mono's subset has no arrows and no block glyphs, so anything off it lands on the design's own
+  face. Verified for `→` in post copy.
 
 ---
 
@@ -219,6 +244,11 @@ Header strip: filename left, `[ COPY ]` right, both 11px `--text-muted`, bottom 
 `--border-hairline`. Body on `--surface-code`, `--text-sm`, `--leading-code`, line numbers in
 `--text-muted`, comments in `--text-faint`, string/value runs in `--text-accent`.
 
+The two halves are in different faces on purpose: the body is `--font-prose`, because it is code
+someone reads, and the header strip carries `font-mono`, because the label and the copy control are
+chrome. The strip needs that class explicitly. Inside a post it would otherwise inherit JetBrains
+Mono from the `.prose` wrapper and stop matching the same component on `/system`.
+
 > **Each line must be its own block element.** Newlines between inline elements are not reliable
 > across template compilers, and a collapsed code block is the single worst failure this design can
 > have. Emit `<div>` (or `<span style="display:block">`) per line inside the `<pre>`.
@@ -266,12 +296,20 @@ A `<pre>` of block characters at `--text-xs`, `--leading-flat`, accent colour at
 translate by -50%.
 Currently used only on the 404. **Do not draw letterforms out of ASCII** — Departure Mono is already
 a pixel face; set big type instead.
+This is the one `<pre>` on the site that carries `font-mono`. Every other `pre` is the reading face
+(§4), and this one is texture drawn on Departure Mono's grid, so it opts back out. Remove that class
+and the 404 art collapses into JetBrains Mono.
 
 ### 7.16 `Prose.astro`
 Wraps rendered markdown. Caps at `--measure`. Styles `h2` as `--text-lg --text-accent` prefixed with
 `##`, `p` as `--text-body` with `--space-5` between, `a` as `--text-accent` with a 1px underline that
 becomes solid accent on hover, `ul/ol` with `–` and `01.` markers, `blockquote` with a left 2px
 accent rule.
+
+Sets `--font-prose` on the wrapper, then puts `h2/h3/h4` back to `--font-mono`. That pairing is the
+whole reading experience: console-voice headings with their `##` prefixes over JetBrains Mono
+paragraphs.
+The post `h1` lives outside this component, in the route, so it stays Departure without a rule here.
 
 ---
 
@@ -327,6 +365,12 @@ keep them on some listings and not others.
 Departure Mono has 775 glyphs; several obvious pictographs are **not** among them and fall back to
 a system sans, which is instantly visible next to pixel type.
 
+This list is Departure Mono's, and it governs the whole site. In post copy the order runs the other
+way: JetBrains Mono is tried first, and its subset lacks the arrows and the block glyphs, so those
+land on Departure, which is second in the `--font-prose` stack. That means the safe set below stays
+safe inside a post, in Departure, next to JetBrains Mono paragraphs. The banned set is still banned
+everywhere.
+
 **Safe:** `░ ▒ ▓ █` · `▲ ▼` · `← → ↑ ↓ ↗` · `⌘` · `§` · `·` · box drawing (`─ │ ┌ ┐ └ ┘ ├ ┤`) · all
 Latin, Greek, small caps, old-style numerals, fractions.
 
@@ -336,7 +380,8 @@ Substitutions this design uses: status dot → `█`; done → `[x]`; play/newes
 `▓▒░`; copy → `[ COPY ]`; hamburger → three CSS bars, not a glyph.
 
 When in doubt, measure: render the candidate and an `M` at 100px and compare `getBoundingClientRect().width`.
-A mismatch against the font's 64px advance means it fell back.
+A mismatch against the font's 64px advance means it fell back. Departure Mono advances 63.64 at
+100px and JetBrains Mono 60, so the measurement also tells you which of the two faces you got.
 
 ---
 
@@ -345,6 +390,15 @@ A mismatch against the font's 64px advance means it fell back.
 Departure Mono © Helena Zhang, SIL Open Font License 1.1. Free for commercial use; ships with the
 site. Download the woff2 from departuremono.com, put it in `public/fonts/`, and keep the OFL text
 alongside it. The mockups load a third-party jsDelivr mirror purely for preview — do not ship that.
+
+JetBrains Mono © The JetBrains Mono Project Authors, SIL Open Font License 1.1. Also free for
+commercial use and also shipped with the site, as `JetBrainsMono-Regular-latin.woff2` (21.2 KB) and
+`JetBrainsMono-Regular-latin-ext.woff2` (7.3 KB), with the OFL text in `JetBrainsMono-LICENSE.txt`.
+
+**Both faces are served from this origin. Never a font CDN.** Split the JetBrains Mono file by
+`unicode-range`: latin carries every accent the pt-BR posts use, so latin-ext only downloads if a
+post reaches past Latin-1, and only the latin file is preloaded. `tests/e2e/font.spec.ts` fails on
+any font request that leaves the origin, and it checks both faces load rather than falling back.
 
 ---
 

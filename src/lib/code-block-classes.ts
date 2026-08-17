@@ -10,7 +10,9 @@
  */
 export const codeBlockClasses = {
   figure: 'relative -mx-4 border-y border-line-hairline sm:mx-0 sm:border',
-  header: 'flex items-center justify-between border-b border-line-hairline bg-surface-chrome px-4 py-2',
+  // `font-mono` on the strip, not on the body: the label and the copy control
+  // are chrome and stay in the console voice, in a post and on /system alike.
+  header: 'flex items-center justify-between border-b border-line-hairline bg-surface-chrome px-4 py-2 font-mono',
   label: 'text-2xs uppercase tracking-chrome text-ink-muted',
   copyButton: 'text-2xs uppercase tracking-chrome text-ink-muted hover:text-accent-lift',
   pre: 'overflow-x-auto bg-surface-code p-4 text-sm text-ink-body',

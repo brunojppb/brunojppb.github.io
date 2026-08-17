@@ -52,9 +52,27 @@
   --color-wash-dither-mute:rgb(228 226 234 / .07);
 
   /* ---- type ------------------------------------------------
-     One family. Sizes are multiples of 11 or 5.5 — the pixel
-     grid Departure Mono is drawn on. Do not add 14/18/24.       */
+     Two families. Departure Mono is the console voice: chrome,
+     headings, listings, prompts. JetBrains Mono is the reading
+     surface: post body and code, where Departure's pixel grid
+     costs too much legibility over a long stretch of text.
+
+     Departure Mono sits first in the prose fallback chain on
+     purpose. JetBrains Mono's subset carries no arrows or block
+     glyphs, so anything off it lands on the design system's own
+     face instead of a system sans.
+
+     Sizes are multiples of 11 or 5.5, the pixel grid Departure
+     Mono is drawn on. Do not add 14/18/24.                      */
   --font-mono: "Departure Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-prose: "JetBrains Mono", "Departure Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Preflight styles `code`, `kbd`, `samp` and `pre` from this variable, and
+     that beats inheriting from `.prose`. Pointing it at the reading face is
+     what puts every code block and every run of inline code on JetBrains Mono. The 404
+     ASCII art is a `pre` that is really pixel art, so it asks for `font-mono`
+     back. */
+  --default-mono-font-family: var(--font-prose);
 
   --text-2xs: 11px;    --text-2xs--line-height: 1.6;
   --text-xs: 13px;     --text-xs--line-height: 1.4;
@@ -101,6 +119,31 @@
   font-display: swap;
 }
 
+/* Two subsets, split by unicode-range: latin carries every accent the
+   pt-BR posts use, so latin-ext only ever downloads if a post reaches
+   past Latin-1. Only the latin file is preloaded. */
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/fonts/JetBrainsMono-Regular-latin.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/fonts/JetBrainsMono-Regular-latin-ext.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+    U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF,
+    U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
 @layer base {
   html {
     background: var(--color-surface-page);
@@ -111,8 +154,12 @@
     -webkit-text-size-adjust: 100%;
   }
 
-  /* One weight exists. Refuse synthetic bold everywhere. */
-  * { font-weight: 400; font-synthesis: none }
+  /* One weight exists, and one character is one cell. Refuse synthetic bold,
+     and refuse JetBrains Mono's code ligatures: they draw `=>` as a single
+     arrow and `!=` as `≠`, which is a glyph the allowlist bans and not what
+     the file says. Departure Mono has no ligatures, so this only ever binds
+     on the reading face. */
+  * { font-weight: 400; font-synthesis: none; font-variant-ligatures: none }
   h1, h2, h3, h4, strong, b, th { font-weight: 400 }
 
   a { color: var(--color-accent-lift); text-decoration: none }

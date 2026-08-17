@@ -21,7 +21,9 @@ const { rows, animate } = Astro.props;
     // convention used elsewhere, though this element is decorative and
     // aria-hidden so the 11px-contrast reasoning behind that convention
     // doesn't strictly apply here — either hue would read fine.
-    'overflow-hidden whitespace-pre text-xs leading-none text-accent-lift opacity-40',
+    // `font-mono` is not redundant: every other `pre` on the site is the
+    // reading face, and this one is texture drawn on Departure Mono's grid.
+    'overflow-hidden whitespace-pre font-mono text-xs leading-none text-accent-lift opacity-40',
     animate === 'sweep' && 'animate-sweep',
   ]}
 >{rows.join('\n')}</pre>

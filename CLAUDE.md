@@ -9,12 +9,24 @@ the values are in `src/styles/theme.css`.
 **The design is decided.** Reproduce it; do not improve it. If something is missing, ask. Do not
 improvise in a different visual language.
 
-**One font, one weight.** Departure Mono, 400. No `font-bold`, no `<strong>` styled heavier, no
-second typeface. Emphasis is `text-accent-lift`, an inverted fill, a leading `█`, or uppercase with
-`tracking-label`.
+**Two faces, one weight each.** Departure Mono 400 is the console voice: chrome, tab bar, prompts,
+headings, listings, 11px labels, the ASCII art. JetBrains Mono 400 is the reading surface:
+post body, inline code, code blocks. There is no third face and no second weight. No `font-bold`,
+no `<strong>` styled heavier. Emphasis is `text-accent-lift`, an inverted fill, a leading `█`, or
+uppercase with `tracking-label`.
 
-**Type sizes are multiples of 11 or 5.5**, the pixel grid the face is drawn on. Use the `text-*`
-tokens. Never 14, 18 or 24px.
+**`font-mono` is the console face; `font-prose` is the reading face.** Preflight styles every `code`
+and `pre` from `--default-mono-font-family`, which points at `--font-prose`. That is what puts code
+on JetBrains Mono without a class, so a `pre` that is really pixel art has to ask for `font-mono`
+back, the way `AsciiBanner` does.
+
+**No ligatures.** JetBrains Mono ships code ligatures and they are off, globally, via
+`font-variant-ligatures: none` in the base layer. One character is one cell: `=>` reads as two
+characters, not as a drawn arrow. Do not switch them back on for a single block.
+
+**Type sizes are multiples of 11 or 5.5**, the pixel grid Departure Mono is drawn on. Use the
+`text-*` tokens. Never 14, 18 or 24px. JetBrains Mono is not bound to that grid but shares the same
+tokens; the two x-heights match within 1%, so no size needs adding for its sake.
 
 **Radius 0, no shadows.** Depth is a 1px border. Both Tailwind scales are deleted on purpose.
 
@@ -24,7 +36,9 @@ tokens. Never 14, 18 or 24px.
 the most common mistake in this system.
 
 **Check glyphs against the allowlist** in the spec before using any symbol. `● ▶ ✓ ★ ≡ ⧉ ✕ ⚠` are
-not in the font and fall back to a system sans. `░ ▒ ▓ █ ▲ ▼ ← → ↑ ↓ ↗ ⌘ §` are genuine.
+not in the font and fall back to a system sans. `░ ▒ ▓ █ ▲ ▼ ← → ↑ ↓ ↗ ⌘ §` are genuine. The
+allowlist is Departure Mono's, and Departure Mono sits second in the `--font-prose` stack, so a
+block or arrow glyph in post copy lands on it rather than on a system sans.
 
 **Code blocks emit one block element per line.** Newlines between inline elements are not reliable.
 

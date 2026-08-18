@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 
 /** The trigger exists above 900px on a fine pointer, and nowhere else. */
 function isDesktop(page: Page): boolean {
@@ -522,5 +523,195 @@ test.describe('the transition', () => {
 
     await page.keyboard.press('Space');
     await expect(page.locator('.invaders-invader[data-state="alive"]')).toHaveCount(45);
+  });
+});
+
+test.describe('the audits', () => {
+  test.beforeEach(async ({ page }) => {
+    test.skip(!isDesktop(page), 'the game is desktop only');
+  });
+
+  test('accent on the field is the player and nothing else', async ({ page }) => {
+    // The one colour law. Break it and the field stops being readable at a
+    // glance, which is the reason the invaders are ranked in ink steps at all.
+    await openGame(page);
+    await page.keyboard.press('Space');
+    await expect(page.locator('.invaders-invader[data-state="alive"]')).toHaveCount(45);
+
+    const offenders = await page.evaluate(() => {
+      const accent = getComputedStyle(document.documentElement)
+        .getPropertyValue('--color-accent')
+        .trim();
+      const probe = document.createElement('span');
+      probe.style.color = accent;
+      document.body.append(probe);
+      const target = getComputedStyle(probe).color;
+      probe.remove();
+
+      const field = document.querySelector('[data-invaders-field]');
+      if (!field) return ['no field'];
+
+      const found: string[] = [];
+      for (const el of field.querySelectorAll<HTMLElement>('*')) {
+        if (el.closest('[data-invaders-player]')) continue;
+        if (el.closest('[data-invaders-panel]')) continue;
+        if (el.offsetParent === null && el.tagName !== 'PRE') continue;
+        const style = getComputedStyle(el);
+        if (style.color === target || style.backgroundColor === target) {
+          found.push(`${el.tagName}.${el.className} ${style.color} / ${style.backgroundColor}`);
+        }
+      }
+      return found;
+    });
+
+    expect(offenders).toEqual([]);
+  });
+
+  test('every sprite glyph comes from Departure Mono', async ({ page }) => {
+    // The template hides the shell from glyphs.spec.ts on purpose, so the sprites
+    // need their own run with the game actually on screen.
+    await openGame(page);
+    await page.keyboard.press('Space');
+    await page.evaluate(() => document.fonts.ready);
+
+    const fallbacks = await page.evaluate(() => {
+      const probe = (ch: string) => {
+        const span = document.createElement('span');
+        span.style.cssText = 'font:100px "Departure Mono";position:absolute;visibility:hidden';
+        span.textContent = ch;
+        document.body.append(span);
+        const width = span.getBoundingClientRect().width;
+        span.remove();
+        return width;
+      };
+      const m = probe('M');
+      const root = document.querySelector<HTMLElement>('[data-invaders-root]');
+      const used = [...new Set(root?.innerText ?? '')].filter((c) => c.trim());
+      return used.filter((c) => Math.abs(probe(c) - m) > 0.5);
+    });
+
+    expect(fallbacks).toEqual([]);
+  });
+
+  test('the sprites use only a full block and a space', async ({ page }) => {
+    await openGame(page);
+    await page.keyboard.press('Space');
+
+    const chars = await page.evaluate(() => {
+      const rows = document.querySelectorAll('.invaders-sprite div');
+      return [...new Set([...rows].map((el) => el.textContent ?? '').join(''))].sort();
+    });
+    expect(chars).toEqual([' ', '█']);
+  });
+
+  test('every sprite is one block element per row', async ({ page }) => {
+    // Newlines between inline elements are not reliable. The failure is silent:
+    // the rows fuse into one run and the sprite becomes a smear.
+    await openGame(page);
+    await page.keyboard.press('Space');
+
+    const shapes = await page.evaluate(() =>
+      [...document.querySelectorAll('.invaders-sprite')].map((pre) => ({
+        rows: pre.children.length,
+        blocks: [...pre.children].every((child) => getComputedStyle(child).display === 'block'),
+      }))
+    );
+
+    expect(shapes.length).toBeGreaterThan(45);
+    for (const shape of shapes) {
+      expect(shape.rows).toBeGreaterThanOrEqual(4);
+      expect(shape.blocks).toBe(true);
+    }
+  });
+
+  test('reads the hi score back from one namespaced key', async ({ page }) => {
+    await page.addInitScript(() =>
+      window.localStorage.setItem('bpaulino:invaders:hi', '4820')
+    );
+    await openGame(page);
+    await expect(page.locator('[data-invaders-hi]')).toHaveText('004820');
+
+    await page.keyboard.press('Escape');
+    const keys = await page.evaluate(() => Object.keys(window.localStorage));
+    expect(keys.filter((key) => key.includes('invaders'))).toEqual(['bpaulino:invaders:hi']);
+  });
+
+  test('the design token and the runtime beat agree', async ({ page }) => {
+    // --game-beat is the design system's record of the beat, and rules.ts is what
+    // the loop reads. Nothing forces them to match, so this does.
+    await openGame(page);
+    const token = await page.evaluate(() =>
+      getComputedStyle(document.documentElement).getPropertyValue('--game-beat').trim()
+    );
+    expect(token).toBe('620ms');
+  });
+
+  test('the field takes its surface from --game-field', async ({ page }) => {
+    await openGame(page);
+    const field = await page
+      .locator('[data-invaders-field]')
+      .evaluate((el) => getComputedStyle(el).backgroundColor);
+    expect(field).toBe('rgb(11, 11, 16)');
+  });
+
+  test('opens and plays with no console error', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error') errors.push(message.text());
+    });
+    page.on('pageerror', (error) => errors.push(error.message));
+
+    await openGame(page);
+    await page.keyboard.press('Space');
+    await page.keyboard.down('ArrowRight');
+    await page.waitForTimeout(400);
+    await page.keyboard.up('ArrowRight');
+    await page.keyboard.press('Space');
+    await page.waitForTimeout(1200);
+    await page.keyboard.press('p');
+    await page.keyboard.press('p');
+    await page.keyboard.press('Escape');
+
+    expect(errors).toEqual([]);
+  });
+});
+
+test.describe('accessibility', () => {
+  test.beforeEach(async ({ page }) => {
+    test.skip(!isDesktop(page), 'the game is desktop only');
+  });
+
+  test('axe reports no WCAG A or AA violation with the game open', async ({ page }) => {
+    await openGame(page);
+    await page.keyboard.press('Space');
+    await page.evaluate(() => document.fonts.ready);
+
+    const { violations } = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+      .analyze();
+
+    expect(violations.map((v) => `${v.id}: ${v.nodes.length}`)).toEqual([]);
+  });
+
+  test('is playable start to finish from the keyboard alone', async ({ page }) => {
+    await page.goto('/posts/');
+    await page.evaluate(() => document.fonts.ready);
+
+    for (let i = 0; i < 12; i += 1) {
+      await page.keyboard.press('Tab');
+      const onTrigger = await page.evaluate(
+        () => document.activeElement?.hasAttribute('data-invaders-open') === true
+      );
+      if (onTrigger) break;
+    }
+
+    await page.keyboard.press('Enter');
+    await expect(page.locator('[data-invaders-root]')).toBeVisible();
+    await page.keyboard.press('Space');
+    await expect(page.locator('.invaders-invader[data-state="alive"]')).toHaveCount(45);
+    await page.keyboard.press('Space');
+    await expect(page.locator('[data-invaders-shot]')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('[data-invaders-root]')).toHaveCount(0);
   });
 });

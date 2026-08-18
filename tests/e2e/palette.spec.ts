@@ -93,6 +93,27 @@ test.describe('opening and closing', () => {
   });
 });
 
+test.describe('the index', () => {
+  // Against the built file, because the numbers are about real content: the
+  // unit tests cover the transform, this covers what the build emitted.
+  test('/search-index.json holds every post, tag and page, and stays small', async ({ request }) => {
+    const response = await request.get('/search-index.json');
+    expect(response.headers()['content-type']).toContain('application/json');
+
+    const body = await response.body();
+    const entries = JSON.parse(body.toString());
+    const count = (kind: string) => entries.filter((e: { kind: string }) => e.kind === kind).length;
+
+    expect(count('post')).toBe(30);
+    expect(count('tag')).toBe(14);
+    expect(count('page')).toBe(6);
+    for (const entry of entries) expect(entry).not.toHaveProperty('body');
+    // The handoff's budget is 60 kB uncompressed. Without post bodies it is
+    // nowhere near, and this fails long before the palette gets slow to open.
+    expect(body.byteLength).toBeLessThan(20_000);
+  });
+});
+
 test.describe('keyboard navigation', () => {
   test('the first result is selected on every keystroke', async ({ page }) => {
     await open(page, 'dev');

@@ -1,5 +1,3 @@
-import { SPRITE_COLS } from './sprites';
-
 /**
  * Every number the design measured, and the four that derive from them.
  *
@@ -13,6 +11,9 @@ import { SPRITE_COLS } from './sprites';
 
 export const RANKS = 5;
 export const COLUMNS = 9;
+
+/** A sprite grid is seven cells wide. */
+export const SPRITE_COLS = 7;
 
 /** A sprite cell at `font-size: 13px` and `line-height: .72`. */
 export const CELL_W = 57.9;

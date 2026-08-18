@@ -10,7 +10,7 @@
 export type Grid = readonly string[];
 export type SpritePair = { readonly a: Grid; readonly b: Grid };
 
-export const SPRITE_COLS = 7;
+export { SPRITE_COLS } from './rules';
 
 /** Rank 1, 30 points. The bottom row alternates. */
 export const SQUID: SpritePair = {

@@ -119,7 +119,8 @@ const { title, dims, current } = Astro.props;
 
     /* A zero blur ring, not elevation. Both alphas the design asks for already
        exist as line tokens, so this adds no colour. */
-    .invaders-trigger:hover {
+    .invaders-trigger:hover,
+    .invaders-trigger:focus-visible {
       box-shadow: 0 0 0 3px var(--color-line-chrome);
     }
 

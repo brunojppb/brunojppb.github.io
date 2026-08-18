@@ -1,3 +1,5 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { BEAT_START } from '../../src/lib/invaders/rules';
@@ -450,6 +452,20 @@ test.describe('the game', () => {
     await page.keyboard.press('Escape');
     await expect(page.locator('[data-invaders-root]')).toHaveCount(0);
   });
+
+  test('Meta+k does not raise the palette behind the game', async ({ page }) => {
+    await openGame(page);
+    await page.keyboard.press('Meta+k');
+
+    // The game is still the one dialog in the document: the palette refused
+    // to open behind it rather than stacking a second one underneath.
+    await expect(page.locator('[data-invaders-root]')).toBeVisible();
+    await expect(page.locator('[role="dialog"][aria-modal="true"]')).toHaveCount(1);
+
+    // No palette input exists to steal the keystroke that follows.
+    await page.keyboard.press('a');
+    await expect(page.locator('[role=combobox]')).toHaveCount(0);
+  });
 });
 
 test.describe('the transition', () => {
@@ -735,5 +751,31 @@ test.describe('accessibility', () => {
     await expect(page.locator('[data-invaders-shot]')).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(page.locator('[data-invaders-root]')).toHaveCount(0);
+  });
+});
+
+test.describe('what every page loads', () => {
+  test('the eager BaseLayout chunk carries none of the sprite art', () => {
+    // BaseLayout's inline script is the one part of the game that loads on
+    // every page (see index.ts). Minification renames identifiers but keeps
+    // string literals, so a full block glyph in this chunk is the durable
+    // sign that the sprite grids rode along with it.
+    const dir = path.join(process.cwd(), 'dist/_astro');
+    const chunkNames = fs
+      .readdirSync(dir)
+      .filter((name) => /^BaseLayout\.astro_astro_type_script_index_\d+_lang\..*\.js$/.test(name));
+    expect(chunkNames.length, `found no BaseLayout entry chunk in ${dir}`).toBeGreaterThan(0);
+
+    const offenders = chunkNames
+      .map((name) => {
+        const blocks = fs.readFileSync(path.join(dir, name), 'utf8').match(/█/g)?.length ?? 0;
+        return { name, blocks };
+      })
+      .filter((chunk) => chunk.blocks > 0);
+
+    const report = offenders
+      .map((o) => `${o.name}: ${o.blocks} block character(s)`)
+      .join(', ');
+    expect(offenders, report || undefined).toEqual([]);
   });
 });

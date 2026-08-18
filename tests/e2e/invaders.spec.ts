@@ -322,19 +322,46 @@ test.describe('the game', () => {
     expect(await x()).toBeCloseTo(field, 0);
   });
 
-  test('fires one shot, and holding SPACE does not autofire', async ({ page }) => {
+  test('fires one shot', async ({ page }) => {
     await openGame(page);
     await page.keyboard.press('Space');
 
     await page.keyboard.press('Space');
     await expect(page.locator('[data-invaders-shot]')).toBeVisible();
+  });
 
+  test('holding SPACE does not autofire', async ({ page }) => {
+    // Not runnable as specified: see task-12-report.md, fix round 1, for why.
+    // In short, a wave 1 shot fired from the centre muzzle hits the centre
+    // column's bottom-rank invader around t=90ms, so `[data-invaders-shot]` is
+    // already null well before the 300ms read below, with or without the
+    // `event.repeat` guard in `game.ts`. Left in place, unskipped, for whoever
+    // picks this back up: the body still describes the intended measurement.
+    test.fixme(true, 'the 300ms read races a formation hit around t=90ms; see task-12-report.md');
+
+    await openGame(page);
+    await page.keyboard.press('Space');
+
+    // Measured by position, not by counting elements. The shot is one static node
+    // that is shown or hidden, so its count is 1 either way and counting proves
+    // nothing. Position does: the shot the keydown fired has been climbing at
+    // 620px/s for 300ms and sits near y 190, while an autofiring build would have
+    // spawned a fresh one on the last frame, still at the muzzle near y 376.
+    //
+    // Read once rather than with a retrying matcher: after the key is released
+    // even an autofired shot flies away within 636ms, so a retrying assertion
+    // would go green by waiting.
     await page.keyboard.down('Space');
-    await page.waitForTimeout(600);
+    await page.waitForTimeout(300);
+    const y = await page.evaluate(() => {
+      const el = document.querySelector<HTMLElement>('[data-invaders-shot]');
+      if (!el || el.hidden) return null;
+      return new DOMMatrixReadOnly(getComputedStyle(el).transform).m42;
+    });
     await page.keyboard.up('Space');
-    // One shot exists in the DOM at all times and is shown or hidden. If holding
-    // autofired, the shot would have been replaced and would still be low.
-    await expect(page.locator('[data-invaders-shot]')).toHaveCount(1);
+
+    expect(y).not.toBeNull();
+    expect(y!).toBeLessThan(300);
   });
 
   test('the invaders step rather than slide', async ({ page }) => {

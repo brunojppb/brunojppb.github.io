@@ -3,6 +3,7 @@ import '../styles/global.css';
 import Scanlines from '../components/chrome/Scanlines.astro';
 import Window from '../components/chrome/Window.astro';
 import TabBar from '../components/chrome/TabBar.astro';
+import CommandPalette from '../components/islands/CommandPalette.tsx';
 
 /**
  * The shell every page renders inside: html head, page void, scanlines,
@@ -118,6 +119,7 @@ const windowTitle = `bruno@bpaulino: ${shellPath ?? derivedShellPath}`;
         </main>
       </Window>
     </div>
+    <CommandPalette client:idle />
     <script>
       // Copy control for markdown-derived code blocks (src/lib/rehype-code-block.ts).
       // CodeBlock.astro's own copy button is a React island (see

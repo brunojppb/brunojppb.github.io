@@ -42,8 +42,9 @@ block or arrow glyph in post copy lands on it rather than on a system sans.
 
 **Code blocks emit one block element per line.** Newlines between inline elements are not reliable.
 
-**`.astro` by default.** React islands only for `CopyButton` and `OutlineDisclosure`. Adding a
-third island needs a reason.
+**`.astro` by default.** React islands only for `CopyButton`, `OutlineDisclosure` and
+`CommandPalette`, the ⌘K search overlay mounted once in `BaseLayout`. Adding a fourth island needs
+a reason.
 
 **Post URLs never change.** They are indexed and linked. Section pages may move with a 301 in
 `public/_redirects`.

@@ -45,6 +45,13 @@
   --color-line-hairline:   rgb(228 226 234 / .10);
   --color-line-faint:      rgb(228 226 234 / .06);
 
+  /* Two values tokens.css does not carry, both from the ⌘K palette handoff
+     (mockup 4a): the scrim the palette sits on, and its border, which is
+     --color-line-window lifted to 50% because the palette floats over a
+     dimmed page and needs the extra definition. */
+  --color-scrim:           rgb(9 9 13 / .78);
+  --color-line-palette:    rgb(169 139 245 / .50);
+
   --color-wash-accent:     rgb(169 139 245 / .07);
   --color-wash-code:       rgb(169 139 245 / .14);
   --color-wash-scan:       rgb(169 139 245 / .05);

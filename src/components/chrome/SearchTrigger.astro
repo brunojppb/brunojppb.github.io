@@ -1,0 +1,46 @@
+---
+/**
+ * The visible way into the ⌘K palette. `variant="tab"` is the cell at the
+ * right end of the tab strip on desktop; `variant="chrome"` is the mobile
+ * button in the chrome bar, because ⌘K does not exist on a phone.
+ *
+ * Both are server-rendered and carry `data-palette-open`. The island
+ * (src/components/islands/CommandPalette.tsx) listens for the click, sets
+ * `aria-expanded`, and prefetches the index on hover or focus.
+ *
+ * The chrome bar is 36px tall by design, so the mobile button reaches a 44px
+ * touch target through an expanded hit area rather than padding that would
+ * grow the bar.
+ */
+interface Props {
+  variant: 'tab' | 'chrome';
+}
+
+const { variant } = Astro.props;
+---
+
+{
+  variant === 'tab' ? (
+    <button
+      type="button"
+      data-palette-open
+      aria-label="Search"
+      aria-haspopup="dialog"
+      aria-expanded="false"
+      class="ml-auto hidden flex-none border-l border-line-faint px-4 py-[9px] text-2xs tracking-label text-ink-muted hover:text-accent-lift aria-expanded:bg-accent aria-expanded:text-on-accent md:block"
+    >
+      ⌘K
+    </button>
+  ) : (
+    <button
+      type="button"
+      data-palette-open
+      aria-label="Search"
+      aria-haspopup="dialog"
+      aria-expanded="false"
+      class="relative p-1 text-2xs tracking-chrome text-accent-lift after:absolute after:inset-[-9px] after:content-['']"
+    >
+      SEARCH
+    </button>
+  )
+}

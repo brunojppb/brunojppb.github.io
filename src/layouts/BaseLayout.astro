@@ -4,6 +4,7 @@ import Scanlines from '../components/chrome/Scanlines.astro';
 import Window from '../components/chrome/Window.astro';
 import TabBar from '../components/chrome/TabBar.astro';
 import CommandPalette from '../components/islands/CommandPalette.tsx';
+import InvadersShell from '../components/chrome/InvadersShell.astro';
 
 /**
  * The shell every page renders inside: html head, page void, scanlines,
@@ -120,6 +121,7 @@ const windowTitle = `bruno@bpaulino: ${shellPath ?? derivedShellPath}`;
       </Window>
     </div>
     <CommandPalette client:idle />
+    <InvadersShell />
     <script>
       // Copy control for markdown-derived code blocks (src/lib/rehype-code-block.ts).
       // CodeBlock.astro's own copy button is a React island (see
@@ -142,6 +144,10 @@ const windowTitle = `bruno@bpaulino: ${shellPath ?? derivedShellPath}`;
           }, COPY_RESET_MS);
         });
       });
+    </script>
+    <script>
+      import { install } from '../lib/invaders';
+      install();
     </script>
   </body>
 </html>

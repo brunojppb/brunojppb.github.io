@@ -56,6 +56,15 @@ function inField(target: EventTarget | null): boolean {
 }
 
 /**
+ * True while some other modal owns the keyboard. Only ever called while
+ * closed: the palette renders nothing then, so any dialog found belongs to
+ * someone else, and opening on top of it would strand the reader behind it.
+ */
+function otherModalOpen(): boolean {
+  return document.querySelector('[role="dialog"][aria-modal="true"]') !== null;
+}
+
+/**
  * The nearest matching element, or null. Guards the instance check because
  * `focusin` and `pointerenter` also fire with `document` as the target, which
  * has no `closest`.
@@ -181,11 +190,22 @@ export default function CommandPalette() {
       if (shortcut) {
         // ⌘K is the browser's own bookmark search on some platforms.
         event.preventDefault();
+        // Never open on top of another modal. The invaders overlay owns the
+        // keyboard while it is up, and a palette opening behind it strands the
+        // reader in a dialog they cannot see.
+        if (!open && otherModalOpen()) return;
         if (!open) triggerRef.current = restoreTarget();
         setOpen((was) => !was);
         return;
       }
-      if (!open && event.key === '/' && !inField(event.target) && !event.metaKey && !event.ctrlKey) {
+      if (
+        !open &&
+        event.key === '/' &&
+        !inField(event.target) &&
+        !event.metaKey &&
+        !event.ctrlKey &&
+        !otherModalOpen()
+      ) {
         event.preventDefault();
         triggerRef.current = restoreTarget();
         setOpen(true);

@@ -1,0 +1,123 @@
+/* ============================================================
+   INVADERS. The field and its sprites.
+
+   Every length here reads a custom property that `view.ts` sets from
+   `src/lib/invaders/rules.ts`. Those are game metrics, not design
+   values: none of them sits on the 11 and 5.5 pixel grid, so none of
+   them belongs in theme.css and none of them may become an arbitrary
+   Tailwind value at a call site.
+   ============================================================ */
+
+[data-invaders-field] {
+  height: var(--invaders-field-h);
+  background: var(--game-field);
+}
+
+[data-invaders-ground] {
+  bottom: var(--invaders-ground);
+}
+
+/* One step fainter than the page's .05: the page's own overlay sits above this
+   one, and two layers at the same alpha read as one dark band. */
+.invaders-scan {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    180deg,
+    rgb(169 139 245 / 0.04) 0 1px,
+    transparent 1px 4px
+  );
+  animation: var(--animate-scan);
+}
+
+/* Sprites. One block element per row inside the `pre`, the same rule CodeBlock
+   obeys and for the same reason: newlines between inline elements are not
+   reliable. `font-mono` is asked for explicitly because preflight points every
+   `pre` at the reading face. */
+.invaders-sprite {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--invaders-sprite-px);
+  line-height: var(--invaders-line-height);
+  white-space: pre;
+  color: var(--invaders-ink);
+}
+
+.invaders-invader,
+.invaders-bunker {
+  position: absolute;
+  left: var(--invaders-x);
+  top: var(--invaders-y);
+}
+
+.invaders-invader > .invaders-sprite {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+/* Both frames sit in the DOM for every invader. The field says which one shows,
+   so a beat costs one attribute write instead of 225 text writes. */
+[data-frame='a'] .invaders-invader[data-state='alive'] .invaders-frame-b,
+[data-frame='b'] .invaders-invader[data-state='alive'] .invaders-frame-a,
+.invaders-invader[data-state='burst'] .invaders-frame-a,
+.invaders-invader[data-state='burst'] .invaders-frame-b,
+.invaders-invader[data-state='alive'] .invaders-burst {
+  visibility: hidden;
+}
+
+.invaders-invader[data-state='dead'] {
+  visibility: hidden;
+}
+
+/* The player and its shot are the only things on the field allowed the accent. */
+[data-invaders-player] {
+  position: absolute;
+  top: var(--invaders-player-top);
+  left: 0;
+  will-change: transform;
+}
+
+[data-invaders-shot],
+.invaders-bomb {
+  position: absolute;
+  left: 0;
+  top: 0;
+  will-change: transform;
+}
+
+[data-invaders-shot] {
+  width: var(--invaders-shot-w);
+  height: var(--invaders-shot-h);
+  background: var(--color-accent-lift);
+}
+
+.invaders-bomb {
+  width: var(--invaders-bomb-w);
+  height: var(--invaders-bomb-h);
+  background: var(--color-ink-muted);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* A hit inverts the field for one flash, then the cannon comes back at 40%. */
+[data-invaders-field][data-hit] {
+  background: var(--color-accent);
+}
+
+[data-invaders-player][data-respawning] {
+  opacity: 0.4;
+}
+
+[data-invaders-field][data-dim] > *:not([data-invaders-panel]) {
+  opacity: 0.4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .invaders-scan {
+    animation: none;
+  }
+}

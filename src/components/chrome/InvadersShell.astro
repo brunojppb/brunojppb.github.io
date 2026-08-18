@@ -1,0 +1,171 @@
+---
+import Caret from '../shell/Caret.astro';
+
+/**
+ * The game's window, as an inert template. `src/lib/invaders/index.ts` clones it
+ * on first open and `view.ts` fills the field.
+ *
+ * A template rather than a hidden subtree: template content lives in its own
+ * DocumentFragment, so it stays out of the accessibility tree, out of
+ * `document.querySelectorAll`, and therefore out of the caret and glyph sweeps
+ * until the game is actually on screen.
+ */
+---
+
+<template id="invaders-template">
+  <div class="fixed inset-0 z-50 overflow-y-auto bg-surface-page" data-invaders-root>
+    <div class="mx-auto max-w-window p-[10px] sm:p-7">
+      <div class="relative border border-line-window bg-surface-window">
+        <div
+          class="flex items-center gap-3 border-b border-line-chrome bg-surface-chrome px-[14px] py-[9px]"
+        >
+          <div class="flex gap-1.5" aria-hidden="true">
+            <span class="block h-[9px] w-[9px] bg-surface-inert"></span>
+            <span class="block h-[9px] w-[9px] bg-surface-inert"></span>
+            <span class="block h-[9px] w-[9px] bg-ink"></span>
+          </div>
+          <span class="text-2xs tracking-chrome text-ink-muted">
+            bruno@bpaulino: ~/invaders — 132×48
+          </span>
+          <span class="ml-auto text-2xs tracking-chrome text-accent-lift">ESC EXIT</span>
+        </div>
+
+        <div
+          data-invaders-hud
+          class="flex items-center gap-[34px] border-b border-line-hairline bg-surface-tabbar px-5 py-[11px]"
+        >
+          <span class="text-2xs tracking-label text-ink-muted">
+            SCORE <span class="text-md text-ink" data-invaders-score>000000</span>
+          </span>
+          <span class="text-2xs tracking-label text-ink-muted">
+            HI <span class="text-md text-accent-lift" data-invaders-hi>000000</span>
+          </span>
+          <span class="text-2xs tracking-label text-ink-muted">
+            WAVE <span class="text-md text-ink" data-invaders-wave>01</span>
+          </span>
+          <span
+            class="ml-auto flex items-center gap-2.5 text-2xs tracking-label text-ink-muted"
+          >
+            LIVES
+            <span class="flex gap-[7px]" data-invaders-lives></span>
+          </span>
+        </div>
+
+        <!-- The background reads `--game-field` in invaders.css rather than a
+             `bg-surface-code` utility, so the token the handoff asks for is the
+             one the field actually uses instead of sitting declared and unused. -->
+        <div class="relative overflow-hidden" data-invaders-field data-frame="a">
+          <div class="invaders-scan" aria-hidden="true"></div>
+          <!--
+            The sprite layers are out of the accessibility tree: they are a
+            picture of a game, and a screen reader has nothing to do with 45
+            block-glyph sprites. The HUD and the panels above stay readable, and
+            `innerText` still reaches the sprites, so the glyph audit covers
+            them either way.
+          -->
+          <div data-invaders-formation aria-hidden="true"></div>
+          <div data-invaders-bunkers aria-hidden="true"></div>
+          <div data-invaders-bombs aria-hidden="true"></div>
+          <div data-invaders-shot aria-hidden="true" hidden></div>
+          <div data-invaders-player aria-hidden="true"></div>
+          <div class="absolute inset-x-0 h-px bg-line-window" data-invaders-ground></div>
+
+          <div
+            class="absolute inset-0 flex flex-col justify-center px-11"
+            data-invaders-panel="title"
+            hidden
+          >
+            <div class="text-2xs tracking-title text-accent-lift">B P A U L I N O . C O M</div>
+            <div class="mt-3.5 text-3xl">INVADERS</div>
+            <div class="mt-6.5 flex flex-col gap-2.75" data-invaders-score-table></div>
+            <div class="invaders-pulse mt-7.5 text-md text-accent-lift">PRESS SPACE TO START</div>
+            <div class="mt-2.5 text-2xs tracking-chrome text-ink-muted">
+              ESC RETURNS YOU TO ~/POSTS
+            </div>
+          </div>
+
+          <div
+            class="absolute inset-0 flex flex-col justify-center px-10"
+            data-invaders-panel="waveClear"
+            hidden
+          >
+            <div class="text-2xs tracking-section text-accent-lift" data-invaders-cleared></div>
+            <div class="mt-3 text-xl">
+              + <span data-invaders-bonus></span> <span class="text-ink-muted">pts</span>
+            </div>
+            <div class="mt-3 text-sm text-ink-muted">
+              <span data-invaders-next-wave></span><Caret />
+            </div>
+          </div>
+
+          <div
+            class="absolute inset-0 flex flex-col justify-center px-10"
+            data-invaders-panel="gameOver"
+            hidden
+          >
+            <div class="text-3xl tracking-label text-accent">GAME OVER</div>
+            <div class="mt-3.5 text-sm text-ink" data-invaders-death></div>
+            <div class="mt-1.5 text-sm text-ink-muted" data-invaders-exit></div>
+          </div>
+
+          <div
+            class="absolute inset-0 flex flex-col items-center justify-center"
+            data-invaders-panel="paused"
+            hidden
+          >
+            <div class="text-xl text-accent-lift">PAUSED</div>
+          </div>
+        </div>
+
+        <div
+          data-invaders-chrome-footer
+          class="border-t border-line-hairline bg-surface-tabbar px-5 py-2.5"
+        >
+          <div
+            class="flex gap-6 text-2xs tracking-chrome text-ink-muted"
+            data-invaders-footer="playing"
+          >
+            <span><span class="text-accent-lift">← →</span> MOVE</span>
+            <span><span class="text-accent-lift">SPACE</span> FIRE</span>
+            <span><span class="text-accent-lift">P</span> PAUSE</span>
+            <span class="ml-auto"><span class="text-accent-lift">ESC</span> BACK TO THE BLOG</span>
+          </div>
+          <div
+            class="flex gap-6 text-2xs tracking-chrome text-ink-muted"
+            data-invaders-footer="paused"
+            hidden
+          >
+            <span><span class="text-accent-lift">P</span> RESUME</span>
+            <span class="ml-auto"><span class="text-accent-lift">ESC</span> BACK TO THE BLOG</span>
+          </div>
+          <div
+            class="flex gap-6 text-2xs tracking-chrome text-ink-muted"
+            data-invaders-footer="gameOver"
+            hidden
+          >
+            <span><span class="text-accent-lift">SPACE</span> RETRY</span>
+            <span class="ml-auto"><span class="text-accent-lift">ESC</span> BACK TO THE BLOG</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style is:global>
+  /* The title screen's one pulse. It is the only animation the game adds, and
+     the global reduced-motion rule in theme.css already flattens it. */
+  @keyframes invaders-pulse {
+    0%,
+    100% {
+      opacity: 0.55;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  .invaders-pulse {
+    animation: invaders-pulse 1.6s ease-in-out infinite;
+  }
+</style>

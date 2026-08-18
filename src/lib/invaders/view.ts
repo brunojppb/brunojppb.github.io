@@ -11,10 +11,14 @@ import {
   MAX_BOMBS,
   PLAYER_TOP,
   RANK_PITCH,
+  SCORES,
+  SCORE_TABLE_SPRITE_PX,
+  SCORE_TABLE_SPRITE_W,
   SHOT_H,
   SHOT_W,
   SPRITE_LINE_HEIGHT,
   SPRITE_PX,
+  WAVE_CLEAR_MS,
 } from './rules';
 import { BURST, CRAB, OCTOPUS, PLAYER, RANK_INK, RANK_SPRITE, SQUID, type Grid } from './sprites';
 import type { GameState, Phase } from './state';
@@ -187,10 +191,13 @@ function buildLives(refs: Refs): void {
 
 /** The title screen's score table, which is how the original taught its rules. */
 function buildScoreTable(refs: Refs): void {
+  // The points come from SCORES rather than being written out again. This table
+  // is how the game teaches its own scoring, so a legend that drifts from what
+  // the game pays out would be worse than no legend.
   const rows: [Grid, number, string][] = [
-    [SQUID.a, 30, RANK_INK[0]],
-    [CRAB.a, 20, RANK_INK[1]],
-    [OCTOPUS.a, 10, RANK_INK[3]],
+    [SQUID.a, SCORES[0], RANK_INK[0]],
+    [CRAB.a, SCORES[1], RANK_INK[1]],
+    [OCTOPUS.a, SCORES[3], RANK_INK[3]],
   ];
   refs.scoreTable.replaceChildren();
   for (const [grid, points, ink] of rows) {
@@ -198,9 +205,9 @@ function buildScoreTable(refs: Refs): void {
     row.className = 'flex items-center gap-4';
 
     const pre = sprite(grid, 'invaders-table-sprite');
-    pre.style.setProperty('--invaders-sprite-px', px(11));
+    pre.style.setProperty('--invaders-sprite-px', px(SCORE_TABLE_SPRITE_PX));
     pre.style.setProperty('--invaders-ink', `var(${ink})`);
-    pre.style.width = px(60);
+    pre.style.width = px(SCORE_TABLE_SPRITE_W);
 
     const value = document.createElement('span');
     value.className = 'text-md text-ink-body';
@@ -282,7 +289,9 @@ function renderPanels(refs: Refs, s: GameState): void {
   if (s.phase === 'waveClear') {
     refs.cleared.textContent = `WAVE ${pad(s.wave, 2)} CLEARED`;
     refs.bonus.textContent = String(s.waveBonus);
-    refs.nextWave.textContent = `wave ${pad(s.wave + 1, 2)} in 2s · they come down faster now`;
+    const seconds = WAVE_CLEAR_MS / 1000;
+    refs.nextWave.textContent =
+      `wave ${pad(s.wave + 1, 2)} in ${seconds}s · they come down faster now`;
   }
 
   if (s.phase === 'gameOver' && s.death) {

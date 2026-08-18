@@ -97,6 +97,10 @@ export const SPRITE_PX = 13;
 export const LIVES_SPRITE_PX = 7;
 export const SPRITE_LINE_HEIGHT = 0.72;
 
+/** The title screen's score table draws its sprites smaller, in a fixed column. */
+export const SCORE_TABLE_SPRITE_PX = 11;
+export const SCORE_TABLE_SPRITE_W = 60;
+
 export const HI_SCORE_KEY = 'bpaulino:invaders:hi';
 
 /** The trigger, the game and the `i n v` route all sit behind this. */

@@ -331,37 +331,34 @@ test.describe('the game', () => {
   });
 
   test('holding SPACE does not autofire', async ({ page }) => {
-    // Not runnable as specified: see task-12-report.md, fix round 1, for why.
-    // In short, a wave 1 shot fired from the centre muzzle hits the centre
-    // column's bottom-rank invader around t=90ms, so `[data-invaders-shot]` is
-    // already null well before the 300ms read below, with or without the
-    // `event.repeat` guard in `game.ts`. Left in place, unskipped, for whoever
-    // picks this back up: the body still describes the intended measurement.
-    test.fixme(true, 'the 300ms read races a formation hit around t=90ms; see task-12-report.md');
-
     await openGame(page);
     await page.keyboard.press('Space');
+    await page.keyboard.press('Space');
 
-    // Measured by position, not by counting elements. The shot is one static node
-    // that is shown or hidden, so its count is 1 either way and counting proves
-    // nothing. Position does: the shot the keydown fired has been climbing at
-    // 620px/s for 300ms and sits near y 190, while an autofiring build would have
-    // spawned a fresh one on the last frame, still at the muzzle near y 376.
+    // Playwright's keyboard.down does not emit repeat keydowns, so a held key
+    // cannot reach the guard through the normal API. These synthetic events are
+    // exactly what a held key produces in a browser.
     //
-    // Read once rather than with a retrying matcher: after the key is released
-    // even an autofired shot flies away within 636ms, so a retrying assertion
-    // would go green by waiting.
-    await page.keyboard.down('Space');
-    await page.waitForTimeout(300);
-    const y = await page.evaluate(() => {
-      const el = document.querySelector<HTMLElement>('[data-invaders-shot]');
-      if (!el || el.hidden) return null;
-      return new DOMMatrixReadOnly(getComputedStyle(el).transform).m42;
+    // Position is no use as the signal either: the cannon starts centred under
+    // an occupied column, so its shot hits the bottom rank 90ms after firing.
+    // Score is the durable signal. The one real press above kills one invader
+    // for 10 points. With the guard that is the only shot ever fired, because
+    // every later event is a repeat. Without it the cannon re-arms the moment
+    // each shot clears, which is about eleven shots a second, and it eats up
+    // the centre column.
+    await page.evaluate(async () => {
+      for (let i = 0; i < 120; i += 1) {
+        window.dispatchEvent(
+          new KeyboardEvent('keydown', { key: ' ', repeat: true, bubbles: true })
+        );
+        await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
+      }
     });
-    await page.keyboard.up('Space');
 
-    expect(y).not.toBeNull();
-    expect(y!).toBeLessThan(300);
+    const score = await page.evaluate(() =>
+      Number(document.querySelector('[data-invaders-score]')?.textContent ?? '0')
+    );
+    expect(score).toBeLessThanOrEqual(10);
   });
 
   test('the invaders step rather than slide', async ({ page }) => {

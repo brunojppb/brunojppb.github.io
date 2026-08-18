@@ -202,10 +202,27 @@ test.describe('opening and closing', () => {
     const history = await page.evaluate(() => window.history.length);
 
     await page.locator('[data-invaders-open]').click();
+    // Without this wait, Escape can land before openGame's dynamic import
+    // resolves, so the close half of this round trip goes untested.
+    await expect(page.locator('[data-invaders-root]')).toBeVisible();
     await page.keyboard.press('Escape');
 
     expect(page.url()).toBe(url);
     expect(await page.evaluate(() => window.history.length)).toBe(history);
+  });
+
+  test('opens again cleanly after closing', async ({ page }) => {
+    await page.goto('/posts/');
+    const root = page.locator('[data-invaders-root]');
+
+    await page.locator('[data-invaders-open]').click();
+    await expect(root).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(root).toHaveCount(0);
+
+    await page.locator('[data-invaders-open]').click();
+    await expect(root).toHaveCount(1);
+    await expect(page.locator('[data-invaders-open]')).toHaveAttribute('data-open', '');
   });
 
   test('hands focus back to the trigger on exit', async ({ page }) => {

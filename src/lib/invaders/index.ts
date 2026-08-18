@@ -37,8 +37,14 @@ function modalOpen(): boolean {
 }
 
 async function launch(): Promise<void> {
-  const { openGame } = await import('./game');
-  await openGame();
+  try {
+    const { openGame } = await import('./game');
+    await openGame();
+  } catch (error) {
+    // A chunk that will not load is not worth breaking the page over. The reader
+    // came here to read, so leave everything exactly as they found it.
+    console.warn('invaders: could not start', error);
+  }
 }
 
 export function install(): void {
@@ -54,9 +60,13 @@ export function install(): void {
   document.addEventListener(
     'pointerenter',
     (event) => {
+      if (!desktop()) return;
       const target = event.target;
       if (!(target instanceof Element) || !target.closest('[data-invaders-open]')) return;
-      void import('./transition').then((mod) => mod.prepare());
+      // A failed prefetch is only a missed warm-up, never worth surfacing.
+      void import('./transition')
+        .then((mod) => mod.prepare())
+        .catch(() => {});
     },
     true
   );

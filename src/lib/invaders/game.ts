@@ -40,6 +40,14 @@ function mount(): HTMLElement {
 }
 
 function onKeyDown(event: KeyboardEvent): void {
+  // The root claims aria-modal and nothing inside the window is focusable, so
+  // Tab has nowhere to go. Without this it walks into the page behind the
+  // overlay, which is still interactive.
+  if (event.key === 'Tab') {
+    event.preventDefault();
+    return;
+  }
+
   if (event.key !== 'Escape') return;
   event.preventDefault();
   closeGame();
@@ -48,13 +56,16 @@ function onKeyDown(event: KeyboardEvent): void {
 export async function openGame(): Promise<void> {
   if (root) return;
 
+  // Mount before anything else. Every line below changes the page, and mount can
+  // throw: locking the scroll first would leave the reader stuck with no way back.
+  const mounted = mount();
+
   trigger = document.querySelector<HTMLElement>('[data-invaders-open]');
   trigger?.setAttribute('data-open', '');
-
   restoreScroll = window.scrollY;
   document.body.style.overflow = 'hidden';
 
-  root = mount();
+  root = mounted;
   root.focus();
   window.addEventListener('keydown', onKeyDown);
 }

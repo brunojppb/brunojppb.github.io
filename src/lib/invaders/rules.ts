@@ -88,6 +88,9 @@ export const WAVE_CLEAR_MS = 2000;
 export const LIVES = 3;
 export const SCORES: readonly number[] = [30, 20, 20, 10, 10];
 
+/** Paid on clearing a wave, times the wave number. 160 x 3 is the mock's + 480. */
+export const WAVE_BONUS = 160;
+
 // ---- sprite metrics the DOM needs -----------------------------------------
 
 export const SPRITE_PX = 13;

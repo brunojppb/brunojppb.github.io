@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { BEAT_START } from '../../src/lib/invaders/rules';
 
 /** The trigger exists above 900px on a fine pointer, and nowhere else. */
 function isDesktop(page: Page): boolean {
@@ -537,6 +538,11 @@ test.describe('the audits', () => {
     await openGame(page);
     await page.keyboard.press('Space');
     await expect(page.locator('.invaders-invader[data-state="alive"]')).toHaveCount(45);
+    // Fire, so the shot is actually on the field when the audit runs. A hidden
+    // shot would never be inspected, and a mis-coloured shot is a defect whether
+    // or not it happens to be on screen at that instant.
+    await page.keyboard.press('Space');
+    await expect(page.locator('[data-invaders-shot]')).toBeVisible();
 
     const offenders = await page.evaluate(() => {
       const accent = getComputedStyle(document.documentElement)
@@ -554,8 +560,9 @@ test.describe('the audits', () => {
       const found: string[] = [];
       for (const el of field.querySelectorAll<HTMLElement>('*')) {
         if (el.closest('[data-invaders-player]')) continue;
+        // The panels are the only other things in the field allowed the accent:
+        // GAME OVER is drawn in it deliberately.
         if (el.closest('[data-invaders-panel]')) continue;
-        if (el.offsetParent === null && el.tagName !== 'PRE') continue;
         const style = getComputedStyle(el);
         if (style.color === target || style.backgroundColor === target) {
           found.push(`${el.tagName}.${el.className} ${style.color} / ${style.backgroundColor}`);
@@ -643,7 +650,9 @@ test.describe('the audits', () => {
     const token = await page.evaluate(() =>
       getComputedStyle(document.documentElement).getPropertyValue('--game-beat').trim()
     );
-    expect(token).toBe('620ms');
+    // The build minifies 620ms to .62s, so compare durations rather than strings.
+    const ms = token.endsWith('ms') ? Number.parseFloat(token) : Number.parseFloat(token) * 1000;
+    expect(ms).toBe(BEAT_START);
   });
 
   test('the field takes its surface from --game-field', async ({ page }) => {
@@ -652,6 +661,17 @@ test.describe('the audits', () => {
       .locator('[data-invaders-field]')
       .evaluate((el) => getComputedStyle(el).backgroundColor);
     expect(field).toBe('rgb(11, 11, 16)');
+  });
+
+  // Checks the rule shared by title, waveClear and gameOver, via the title panel,
+  // which is reachable the instant the game opens. It does not reach game over
+  // itself: that takes a real run to trigger in a browser.
+  test('a panel covers the field rather than sitting over the invaders', async ({ page }) => {
+    await openGame(page);
+    const background = await page
+      .locator('[data-invaders-panel="title"]')
+      .evaluate((el) => getComputedStyle(el).backgroundColor);
+    expect(background).toBe('rgb(11, 11, 16)');
   });
 
   test('opens and plays with no console error', async ({ page }) => {
@@ -706,7 +726,9 @@ test.describe('accessibility', () => {
     }
 
     await page.keyboard.press('Enter');
-    await expect(page.locator('[data-invaders-root]')).toBeVisible();
+    const root = page.locator('[data-invaders-root]');
+    await expect(root).toBeVisible();
+    await expect(root).toHaveAttribute('data-armed', '');
     await page.keyboard.press('Space');
     await expect(page.locator('.invaders-invader[data-state="alive"]')).toHaveCount(45);
     await page.keyboard.press('Space');

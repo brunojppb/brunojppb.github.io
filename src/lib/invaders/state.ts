@@ -255,6 +255,9 @@ function endGame(s: GameState, rank: number): void {
   s.phase = 'gameOver';
   s.hitUntil = 0;
   s.respawnUntil = 0;
+  // s.now freezes once the phase leaves playing, so any burst deadline still
+  // in the future would never resolve. Clear them all now, while time still moves.
+  clearBursts(s.formation, Infinity);
 }
 
 function hitPlayer(s: GameState, rank: number): void {

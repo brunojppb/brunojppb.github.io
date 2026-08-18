@@ -263,6 +263,27 @@ describe('taking a hit', () => {
     expect(game.hitUntil).toBe(0);
     expect(game.respawnUntil).toBe(0);
   });
+
+  it('leaves no invader bursting once the game is over', () => {
+    // A burst is also a deadline in game time, so a kill on the final frame
+    // left an invader painted accent forever once s.now stopped.
+    const target = game.formation.invaders.find((i) => i.rank === RANKS - 1 && i.col === 4)!;
+    const box = invaderRect(game.formation, target);
+    game.shot = { x: box.x + CELL_W / 2, y: box.y + box.h - 1 };
+    bombOnPlayer(game);
+
+    for (let i = 0; i < LIVES - 1; i += 1) {
+      game.respawnUntil = 0;
+      step(game, 16, IDLE, NEVER_BOMB);
+      bombOnPlayer(game);
+    }
+    game.respawnUntil = 0;
+    step(game, 16, IDLE, NEVER_BOMB);
+
+    expect(game.phase).toBe('gameOver');
+    expect(target.burstUntil).toBe(0);
+    expect(game.formation.invaders.every((inv) => inv.burstUntil === 0)).toBe(true);
+  });
 });
 
 describe('deathFor', () => {

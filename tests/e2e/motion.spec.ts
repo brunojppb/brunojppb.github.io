@@ -18,12 +18,13 @@ test('reduced motion stops the scanlines', async ({ page }) => {
 });
 
 test('reduced motion pins the caret visible', async ({ page }) => {
-  // The home page's only caret is the closing prompt line's live caret
-  // (PromptLine's `caret` prop, `animate` defaulted true) — not a static
-  // size specimen, which `.caret` would also match but which reduced
-  // motion has nothing to override.
+  // The home page carries more than one .caret now: the chrome bar holds a
+  // hidden ./invaders hint caret that only shows once the game trigger is
+  // hovered. This test cares about the live prompt caret, so it selects a
+  // visible one instead of the first in DOM order. A hidden specimen has
+  // nothing for reduced motion to override.
   await page.goto('/');
-  const caret = page.locator('.caret').first();
+  const caret = page.locator('.caret:visible').first();
   await expect(caret).toBeVisible();
   // `console-blink` is `1.1s steps(1) infinite`: opacity sits at 1 for the
   // first half of every cycle regardless of reduced motion, so reading

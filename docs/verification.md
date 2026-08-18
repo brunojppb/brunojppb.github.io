@@ -110,6 +110,19 @@ allowed to exceed that, and only on pages where it is used.~~
 
 Check 9 is struck. Bruno chose a React island over the JS budget; the budget no longer applies.
 
+**10. The ⌘K palette.** Keyboard first, so screenshots alone will not catch what matters. Drive it
+with the mouse untouched: `⌘K` and `Ctrl+K` both open and are both prevented from reaching the
+browser; `/` opens outside a field and types itself inside one; `↑` `↓` walk one flat list across
+the group rules and wrap at both ends; `Enter` opens the selected URL; `Tab` cycles the group filter
+and never moves focus out of the dialog; `Backspace` on an empty query closes; `Esc` closes and
+`document.activeElement` is the trigger again. The document must not scroll while the selected row
+comes into view. Then check the states: `N MATCHES`, `30 INDEXED` empty, `EXIT 1` on a miss;
+selection is a wash plus a 2px left bar, never an inverted fill; 660px wide and 96px from the top
+above 640px, full screen below it with every row ≥44px; the footer is not clipped at 900px height.
+`tests/e2e/palette.spec.ts` encodes all of this, including axe and the glyph audit over the open
+palette. `tests/unit/search.test.ts` covers ranking and caps, and `tests/unit/search-index.test.ts`
+guards the index shape and its size.
+
 ## Per-route checklist
 
 | Route | Beyond the standard checks |

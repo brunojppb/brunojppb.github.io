@@ -100,7 +100,7 @@ const FALLBACK_GLYPHS = ['●', '▶', '▚', '✓', '★', '⧉', '≡', '✕',
 const COMPONENTS = [
   'PromptLine + Caret', 'SectionRule', 'Tag', 'FileRow', 'Pagination',
   'CodeBlock', 'Callout', 'BookCover', 'AsciiBanner', 'Outline', 'Prose',
-  'Window · TabBar · Scanlines',
+  'Window · TabBar · Scanlines', 'CommandPalette',
 ];
 
 const outlineHeadings = [
@@ -469,6 +469,31 @@ const outlineHeadings = [
       the tab strip below it is highlighting <span class="text-accent-lift">system/</span> right now.
       Squares, never circles. The third one is the accent.
     </p>
+  </div>
+
+  <div class="grid gap-5 border-t border-line-hairline py-5 sm:grid-cols-[200px_1fr] [&>*]:min-w-0">
+    <div>
+      <div class="text-md text-ink">CommandPalette</div>
+      <div class="mt-1.5 text-xs leading-snug text-ink-muted">Search over {posts.length} posts, {counts.size} tags and 6 pages. Selection is a wash plus a left accent bar, never the inverted fill the active tab uses: it moves on every keypress and a fill would strobe.</div>
+      <div class="mt-2 text-2xs tracking-chrome text-ink-muted">islands/CommandPalette.tsx · REACT</div>
+    </div>
+    <div class="flex flex-col items-start gap-3 border border-line-hairline bg-surface-code px-5 py-4.5">
+      <button
+        type="button"
+        data-palette-open
+        aria-haspopup="dialog"
+        aria-expanded="false"
+        class="border border-line-strong px-3 py-2 text-2xs tracking-chrome text-accent-lift hover:border-line-accent"
+      >
+        OPEN SEARCH
+      </button>
+      <p class="text-sm text-ink-body">
+        The same palette every page carries: <span class="text-accent-lift">⌘K</span> or{' '}
+        <span class="text-accent-lift">/</span> anywhere, the <span class="text-accent-lift">⌘K</span>{' '}
+        cell at the end of the tab strip, or <span class="text-accent-lift">SEARCH</span> in the chrome
+        bar on a phone. Arrow keys cross the group rules, TAB narrows to one group, ESC closes.
+      </p>
+    </div>
   </div>
 
   <!-- ============================================================ -->

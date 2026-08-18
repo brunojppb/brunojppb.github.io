@@ -1,16 +1,6 @@
 ---
-/**
- * The six destinations of the site, in tab order. Shared with NavSheet so
- * the mobile menu never drifts from the tab strip.
- */
-export const TABS = [
-  { label: 'posts/', href: '/posts/' },
-  { label: 'about.md', href: '/about/' },
-  { label: 'src/', href: '/src/' },
-  { label: 'reading/', href: '/reading/' },
-  { label: 'courses/', href: '/courses/' },
-  { label: 'system/', href: '/system/' },
-] as const;
+import { TABS } from '../../lib/nav';
+import SearchTrigger from './SearchTrigger.astro';
 
 interface Props {
   current?: string;
@@ -40,4 +30,5 @@ const { current } = Astro.props;
       );
     })
   }
+  <SearchTrigger variant="tab" />
 </div>

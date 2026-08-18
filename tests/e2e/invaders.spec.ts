@@ -112,3 +112,111 @@ test.describe('on a coarse pointer', () => {
     await expect(page.locator('[data-chrome-dot]').nth(3)).toBeVisible();
   });
 });
+
+test.describe('opening and closing', () => {
+  // The condition has to run inside a test, not at describe level: Playwright
+  // evaluates a describe-level skip before the page fixture exists.
+  test.beforeEach(async ({ page }) => {
+    test.skip(!isDesktop(page), 'the game is desktop only');
+  });
+
+  test('the dot opens the game window', async ({ page }) => {
+    await page.goto('/posts/');
+    await page.locator('[data-invaders-open]').click();
+
+    const root = page.locator('[data-invaders-root]');
+    await expect(root).toBeVisible();
+    await expect(root).toContainText('~/invaders');
+    await expect(root).toContainText('ESC EXIT');
+  });
+
+  test('holds the trigger dot white while the game is open', async ({ page }) => {
+    await page.goto('/posts/');
+    await page.locator('[data-invaders-open]').click();
+    await expect(page.locator('[data-invaders-open]')).toHaveAttribute('data-open', '');
+  });
+
+  test('typing i n v opens it too', async ({ page }) => {
+    await page.goto('/posts/');
+    await page.keyboard.press('i');
+    await page.keyboard.press('n');
+    await page.keyboard.press('v');
+    await expect(page.locator('[data-invaders-root]')).toBeVisible();
+  });
+
+  test('i n v is ignored while the palette has focus', async ({ page }) => {
+    await page.goto('/posts/');
+    // The palette island hydrates on idle; nothing answers Meta+K until it
+    // has. palette.spec.ts's own `load` helper waits on the same signal.
+    await page.waitForSelector('astro-island[component-url*="CommandPalette"]:not([ssr])', {
+      state: 'attached',
+    });
+    await page.keyboard.press('Meta+k');
+    await expect(page.locator('[role="dialog"][aria-modal="true"]')).toBeVisible();
+
+    await page.keyboard.type('inv');
+
+    await expect(page.locator('[data-invaders-root]')).toHaveCount(0);
+    // The letters went where they were typed.
+    await expect(page.locator('input[type="search"]')).toHaveValue('inv');
+  });
+
+  test('locks the page behind it, and does not shift it', async ({ page }) => {
+    await page.goto('/posts/');
+    const before = await page.evaluate(() => document.body.getBoundingClientRect().width);
+
+    await page.locator('[data-invaders-open]').click();
+    // openGame is behind a dynamic import; the click event fires before it
+    // resolves, so the lock is not in place until the window is visible.
+    await expect(page.locator('[data-invaders-root]')).toBeVisible();
+
+    expect(await page.evaluate(() => getComputedStyle(document.body).overflow)).toBe('hidden');
+    expect(await page.evaluate(() => document.body.getBoundingClientRect().width)).toBe(before);
+  });
+
+  test('Esc restores the exact scroll position', async ({ page }) => {
+    await page.goto('/entries/https-for-your-homelab/');
+    await page.evaluate(() => window.scrollTo(0, 900));
+    const before = await page.evaluate(() => window.scrollY);
+    expect(before).toBeGreaterThan(0);
+
+    // The trigger opens the game only where a real click can land, so at
+    // this scroll depth it sits off screen. Clicking it here would make
+    // Playwright's own scroll-into-view move the page before the click ever
+    // fires, which is the thing this test is trying to rule out. The `i n v`
+    // route reaches the same `openGame` without touching the scroll first.
+    await page.keyboard.press('i');
+    await page.keyboard.press('n');
+    await page.keyboard.press('v');
+    await expect(page.locator('[data-invaders-root]')).toBeVisible();
+    await page.keyboard.press('Escape');
+
+    await expect(page.locator('[data-invaders-root]')).toHaveCount(0);
+    expect(await page.evaluate(() => window.scrollY)).toBe(before);
+    expect(await page.evaluate(() => getComputedStyle(document.body).overflow)).not.toBe('hidden');
+  });
+
+  test('never touches the URL', async ({ page }) => {
+    await page.goto('/posts/');
+    const url = page.url();
+    const history = await page.evaluate(() => window.history.length);
+
+    await page.locator('[data-invaders-open]').click();
+    await page.keyboard.press('Escape');
+
+    expect(page.url()).toBe(url);
+    expect(await page.evaluate(() => window.history.length)).toBe(history);
+  });
+
+  test('hands focus back to the trigger on exit', async ({ page }) => {
+    await page.goto('/posts/');
+    await page.locator('[data-invaders-open]').click();
+    // openGame is behind a dynamic import; without this wait Escape can
+    // race the import and land before the game (and its listener) exists.
+    await expect(page.locator('[data-invaders-root]')).toBeVisible();
+    await page.keyboard.press('Escape');
+    expect(
+      await page.evaluate(() => document.activeElement?.hasAttribute('data-invaders-open') === true)
+    ).toBe(true);
+  });
+});

@@ -159,8 +159,15 @@ export async function openGame(): Promise<void> {
   build(refs, state);
   render(refs, state);
 
-  const { run } = await import('./transition');
-  await run(refs.field.getBoundingClientRect(), 'in');
+  try {
+    const { run } = await import('./transition');
+    await run(refs.field.getBoundingClientRect(), 'in');
+  } catch (error) {
+    // The transition is decoration. If its chunk will not load, open the game
+    // without it: the alternative is a reader stranded on a scroll-locked page
+    // with the modal up and no input wired yet.
+    console.warn('invaders: transition unavailable', error);
+  }
 
   root.focus();
   held.left = false;
@@ -189,8 +196,15 @@ export async function closeGame(): Promise<void> {
 
   if (state && state.hi > savedHi) writeHiScore(state.hi);
 
-  const { run } = await import('./transition');
-  await run(refs.field.getBoundingClientRect(), 'out');
+  try {
+    const { run } = await import('./transition');
+    await run(refs.field.getBoundingClientRect(), 'out');
+  } catch (error) {
+    // Same reasoning as openGame, and it matters more here: the keydown listener
+    // is already gone, so a throw would leave the page locked with the modal up
+    // and Escape no longer doing anything.
+    console.warn('invaders: exit transition unavailable', error);
+  }
 
   root.remove();
   root = null;

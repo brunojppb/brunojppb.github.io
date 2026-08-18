@@ -1,6 +1,7 @@
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { parse } from 'yaml';
+import sharp from 'sharp';
 
 // This script only ever runs on demand (`npm run books:covers`), never as
 // part of `npm run build` — the build must succeed with zero network
@@ -9,17 +10,25 @@ import { parse } from 'yaml';
 const OUT = 'src/assets/books';
 mkdirSync(OUT, { recursive: true });
 
+// BookCover asks Astro for 480px at the widest (reading, 2x its ~241px cap),
+// so a source wider than that is detail no page can show.
+const MAX_WIDTH = 480;
+
 const doc = parse(readFileSync('src/data/books.yaml', 'utf8')) ?? {};
 const books = [...(doc.reading ?? []), ...(doc.finished ?? [])];
+
+// src/lib/books.ts matches a cover by filename stem, so any extension counts
+// as already downloaded.
+const stems = new Set(readdirSync(OUT).map((f) => f.replace(/\.[^.]+$/, '')));
 
 const unresolved = [];
 
 for (const book of books) {
   const key = book.isbn ?? book.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-  const target = join(OUT, `${key}.jpg`);
+  const target = join(OUT, `${key}.webp`);
 
   // 1. Already downloaded.
-  if (existsSync(target)) {
+  if (stems.has(key)) {
     console.log(`have    ${book.title}`);
     continue;
   }
@@ -43,8 +52,20 @@ for (const book of books) {
     const buf = Buffer.from(await res.arrayBuffer());
     // Open Library returns a tiny placeholder for some misses even with default=false.
     if (buf.length < 2000) continue;
-    writeFileSync(target, buf);
-    console.log(`saved   ${book.title}  ${(buf.length / 1024).toFixed(0)} KB  <- ${url}`);
+
+    // Quality 80 to match scripts/optimize-images.mjs. Astro re-encodes this
+    // file to serve it, and measuring 75 through 90 here moved the served bytes
+    // by under 2%, so the higher settings only cost repository size.
+    let img = sharp(buf);
+    const meta = await img.metadata();
+    if (meta.width > MAX_WIDTH) img = img.resize({ width: MAX_WIDTH });
+    const out = await img.webp({ quality: 80, effort: 6 }).toBuffer();
+
+    writeFileSync(target, out);
+    console.log(
+      `saved   ${book.title}  ${meta.width}x${meta.height} ${meta.format}` +
+        ` -> ${(out.length / 1024).toFixed(0)} KB webp  <- ${url}`
+    );
     saved = true;
     break;
   }

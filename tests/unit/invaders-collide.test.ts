@@ -40,10 +40,22 @@ describe('cellAt', () => {
     expect(cellAt(box, 7, 5, 105, 250)).toBeNull();
   });
 
-  it('never reports a cell past the last one', () => {
-    // Floating point on the right edge is the failure this guards: a point a
-    // hair inside 170 must land in column 6, not column 7.
+  it('keeps a point just inside the right edge in the last cell', () => {
     const cell = cellAt(box, 7, 5, 169.999, 249.999);
     expect(cell).toEqual({ col: 6, row: 4 });
+  });
+
+  it('clamps a column that the subtraction rounds past the last one', () => {
+    // The real reason the clamp exists, and it needs these values rather than
+    // round ones. `px - x` can round up to exactly `w` while `px < x + w`, which
+    // makes the unclamped index equal `cols` and read off the end of a sprite
+    // grid. No double between 100 and 170 reaches that case, so the test above
+    // passes whether the clamp is there or not.
+    const drift: Rect = { x: 104.86599972550059, y: 0, w: 387.3766972172531, h: 10 };
+    const px = 492.24269694275364;
+
+    expect(px).toBeLessThan(drift.x + drift.w);
+    expect(Math.floor(((px - drift.x) / drift.w) * 32)).toBe(32);
+    expect(cellAt(drift, 32, 5, px, 5)).toEqual({ col: 31, row: 2 });
   });
 });

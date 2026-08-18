@@ -237,3 +237,161 @@ test.describe('opening and closing', () => {
     ).toBe(true);
   });
 });
+
+/** Opens the game and waits for the font, which every measurement depends on. */
+async function openGame(page: Page) {
+  await page.goto('/posts/');
+  await page.evaluate(() => document.fonts.ready);
+  await page.locator('[data-invaders-open]').click();
+  await expect(page.locator('[data-invaders-root]')).toBeVisible();
+}
+
+test.describe('the game', () => {
+  test.beforeEach(async ({ page }) => {
+    test.skip(!isDesktop(page), 'the game is desktop only');
+  });
+
+  test('opens on the title screen, which is also the score table', async ({ page }) => {
+    await openGame(page);
+    const title = page.locator('[data-invaders-panel="title"]');
+    await expect(title).toBeVisible();
+    await expect(title).toContainText('INVADERS');
+    await expect(title).toContainText('PRESS SPACE TO START');
+    await expect(title).toContainText('ESC RETURNS YOU TO ~/POSTS');
+    await expect(title).toContainText('= 30 PTS');
+    await expect(title).toContainText('= 20 PTS');
+    await expect(title).toContainText('= 10 PTS');
+  });
+
+  test('SPACE starts a wave of five ranks by nine', async ({ page }) => {
+    await openGame(page);
+    await page.keyboard.press('Space');
+
+    await expect(page.locator('[data-invaders-panel="title"]')).toBeHidden();
+    await expect(page.locator('.invaders-invader[data-state="alive"]')).toHaveCount(45);
+    await expect(page.locator('.invaders-bunker')).toHaveCount(4);
+    await expect(page.locator('[data-invaders-footer="playing"]')).toBeVisible();
+  });
+
+  test('draws the HUD and three lives as cannons, not numerals', async ({ page }) => {
+    await openGame(page);
+    await page.keyboard.press('Space');
+
+    await expect(page.locator('[data-invaders-score]')).toHaveText('000000');
+    await expect(page.locator('[data-invaders-wave]')).toHaveText('01');
+    const lives = page.locator('[data-invaders-lives] pre');
+    await expect(lives).toHaveCount(3);
+    for (let i = 0; i < 3; i += 1) await expect(lives.nth(i)).toBeVisible();
+  });
+
+  test('puts the ground rule 24px off the bottom of a 466px field', async ({ page }) => {
+    await openGame(page);
+    await page.keyboard.press('Space');
+
+    const geometry = await page.evaluate(() => {
+      const field = document.querySelector('[data-invaders-field]')!.getBoundingClientRect();
+      const ground = document.querySelector('[data-invaders-ground]')!.getBoundingClientRect();
+      return { fieldH: field.height, gap: field.bottom - ground.bottom };
+    });
+    expect(geometry.fieldH).toBeCloseTo(466, 0);
+    expect(geometry.gap).toBeCloseTo(24, 0);
+  });
+
+  test('the cannon moves, and stops at the wall', async ({ page }) => {
+    await openGame(page);
+    await page.keyboard.press('Space');
+
+    const x = () =>
+      page.evaluate(
+        () => document.querySelector('[data-invaders-player]')!.getBoundingClientRect().x
+      );
+    const from = await x();
+
+    await page.keyboard.down('ArrowRight');
+    await page.waitForTimeout(250);
+    await page.keyboard.up('ArrowRight');
+    expect(await x()).toBeGreaterThan(from);
+
+    await page.keyboard.down('ArrowLeft');
+    await page.waitForTimeout(2000);
+    await page.keyboard.up('ArrowLeft');
+
+    const field = await page.evaluate(
+      () => document.querySelector('[data-invaders-field]')!.getBoundingClientRect().x
+    );
+    expect(await x()).toBeCloseTo(field, 0);
+  });
+
+  test('fires one shot, and holding SPACE does not autofire', async ({ page }) => {
+    await openGame(page);
+    await page.keyboard.press('Space');
+
+    await page.keyboard.press('Space');
+    await expect(page.locator('[data-invaders-shot]')).toBeVisible();
+
+    await page.keyboard.down('Space');
+    await page.waitForTimeout(600);
+    await page.keyboard.up('Space');
+    // One shot exists in the DOM at all times and is shown or hidden. If holding
+    // autofired, the shot would have been replaced and would still be low.
+    await expect(page.locator('[data-invaders-shot]')).toHaveCount(1);
+  });
+
+  test('the invaders step rather than slide', async ({ page }) => {
+    await openGame(page);
+    await page.keyboard.press('Space');
+
+    const left = () =>
+      page.evaluate(
+        () =>
+          new DOMMatrixReadOnly(
+            getComputedStyle(document.querySelector('[data-invaders-formation]')!).transform
+          ).m41
+      );
+
+    const first = await left();
+    await page.waitForTimeout(1400);
+    const later = await left();
+
+    expect(later).toBeGreaterThan(first);
+    // Two beats at 620ms is two glyph cells, about 16.5px. A tween would land
+    // on any value in between; a discrete step lands on a multiple.
+    const cell = 57.9 / 7;
+    const steps = (later - first) / cell;
+    expect(Math.abs(steps - Math.round(steps))).toBeLessThan(0.01);
+  });
+
+  test('P pauses, dims the field, and swaps the footer', async ({ page }) => {
+    await openGame(page);
+    await page.keyboard.press('Space');
+    await page.keyboard.press('p');
+
+    await expect(page.locator('[data-invaders-panel="paused"]')).toBeVisible();
+    await expect(page.locator('[data-invaders-panel="paused"]')).toContainText('PAUSED');
+    await expect(page.locator('[data-invaders-footer="paused"]')).toContainText('P RESUME');
+    await expect(page.locator('[data-invaders-footer="playing"]')).toBeHidden();
+    await expect(page.locator('[data-invaders-field]')).toHaveAttribute('data-dim', '');
+
+    await page.keyboard.press('p');
+    await expect(page.locator('[data-invaders-panel="paused"]')).toBeHidden();
+  });
+
+  test('Esc exits from the title screen and from play', async ({ page }) => {
+    await openGame(page);
+    await page.keyboard.press('Escape');
+    await expect(page.locator('[data-invaders-root]')).toHaveCount(0);
+
+    await page.locator('[data-invaders-open]').click();
+    await page.keyboard.press('Space');
+    await page.keyboard.press('Escape');
+    await expect(page.locator('[data-invaders-root]')).toHaveCount(0);
+  });
+
+  test('Esc exits from pause', async ({ page }) => {
+    await openGame(page);
+    await page.keyboard.press('Space');
+    await page.keyboard.press('p');
+    await page.keyboard.press('Escape');
+    await expect(page.locator('[data-invaders-root]')).toHaveCount(0);
+  });
+});

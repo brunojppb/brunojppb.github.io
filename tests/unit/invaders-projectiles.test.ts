@@ -16,8 +16,11 @@ describe('shotRect', () => {
 
 describe('advanceShot', () => {
   it('travels up at 620px a second', () => {
-    const moved = advanceShot({ x: 10, y: 400 }, 1000);
-    expect(moved!.y).toBeCloseTo(400 - SHOT_SPEED, 5);
+    // Measured over a tenth of a second and scaled. A full second of travel
+    // needs a start above y 601, and the field is only 466 tall, so the shot
+    // would already be gone and there would be nothing to measure.
+    const moved = advanceShot({ x: 10, y: 400 }, 100);
+    expect(moved!.y).toBeCloseTo(400 - SHOT_SPEED / 10, 5);
     expect(moved!.x).toBe(10);
   });
 

@@ -172,6 +172,11 @@ export async function openGame(): Promise<void> {
   window.addEventListener('keyup', onKeyUp);
   window.addEventListener('resize', onResize);
   frame = requestAnimationFrame(tick);
+
+  // The design arms input at 720ms, after the transition. Anything waiting on the
+  // game needs a signal for that moment: before it, a keypress has nothing
+  // listening for it. The window being on screen is not the same as being ready.
+  root.dataset.armed = '';
 }
 
 export async function closeGame(): Promise<void> {

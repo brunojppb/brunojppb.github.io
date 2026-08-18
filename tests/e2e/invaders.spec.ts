@@ -188,7 +188,11 @@ test.describe('opening and closing', () => {
     await page.keyboard.press('i');
     await page.keyboard.press('n');
     await page.keyboard.press('v');
-    await expect(page.locator('[data-invaders-root]')).toBeVisible();
+    const root = page.locator('[data-invaders-root]');
+    await expect(root).toBeVisible();
+    // The design arms input at 720ms; Escape sent before that lands on
+    // nothing, so the close half of this round trip goes untested.
+    await expect(root).toHaveAttribute('data-armed', '');
     await page.keyboard.press('Escape');
 
     await expect(page.locator('[data-invaders-root]')).toHaveCount(0);
@@ -202,9 +206,11 @@ test.describe('opening and closing', () => {
     const history = await page.evaluate(() => window.history.length);
 
     await page.locator('[data-invaders-open]').click();
-    // Without this wait, Escape can land before openGame's dynamic import
-    // resolves, so the close half of this round trip goes untested.
-    await expect(page.locator('[data-invaders-root]')).toBeVisible();
+    const root = page.locator('[data-invaders-root]');
+    // Without this wait, Escape can land before input is armed at 720ms, so
+    // the close half of this round trip goes untested.
+    await expect(root).toBeVisible();
+    await expect(root).toHaveAttribute('data-armed', '');
     await page.keyboard.press('Escape');
 
     expect(page.url()).toBe(url);
@@ -217,6 +223,10 @@ test.describe('opening and closing', () => {
 
     await page.locator('[data-invaders-open]').click();
     await expect(root).toBeVisible();
+    // The design arms input at 720ms; Escape sent before that lands on
+    // nothing, so the game never closes and the reopen below has nothing to
+    // reopen.
+    await expect(root).toHaveAttribute('data-armed', '');
     await page.keyboard.press('Escape');
     await expect(root).toHaveCount(0);
 
@@ -228,22 +238,38 @@ test.describe('opening and closing', () => {
   test('hands focus back to the trigger on exit', async ({ page }) => {
     await page.goto('/posts/');
     await page.locator('[data-invaders-open]').click();
-    // openGame is behind a dynamic import; without this wait Escape can
-    // race the import and land before the game (and its listener) exists.
-    await expect(page.locator('[data-invaders-root]')).toBeVisible();
+    const root = page.locator('[data-invaders-root]');
+    await expect(root).toBeVisible();
+    // The design arms input at 720ms; Escape sent before that lands on
+    // nothing, so focus never moves and this assertion is really testing that
+    // Escape did nothing rather than that it worked.
+    await expect(root).toHaveAttribute('data-armed', '');
     await page.keyboard.press('Escape');
+    // closeGame runs its own 480ms exit transition before it hands focus
+    // back; checking activeElement before the window is gone would just be
+    // reading the focus the opening click already left on the trigger.
+    await expect(root).toHaveCount(0);
     expect(
       await page.evaluate(() => document.activeElement?.hasAttribute('data-invaders-open') === true)
     ).toBe(true);
   });
 });
 
-/** Opens the game and waits for the font, which every measurement depends on. */
+/**
+ * Opens the game and waits for the font, which every measurement depends on, and
+ * for input to be armed.
+ *
+ * Waiting for `data-armed` rather than for the window to appear is what makes
+ * these tests independent of the transition: the design arms input at 720ms, so a
+ * keypress sent when the window first paints has nothing listening for it.
+ */
 async function openGame(page: Page) {
   await page.goto('/posts/');
   await page.evaluate(() => document.fonts.ready);
   await page.locator('[data-invaders-open]').click();
-  await expect(page.locator('[data-invaders-root]')).toBeVisible();
+  const root = page.locator('[data-invaders-root]');
+  await expect(root).toBeVisible();
+  await expect(root).toHaveAttribute('data-armed', '');
 }
 
 test.describe('the game', () => {
@@ -406,6 +432,10 @@ test.describe('the game', () => {
     await expect(page.locator('[data-invaders-root]')).toHaveCount(0);
 
     await page.locator('[data-invaders-open]').click();
+    const root = page.locator('[data-invaders-root]');
+    // Reopening bypasses the openGame helper, so it needs its own wait: Space
+    // sent before 720ms would land before input is armed.
+    await expect(root).toHaveAttribute('data-armed', '');
     await page.keyboard.press('Space');
     await page.keyboard.press('Escape');
     await expect(page.locator('[data-invaders-root]')).toHaveCount(0);
@@ -448,6 +478,9 @@ test.describe('the transition', () => {
     await page.locator('[data-invaders-open]').click();
     await expect(page.locator('[data-invaders-canvas]')).toBeVisible();
     await expect(page.locator('[data-invaders-canvas]')).toHaveCount(0, { timeout: 4000 });
+    // The canvas comes down at 650ms, ahead of the 720ms mark where input
+    // arms; without this wait Escape can land in that gap and do nothing.
+    await expect(page.locator('[data-invaders-root]')).toHaveAttribute('data-armed', '');
     await page.keyboard.press('Escape');
     await expect(page.locator('[data-invaders-root]')).toHaveCount(0);
 
@@ -473,6 +506,9 @@ test.describe('the transition', () => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/posts/');
     await page.locator('[data-invaders-open]').click();
+    const root = page.locator('[data-invaders-root]');
+    await expect(root).toBeVisible();
+    await expect(root).toHaveAttribute('data-armed', '');
 
     const pulse = await page
       .locator('.invaders-pulse')

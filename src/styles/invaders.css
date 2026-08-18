@@ -22,6 +22,7 @@
 .invaders-scan {
   position: absolute;
   inset: 0;
+  z-index: 1;
   pointer-events: none;
   background: repeating-linear-gradient(
     180deg,
@@ -29,6 +30,15 @@
     transparent 1px 4px
   );
   animation: var(--animate-scan);
+}
+
+/* Title, wave clear and game over take over the field: the design draws all three
+   on a clean field surface. Pause is the exception, dimming the frozen game so you
+   can still see what you are coming back to. */
+[data-invaders-panel='title'],
+[data-invaders-panel='waveClear'],
+[data-invaders-panel='gameOver'] {
+  background: var(--game-field);
 }
 
 /* Sprites. One block element per row inside the `pre`, the same rule CodeBlock

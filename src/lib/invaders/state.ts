@@ -242,14 +242,28 @@ function moveBombs(s: GameState, dt: number): void {
   s.bombs = survivors;
 }
 
+/**
+ * Ends the run.
+ *
+ * Clearing the timers is the point: game time stops with the phase change, so a
+ * flash or respawn timer left in the future would never expire, and the field
+ * would stay inverted behind the game over panel.
+ */
+function endGame(s: GameState, rank: number): void {
+  s.death = deathFor(rank);
+  s.lives = 0;
+  s.phase = 'gameOver';
+  s.hitUntil = 0;
+  s.respawnUntil = 0;
+}
+
 function hitPlayer(s: GameState, rank: number): void {
   s.lives -= 1;
-  s.hitUntil = s.now + HIT_FLASH_MS;
   if (s.lives <= 0) {
-    s.death = deathFor(rank);
-    s.phase = 'gameOver';
+    endGame(s, rank);
     return;
   }
+  s.hitUntil = s.now + HIT_FLASH_MS;
   s.respawnUntil = s.now + RESPAWN_MS;
 }
 
@@ -258,9 +272,7 @@ function checkGround(s: GameState): void {
   if (formationBottom(s.formation) < GROUND_Y) return;
   const living = alive(s.formation);
   const lowest = living.length > 0 ? Math.max(...living.map((inv) => inv.rank)) : 0;
-  s.death = deathFor(lowest);
-  s.lives = 0;
-  s.phase = 'gameOver';
+  endGame(s, lowest);
 }
 
 function checkCleared(s: GameState): void {

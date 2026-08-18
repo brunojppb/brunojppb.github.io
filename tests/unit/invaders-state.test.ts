@@ -249,6 +249,20 @@ describe('taking a hit', () => {
     expect(game.phase).toBe('gameOver');
     expect(game.death).toEqual({ rank: 1, row: RANKS });
   });
+
+  it('leaves no live flash or respawn timer once the game is over', () => {
+    // The flash and the respawn are both deadlines in game time, and game time
+    // stops at game over. A deadline left in the future never expires, which once
+    // left the whole field painted accent behind the game over panel.
+    for (let i = 0; i < LIVES; i += 1) {
+      game.respawnUntil = 0;
+      bombOnPlayer(game);
+      step(game, 16, IDLE, NEVER_BOMB);
+    }
+    expect(game.phase).toBe('gameOver');
+    expect(game.hitUntil).toBe(0);
+    expect(game.respawnUntil).toBe(0);
+  });
 });
 
 describe('deathFor', () => {
@@ -287,6 +301,8 @@ describe('the ground line', () => {
     step(game, game.formation.nextBeatAt + 1, IDLE, NEVER_BOMB);
     expect(game.phase).toBe('gameOver');
     expect(game.death).not.toBeNull();
+    expect(game.hitUntil).toBe(0);
+    expect(game.respawnUntil).toBe(0);
   });
 });
 

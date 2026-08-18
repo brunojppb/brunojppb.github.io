@@ -8,7 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       # Node comes from mise.toml, so CI runs the version the repo declares.
       - uses: jdx/mise-action@v4

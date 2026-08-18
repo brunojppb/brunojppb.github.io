@@ -419,3 +419,72 @@ test.describe('the game', () => {
     await expect(page.locator('[data-invaders-root]')).toHaveCount(0);
   });
 });
+
+test.describe('the transition', () => {
+  test.beforeEach(async ({ page }) => {
+    test.skip(!isDesktop(page), 'the game is desktop only');
+  });
+
+  test('covers the page with a canvas and then takes it away', async ({ page }) => {
+    await page.goto('/posts/');
+    await page.evaluate(() => document.fonts.ready);
+
+    await page.locator('[data-invaders-open]').hover();
+    await page.locator('[data-invaders-open]').click();
+
+    await expect(page.locator('[data-invaders-canvas]')).toBeVisible();
+    await expect(page.locator('[data-invaders-canvas]')).toHaveCount(0, { timeout: 4000 });
+    await expect(page.locator('[data-invaders-root]')).toBeVisible();
+  });
+
+  test('leaves the page behind it exactly where it was', async ({ page }) => {
+    await page.goto('/entries/https-for-your-homelab/');
+    await page.evaluate(() => document.fonts.ready);
+    const before = await page.evaluate(() => ({
+      w: document.body.scrollWidth,
+      h: document.body.scrollHeight,
+    }));
+
+    await page.locator('[data-invaders-open]').click();
+    await expect(page.locator('[data-invaders-canvas]')).toBeVisible();
+    await expect(page.locator('[data-invaders-canvas]')).toHaveCount(0, { timeout: 4000 });
+    await page.keyboard.press('Escape');
+    await expect(page.locator('[data-invaders-root]')).toHaveCount(0);
+
+    expect(await page.evaluate(() => ({
+      w: document.body.scrollWidth,
+      h: document.body.scrollHeight,
+    }))).toEqual(before);
+  });
+
+  test('runs no canvas at all under reduced motion', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/posts/');
+    await page.evaluate(() => document.fonts.ready);
+
+    await page.locator('[data-invaders-open]').click();
+
+    // Straight to the game. A canvas would mean the pixelation ran anyway.
+    await expect(page.locator('[data-invaders-root]')).toBeVisible();
+    await expect(page.locator('[data-invaders-canvas]')).toHaveCount(0);
+  });
+
+  test('the game still runs under reduced motion, and the pulse does not', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/posts/');
+    await page.locator('[data-invaders-open]').click();
+
+    const pulse = await page
+      .locator('.invaders-pulse')
+      .evaluate((el) => getComputedStyle(el).animationDuration);
+    expect(Number.parseFloat(pulse)).toBeLessThan(0.01);
+
+    const scan = await page
+      .locator('.invaders-scan')
+      .evaluate((el) => getComputedStyle(el).animationName);
+    expect(scan).toBe('none');
+
+    await page.keyboard.press('Space');
+    await expect(page.locator('.invaders-invader[data-state="alive"]')).toHaveCount(45);
+  });
+});

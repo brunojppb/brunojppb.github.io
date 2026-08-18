@@ -121,3 +121,18 @@
     animation: none;
   }
 }
+
+/* 650ms to 720ms: the HUD and the footer arrive from the frame edges. The
+   global reduced-motion rule in theme.css flattens both. */
+[data-invaders-hud],
+[data-invaders-chrome-footer] {
+  transition: transform 70ms linear;
+}
+
+[data-invaders-root][data-arriving] [data-invaders-hud] {
+  transform: translateY(-100%);
+}
+
+[data-invaders-root][data-arriving] [data-invaders-chrome-footer] {
+  transform: translateY(100%);
+}

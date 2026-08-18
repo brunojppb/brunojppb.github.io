@@ -85,7 +85,7 @@ function onKeyDown(event: KeyboardEvent): void {
   switch (event.key) {
     case 'Escape':
       event.preventDefault();
-      closeGame();
+      void closeGame();
       return;
     case 'Tab':
       // The root claims aria-modal and nothing inside the window is focusable,
@@ -148,6 +148,9 @@ export async function openGame(): Promise<void> {
   restoreScroll = window.scrollY;
   document.body.style.overflow = 'hidden';
 
+  // The game mounts before the transition runs. That is how the transition
+  // learns where the field will be, so the invaders it draws at 520ms land
+  // exactly where the real ones appear at 720ms.
   root = mounted;
   refs = collect(root);
   savedHi = readHiScore();
@@ -155,8 +158,11 @@ export async function openGame(): Promise<void> {
   builtWave = state.wave;
   build(refs, state);
   render(refs, state);
-  root.focus();
 
+  const { run } = await import('./transition');
+  await run(refs.field.getBoundingClientRect(), 'in');
+
+  root.focus();
   held.left = false;
   held.right = false;
   fireQueued = false;
@@ -168,8 +174,8 @@ export async function openGame(): Promise<void> {
   frame = requestAnimationFrame(tick);
 }
 
-export function closeGame(): void {
-  if (!root) return;
+export async function closeGame(): Promise<void> {
+  if (!root || !refs) return;
 
   cancelAnimationFrame(frame);
   window.removeEventListener('keydown', onKeyDown);
@@ -177,6 +183,9 @@ export function closeGame(): void {
   window.removeEventListener('resize', onResize);
 
   if (state && state.hi > savedHi) writeHiScore(state.hi);
+
+  const { run } = await import('./transition');
+  await run(refs.field.getBoundingClientRect(), 'out');
 
   root.remove();
   root = null;

@@ -57,6 +57,7 @@ finished:
     author: Bruce A. Tate
     finished: 2023-10
     isbn: "9781680508215"
+    cover_url: https://m.media-amazon.com/images/P/1680508210.01._SCLZZZZZZZ_.jpg
 
   - title: "Asynchronous Programming in Rust"
     author: Carl Fredrik Samson
@@ -68,6 +69,7 @@ finished:
     author: Tim McNamara
     finished: 2023-02
     isbn: "9781617294556"
+    cover_url: https://covers.openlibrary.org/b/id/11589242-L.jpg
 
   - title: "Code: The Hidden Language of Computer Hardware and Software"
     author: Charles Petzold
@@ -114,18 +116,22 @@ finished:
   - title: "Pequeno Manual Antirracista"
     author: Djamila Ribeiro
     finished: 2022-02
+    cover_url: https://m.media-amazon.com/images/P/8535932879.01._SCLZZZZZZZ_.jpg
 
   - title: "Dune"
     author: Frank Herbert
     finished: 2021-11
+    cover_url: https://covers.openlibrary.org/b/id/11481354-L.jpg
 
   - title: "Foundation"
     author: Isaac Asimov
     finished: 2021-10
+    cover_url: https://covers.openlibrary.org/b/id/14612610-L.jpg
 
   - title: "Staff Engineer: Leadership Beyond the Management Track"
     author: Will Larson
     finished: 2021-08
+    cover_url: https://covers.openlibrary.org/b/id/10637714-L.jpg
 
   - title: "Thanks for the Feedback: The Science and Art of Receiving Feedback Well"
     author: Douglas Stone
@@ -137,6 +143,8 @@ finished:
     author: Saša Jurić
     finished: 2021-07
     isbn: "9781638354376"
+    # Manning serves the original at 2213px. The committed file is that, scaled to 400.
+    cover_url: https://images.manning.com/book/0/8956122-acbd-4df6-bf93-78701555c171/Juric-3ed-HI.png
 
   - title: "Inspired: How to Create Tech Products Customers Love"
     author: Marty Cagan
@@ -154,11 +162,13 @@ finished:
     author: Christina Wodtke
     finished: 2021-05
     isbn: "9780996006088"
+    cover_url: https://covers.openlibrary.org/b/id/10864735-L.jpg
 
   - title: "Range: Why Generalists Triumph in a Specialized World"
     author: David Epstein
     finished: 2021-05
     isbn: "9780593084496"
+    cover_url: https://covers.openlibrary.org/b/id/8782615-L.jpg
 
   - title: "Cloud Native DevOps with Kubernetes"
     author: John Arundel
@@ -182,6 +192,7 @@ finished:
     author: Marshall B. Rosenberg
     finished: 2021-02
     isbn: "9781892005021"
+    cover_url: https://covers.openlibrary.org/b/id/940686-L.jpg
 
   - title: "The Manager's Path: A Guide for Tech Leaders Navigating Growth and Change"
     author: Camille Fournier
@@ -193,11 +204,13 @@ finished:
     author: Matthew D. Lieberman
     finished: 2021-01
     isbn: "9780198743811"
+    cover_url: https://m.media-amazon.com/images/P/0198743815.01._SCLZZZZZZZ_.jpg
 
   - title: "A Philosophy of Software Design"
     author: John Ousterhout
     finished: 2020-12
     isbn: "9781732102200"
+    cover_url: https://covers.openlibrary.org/b/id/10352230-L.jpg
 
   - title: "Indistractable: How to Control Your Attention and Choose Your Life"
     author: Nir Eyal
@@ -221,6 +234,7 @@ finished:
     author: Donella H. Meadows
     finished: 2020-09
     isbn: "9781844077267"
+    cover_url: https://covers.openlibrary.org/b/id/14420637-L.jpg
 
   - title: "The Systems Bible: The Beginner's Guide to Systems Large and Small"
     author: John Gall
@@ -262,6 +276,7 @@ finished:
     author: Jason Fried
     finished: 2020-02
     isbn: "9780578012810"
+    cover_url: https://covers.openlibrary.org/b/id/10653467-L.jpg
 
   - title: "Terraform: Up and Running: Writing Infrastructure as Code"
     author: Yevgeniy Brikman
@@ -279,7 +294,8 @@ finished:
     author: Ichiro Kishimi
     finished: 2020-01
     isbn: "9781501197291"
-    cover_url: https://books.google.com/books/content?id=hGFEDwAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+    # Google Books served an interior page, not the cover.
+    cover_url: https://m.media-amazon.com/images/P/1760630497.01._SCLZZZZZZZ_.jpg
 
   - title: "Escaping the Build Trap: How Effective Product Management Creates Real Value"
     author: Melissa Perri
@@ -303,7 +319,8 @@ finished:
     author: James Clear
     finished: 2019-08
     isbn: "9798217180516"
-    cover_url: https://books.google.com/books/content?id=FJ5hEQAAQBAJ&printsec=frontcover&img=1&zoom=0&source=gbs_api
+    # Google Books served an interior page, not the cover.
+    cover_url: https://m.media-amazon.com/images/P/0735211299.01._SCLZZZZZZZ_.jpg
 
   - title: "The Burnout Society"
     author: Byung-Chul Han
@@ -338,11 +355,14 @@ finished:
   - title: "The Man on the Mountaintop"
     author: Susan Trott
     finished: 2019-02
+    # Audio-only, so the art is square. The committed file is padded top and bottom to 2:3.
+    cover_url: https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1548061583i/43658721.jpg
 
   - title: "Rich Dad Poor Dad: What the Rich Teach Their Kids About Money—That the Poor and Middle Class Do Not!"
     author: Robert T. Kiyosaki
     finished: 2019-01
     isbn: "9780751532715"
+    cover_url: https://covers.openlibrary.org/b/id/8315603-L.jpg
 
   - title: "The Docker Book: Containerization is the New Virtualization"
     author: James Turnbull
@@ -372,14 +392,17 @@ finished:
     author: Dennis E. Taylor
     finished: 2018-09
     isbn: "9781668223413"
+    cover_url: https://covers.openlibrary.org/b/id/8421582-L.jpg
 
   - title: "Me Engana Que Eu Gosto: Dois meio Brasis jamais somarão um Brasil inteiro"
     author: Luciano Pires
     finished: 2018-07
+    cover_url: https://m.media-amazon.com/images/P/8563249711.01._SCLZZZZZZZ_.jpg
 
   - title: "Homo Deus: A Brief History of Tomorrow"
     author: Yuval Noah Harari
     finished: 2018-07
+    cover_url: https://m.media-amazon.com/images/P/1784703931.01._SCLZZZZZZZ_.jpg
 
   - title: "The Demon-Haunted World: Science as a Candle in the Dark"
     author: Carl Sagan
@@ -402,6 +425,7 @@ finished:
   - title: "Sapiens: A Brief History of Humankind"
     author: Yuval Noah Harari
     finished: 2018-05
+    cover_url: https://covers.openlibrary.org/b/id/8634250-L.jpg
 
   - title: "The Subtle Art of Not Giving a F*ck: A Counterintuitive Approach to Living a Good Life"
     author: Mark Manson
@@ -412,6 +436,7 @@ finished:
   - title: "Cosmos"
     author: Carl Sagan
     finished: 2018-01
+    cover_url: https://covers.openlibrary.org/b/id/8283901-L.jpg
 
   - title: "Essentialism: The Disciplined Pursuit of Less"
     author: Greg McKeown
@@ -447,11 +472,13 @@ finished:
     author: Charles Duhigg
     finished: 2016-08
     isbn: "9780812981605"
+    cover_url: https://covers.openlibrary.org/b/id/9078085-L.jpg
 
   - title: "Metaprogramming Ruby 2: Program Like the Ruby Pros"
     author: Paolo Perrotta
     finished: 2016-08
     isbn: "9781941222126"
+    cover_url: https://covers.openlibrary.org/b/id/8513494-L.jpg
 
   - title: "A Mind for Numbers: How to Excel at Math and Science"
     author: Barbara Oakley
@@ -462,6 +489,7 @@ finished:
   - title: "Growing Rails Applications in Practice"
     author: Henning Koch
     finished: 2016-06
+    cover_url: https://d2sofvawe08yqg.cloudfront.net/growing-rails/s_hero
 
   - title: "Pro React"
     author: Cassio de Sousa Antonio
@@ -478,10 +506,13 @@ finished:
   - title: "Learn Enough Git to Be Dangerous"
     author: Michael Hartl
     finished: 2016-02
+    # Source is a PNG. The committed file is that, as JPEG.
+    cover_url: https://softcover.s3.amazonaws.com/636/learn_enough_git/images/cover-web.png
 
   - title: "Ember-cli 101"
     author: Adolfo Builes
     finished: 2016-01
+    cover_url: https://d2sofvawe08yqg.cloudfront.net/ember-cli-101/s_hero
 
   - title: "Geração de Valor 2: Plantando sonhos, colhendo conquistas"
     author: Flavio Augusto da Silva
@@ -510,6 +541,7 @@ finished:
   - title: "Use a Cabeça! JavaScript"
     author: Michael Morrison
     finished: 2015-11
+    cover_url: https://m.media-amazon.com/images/P/8576082136.01._SCLZZZZZZZ_.jpg
 
   - title: "Use a Cabeça: Java"
     author: Kathy Sierra
@@ -520,6 +552,7 @@ finished:
   - title: "Perdido em Marte"
     author: Andy Weir
     finished: 2015-11
+    cover_url: https://m.media-amazon.com/images/P/8580414482.01._SCLZZZZZZZ_.jpg
 
   - title: "A Menina do Vale 2"
     author: Bel Pesce
@@ -555,12 +588,14 @@ finished:
     author: B. Storm
     finished: 2015-04
     isbn: "9781500805500"
+    cover_url: https://m.media-amazon.com/images/P/1500805505.01._SCLZZZZZZZ_.jpg
 
   - title: "Survival in Auschwitz"
     author: Primo Levi
     finished: 2015-04
     isbn: "9780684826806"
-    cover_url: https://books.google.com/books/content?id=6w1uHveM54EC&printsec=frontcover&img=1&zoom=0&source=gbs_api
+    # Google Books served an interior page, not the cover.
+    cover_url: https://m.media-amazon.com/images/P/0684826801.01._SCLZZZZZZZ_.jpg
 
   - title: "The Alchemist"
     author: Paulo Coelho
@@ -572,10 +607,13 @@ finished:
     author: Steve Wozniak
     finished: 2015-03
     isbn: "9780755314072"
+    cover_url: https://covers.openlibrary.org/b/id/6624406-L.jpg
 
   - title: "The Ruby on Rails Tutorial"
     author: Michael Hartl
     finished: 2015-01
+    # Source is a PNG. The committed file is that, as JPEG.
+    cover_url: https://softcover.s3.amazonaws.com/304499/ruby_on_rails_tutorial_8th_edition/images/cover-web.png
 
   - title: "The Lost Symbol"
     author: Dan Brown
@@ -617,11 +655,13 @@ finished:
     author: J.K. Rowling
     finished: 2015-01
     isbn: "9780747570738"
+    cover_url: https://covers.openlibrary.org/b/id/15158666-L.jpg
 
   - title: "Harry Potter and the Goblet of Fire"
     author: J.K. Rowling
     finished: 2015-01
     isbn: "9781855494787"
+    cover_url: https://m.media-amazon.com/images/P/074754624X.01._SCLZZZZZZZ_.jpg
 
   - title: "Harry Potter and the Prisoner of Azkaban"
     author: J.K. Rowling
@@ -633,9 +673,11 @@ finished:
     author: J.K. Rowling
     finished: 2015-01
     isbn: "9781551922447"
-    cover_url: https://books.google.com/books/content?id=nmXTy4FPfcwC&printsec=frontcover&img=1&zoom=0&source=gbs_api
+    # Google Books served a 575x92 crop of the title, not the cover.
+    cover_url: https://m.media-amazon.com/images/P/1551922444.01._SCLZZZZZZZ_.jpg
 
   - title: "Harry Potter and the Sorcerer's Stone"
     author: J.K. Rowling
     finished: 2015-01
     isbn: "9781338299144"
+    cover_url: https://m.media-amazon.com/images/P/133829914X.01._SCLZZZZZZZ_.jpg

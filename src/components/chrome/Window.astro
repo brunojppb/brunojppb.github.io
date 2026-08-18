@@ -1,6 +1,7 @@
 ---
 import NavSheet from './NavSheet.astro';
 import SearchTrigger from './SearchTrigger.astro';
+import Caret from '../shell/Caret.astro';
 
 /**
  * The frame every page lives in: chrome bar, tab strip and body.
@@ -16,22 +17,53 @@ const { title, dims, current } = Astro.props;
 
 <div class="relative border border-line-window bg-surface-window">
   <div
+    data-chrome
     class="flex items-center gap-[9px] border-b border-line-chrome bg-surface-chrome px-3 py-[9px] sm:gap-3 sm:px-[14px]"
   >
-    <div class="flex gap-[5px] sm:gap-1.5" aria-hidden="true">
+    <div class="flex gap-[5px] sm:gap-1.5">
       <span
+        aria-hidden="true"
         data-chrome-dot
-        class="hidden h-2 w-2 bg-surface-inert sm:block sm:h-[9px] sm:w-[9px]"
-      ></span>
-      <span data-chrome-dot class="block h-2 w-2 bg-surface-inert sm:h-[9px] sm:w-[9px]"></span>
-      <span data-chrome-dot class="block h-2 w-2 bg-accent sm:h-[9px] sm:w-[9px]"></span>
+        class="hidden h-2 w-2 bg-surface-inert sm:block sm:h-[9px] sm:w-[9px]"></span>
+      <span
+        aria-hidden="true"
+        data-chrome-dot
+        class="block h-2 w-2 bg-surface-inert sm:h-[9px] sm:w-[9px]"></span>
+      <!--
+        The third dot is the easter egg. Above 900px on a fine pointer it is a
+        real button; everywhere else it is the inert square it has always been.
+        Exactly one of the two renders, so the dot count and the chrome title
+        never move. Display is set in the style block below rather than by a
+        Tailwind utility: the two would have equal specificity and the winner
+        would come down to stylesheet order.
+      -->
+      <button
+        type="button"
+        aria-label="Play invaders"
+        data-invaders-open
+        data-chrome-dot
+        class="invaders-trigger h-2 w-2 bg-accent sm:h-[9px] sm:w-[9px]"></button>
+      <span
+        aria-hidden="true"
+        data-chrome-dot
+        class="invaders-dot h-2 w-2 bg-accent sm:h-[9px] sm:w-[9px]"></span>
     </div>
     <span class="text-2xs tracking-chrome text-ink-muted">
       {title}
       {dims && <span class="hidden md:inline"> — {dims}</span>}
     </span>
-    <div class="ml-auto hidden items-center gap-3 text-2xs tracking-chrome text-ink-muted md:flex">
+    <div
+      data-chrome-meta
+      class="ml-auto hidden items-center gap-3 text-2xs tracking-chrome text-ink-muted md:flex"
+    >
       <slot name="chrome-meta" />
+    </div>
+    <div
+      data-invaders-hint
+      aria-hidden="true"
+      class="ml-auto hidden items-center gap-1.75 text-2xs tracking-chrome text-accent-lift"
+    >
+      ./invaders<Caret size="xs" />
     </div>
     <div class="ml-auto flex items-center gap-3 md:hidden">
       <SearchTrigger variant="chrome" />
@@ -45,3 +77,75 @@ const { title, dims, current } = Astro.props;
     <slot />
   </div>
 </div>
+
+<style is:global>
+  /* Below 900px, or on a coarse pointer, the accent dot is the inert square and
+     the button is not rendered at all, so it cannot be focused either. */
+  .invaders-trigger {
+    display: none;
+    padding: 0;
+    border: 0;
+    appearance: none;
+    position: relative;
+  }
+
+  .invaders-dot {
+    display: block;
+  }
+
+  /* The hit area is 24 by 24 around a 9px square. A pseudo-element rather than
+     padding: padding would widen the layout box and shift the chrome title. */
+  .invaders-trigger::after {
+    content: '';
+    position: absolute;
+    inset: -7.5px;
+  }
+
+  /* At rest the hint is not rendered and its caret does not animate. That is
+     what keeps the one-animating-caret rule true on a page at rest. */
+  [data-invaders-hint] .caret {
+    animation: none;
+  }
+
+  @media (min-width: 900px) and (pointer: fine) {
+    .invaders-trigger {
+      display: block;
+      cursor: pointer;
+    }
+
+    .invaders-dot {
+      display: none;
+    }
+
+    /* A zero blur ring, not elevation. Both alphas the design asks for already
+       exist as line tokens, so this adds no colour. */
+    .invaders-trigger:hover {
+      box-shadow: 0 0 0 3px var(--color-line-chrome);
+    }
+
+    .invaders-trigger:active {
+      background: var(--color-ink);
+      box-shadow: 0 0 0 3px var(--color-line-palette);
+    }
+
+    /* Held white for as long as the game is open. */
+    .invaders-trigger[data-open] {
+      background: var(--color-ink);
+      box-shadow: none;
+    }
+
+    /* The button sits inside the dot group, so it is not a sibling of the meta
+       text. `:has()` is what lets the swap stay in CSS. */
+    [data-chrome]:has([data-invaders-open]:is(:hover, :focus-visible)) [data-chrome-meta] {
+      display: none;
+    }
+
+    [data-chrome]:has([data-invaders-open]:is(:hover, :focus-visible)) [data-invaders-hint] {
+      display: flex;
+    }
+
+    [data-chrome]:has([data-invaders-open]:is(:hover, :focus-visible)) [data-invaders-hint] .caret {
+      animation: var(--animate-blink);
+    }
+  }
+</style>

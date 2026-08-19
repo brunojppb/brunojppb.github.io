@@ -1,5 +1,13 @@
 import { HI_SCORE_KEY, clampPlayerX } from './rules';
-import { createGame, startGame, step, togglePause, type GameState, type Input } from './state';
+import {
+  createGame,
+  startGame,
+  step,
+  togglePause,
+  type GameState,
+  type Input,
+  type Phase,
+} from './state';
 import { build, collect, render, type Refs } from './view';
 
 /**
@@ -17,6 +25,7 @@ let trigger: HTMLElement | null = null;
 let frame = 0;
 let lastFrameAt = 0;
 let builtWave = 0;
+let shownPhase: Phase | null = null;
 let savedHi = 0;
 let restoreScroll = 0;
 
@@ -52,6 +61,25 @@ function mount(): HTMLElement {
   return el;
 }
 
+/**
+ * Keeps the exit transition's copy of the window true to the screen.
+ *
+ * The exit resolves onto a raster of this window and needs it the instant Escape
+ * lands, so it cannot be taken on demand. `playing` never holds still, so there
+ * the copy is dropped and the exit runs on the formation instead.
+ */
+async function refreshExitCopy(phase: Phase): Promise<void> {
+  if (!root) return;
+  try {
+    const { invalidateGame, prepareGame } = await import('./transition');
+    invalidateGame();
+    if (phase !== 'playing') prepareGame();
+  } catch {
+    // The copy is an optimisation for one transition. A chunk that will not load
+    // is not worth breaking a running game over.
+  }
+}
+
 function tick(now: number): void {
   frame = requestAnimationFrame(tick);
   if (!state || !refs) return;
@@ -72,6 +100,11 @@ function tick(now: number): void {
   }
 
   render(refs, state);
+
+  if (state.phase !== shownPhase) {
+    shownPhase = state.phase;
+    void refreshExitCopy(state.phase);
+  }
 
   if (state.hi > savedHi) {
     savedHi = state.hi;
@@ -156,6 +189,9 @@ export async function openGame(): Promise<void> {
   savedHi = readHiScore();
   state = createGame(savedHi, refs.field.clientWidth);
   builtWave = state.wave;
+  // Seeded, not left null: the enter transition takes the raster itself, and a
+  // first tick that read this as a phase change would throw that copy away.
+  shownPhase = state.phase;
   build(refs, state);
   render(refs, state);
 
@@ -197,8 +233,11 @@ export async function closeGame(): Promise<void> {
   if (state && state.hi > savedHi) writeHiScore(state.hi);
 
   try {
-    const { run } = await import('./transition');
+    const { invalidateGame, run } = await import('./transition');
     await run(refs.field.getBoundingClientRect(), 'out');
+    // The copy outlives this window otherwise, and the next open would resolve
+    // onto the last session's screen: an old hi score, an old phase.
+    invalidateGame();
   } catch (error) {
     // Same reasoning as openGame, and it matters more here: the keydown listener
     // is already gone, so a throw would leave the page locked with the modal up
@@ -210,6 +249,7 @@ export async function closeGame(): Promise<void> {
   root = null;
   refs = null;
   state = null;
+  shownPhase = null;
 
   document.body.style.overflow = '';
   window.scrollTo(0, restoreScroll);

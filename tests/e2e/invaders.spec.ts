@@ -496,8 +496,8 @@ test.describe('the transition', () => {
     await page.locator('[data-invaders-open]').click();
     await expect(page.locator('[data-invaders-canvas]')).toBeVisible();
     await expect(page.locator('[data-invaders-canvas]')).toHaveCount(0, { timeout: 4000 });
-    // The canvas comes down at 650ms, ahead of the 720ms mark where input
-    // arms; without this wait Escape can land in that gap and do nothing.
+    // The canvas fades out from 650ms and comes down at 720ms, the same mark
+    // where input arms; without this wait Escape can race it and do nothing.
     await expect(page.locator('[data-invaders-root]')).toHaveAttribute('data-armed', '');
     await page.keyboard.press('Escape');
     await expect(page.locator('[data-invaders-root]')).toHaveCount(0);

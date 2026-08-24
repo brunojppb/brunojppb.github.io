@@ -32,7 +32,7 @@
     "@playwright/test": "1.62.1",
     "@types/hast": "^3.0.5",
     "@types/react": "19.2.18",
-    "@types/react-dom": "19.2.4",
+    "@types/react-dom": "19.2.5",
     "serve": "^14.2.6",
     "sharp": "0.35.3",
     "typescript": "6.0.3",

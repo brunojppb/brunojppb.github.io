@@ -4,7 +4,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import PromptLine from '../components/shell/PromptLine.astro';
 import SectionRule from '../components/shell/SectionRule.astro';
 import BookCover from '../components/media/BookCover.astro';
-import { coverImage, finishedLabel, sortFinished, type Book } from '../lib/books';
+import { coverImage, sortFinished, type Book } from '../lib/books';
 
 const books = await getCollection('books');
 const reading = books.filter((b) => b.data.status === 'reading').map((b) => b.data);
@@ -61,12 +61,7 @@ const description = "What I'm currently reading on my Kindle and xteink x4";
         {finished.map((book) => (
           <div class="flex flex-col gap-2.5">
             <BookCover src={coverImage(book)} alt={`${book.title} cover`} status="finished" />
-            <div class="text-xs leading-snug text-ink-secondary">
-              {book.title}
-              <span class="mt-1 block text-2xs tracking-label text-ink-muted">
-                [x] {finishedLabel(book.finished!)}
-              </span>
-            </div>
+            <div class="text-xs leading-snug text-ink-secondary">{book.title}</div>
           </div>
         ))}
       </div>

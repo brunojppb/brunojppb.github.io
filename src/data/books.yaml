@@ -3,10 +3,6 @@
 # If Open Library has no cover for your edition, set cover_url to the publisher's.
 
 reading:
-  - title: Ender's Game
-    author: Orson Scott Card
-    isbn: "9780356500843"
-
   - title: "Observability Engineering: Achieving Production Excellence"
     author: Charity Majors, Liz Fong-Jones
     edition: 2nd
@@ -17,6 +13,11 @@ reading:
 # Imported from the Goodreads "read" shelf. Where Goodreads had no date read,
 # `finished` carries the date the book was added to the shelf instead.
 finished:
+  - title: "Ender's Game"
+    author: Orson Scott Card
+    finished: 2026-08
+    isbn: "9780356500843"
+
   - title: "Coisa de Rico: A Vida dos Endinheirados Brasileiros"
     author: Michel Alcoforado
     finished: 2026-01

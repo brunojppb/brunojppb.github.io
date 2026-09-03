@@ -35,7 +35,7 @@
     "@types/react-dom": "19.2.5",
     "serve": "^14.2.6",
     "sharp": "0.35.4",
-    "typescript": "6.0.3",
+    "typescript": "7.0.2",
     "vitest": "4.1.11",
     "yaml": "2.9.0"
   }

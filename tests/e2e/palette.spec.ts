@@ -332,3 +332,75 @@ test.describe('reduced motion', () => {
     expect(parseFloat(style.duration)).toBeLessThan(0.01);
   });
 });
+
+test.describe('the /play command', () => {
+  // The game itself is gated at 900px on a fine pointer, so the row is too.
+  // The mobile project is 390px wide, which is the unsupported side of it.
+  const isSupported = (page: Page) => (page.viewportSize()?.width ?? 0) >= 900;
+  const commands = (page: Page) => page.locator('[role=group][aria-label=COMMANDS]');
+
+  test('offers the row for /play and for a bare play', async ({ page }) => {
+    test.skip(!isSupported(page), 'the game needs 900px and a fine pointer');
+    await open(page, '/play');
+    await expect(commands(page)).toContainText('/play');
+    await expect(commands(page)).toContainText('space invaders, in a terminal window');
+
+    // `/` opens the palette and the open clears the query, so a reader who
+    // arrives that way types the word without its slash.
+    await page.locator('[role=combobox]').fill('play');
+    await expect(commands(page)).toContainText('/play');
+  });
+
+  test('counts as a match rather than a miss', async ({ page }) => {
+    test.skip(!isSupported(page), 'the game needs 900px and a fine pointer');
+    await open(page, '/play');
+    const chrome = page.locator('[role=dialog] [aria-hidden=true]', { hasText: /INDEXED|MATCH|EXIT/ });
+    await expect(chrome).toHaveText('1 MATCH');
+    await expect(page.locator('[role=listbox]')).not.toContainText('no matches');
+  });
+
+  test('is the first row, and Enter on it opens the game', async ({ page }) => {
+    test.skip(!isSupported(page), 'the game needs 900px and a fine pointer');
+    await open(page, '/play');
+    await expect(page.locator('[role=option][aria-selected=true]')).toContainText('/play');
+
+    await page.keyboard.press('Enter');
+    await expect(page.locator('[role=dialog][aria-modal=true]')).toHaveCount(1);
+    const root = page.locator('[data-invaders-root]');
+    await expect(root).toBeVisible();
+    await expect(root).toHaveAttribute('data-armed', '');
+    // The palette is gone, and the game owns the scroll lock it left behind.
+    await expect(page.locator('[role=listbox]')).toHaveCount(0);
+    expect(await page.evaluate(() => document.body.style.overflow)).toBe('hidden');
+  });
+
+  // A guard, not a discovery: the row adds copy the audit above never sees,
+  // because that one opens the palette on a search query.
+  test('every glyph in the row comes from Departure Mono', async ({ page }) => {
+    test.skip(!isSupported(page), 'the game needs 900px and a fine pointer');
+    await open(page, '/play');
+    const fallbacks = await page.evaluate(() => {
+      const probe = (ch: string) => {
+        const s = document.createElement('span');
+        s.style.cssText = 'font:100px "Departure Mono";position:absolute;visibility:hidden';
+        s.textContent = ch;
+        document.body.append(s);
+        const w = s.getBoundingClientRect().width;
+        s.remove();
+        return w;
+      };
+      const M = probe('M');
+      const dialog = document.querySelector<HTMLElement>('[role=dialog]')!;
+      const used = [...new Set(dialog.innerText)].filter((c) => c.trim());
+      return used.filter((c) => Math.abs(probe(c) - M) > 0.5);
+    });
+    expect(fallbacks, `these fell back to a system font: ${fallbacks.join(' ')}`).toEqual([]);
+  });
+
+  test('does not exist below the gate', async ({ page }) => {
+    test.skip(isSupported(page), 'the row is real above 900px');
+    await open(page, '/play');
+    await expect(commands(page)).toHaveCount(0);
+    await expect(page.locator('[role=listbox]')).toContainText('no matches');
+  });
+});

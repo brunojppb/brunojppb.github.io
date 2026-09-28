@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v7
 
       # Node comes from mise.toml, so CI runs the version the repo declares.
-      - uses: jdx/mise-action@v4
+      - uses: jdx/mise-action@v5
 
       # mise-action caches the toolchain, not the package store. setup-node's
       # `cache: npm` went away with it, so the npm cache is restored here.

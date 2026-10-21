@@ -15,11 +15,11 @@
     "urls:check": "node scripts/check-urls.mjs"
   },
   "dependencies": {
-    "@astrojs/markdown-remark": "7.3.0",
-    "@astrojs/react": "6.0.5",
+    "@astrojs/markdown-remark": "7.3.4",
+    "@astrojs/react": "6.0.6",
     "@astrojs/sitemap": "3.7.4",
     "@tailwindcss/vite": "4.3.3",
-    "astro": "7.2.10",
+    "astro": "7.4.2",
     "html2canvas": "^1.4.1",
     "react": "19.2.8",
     "react-dom": "19.2.8",
@@ -27,7 +27,7 @@
     "unist-util-visit": "^5.1.0"
   },
   "devDependencies": {
-    "@astrojs/check": "0.9.10",
+    "@astrojs/check": "0.9.12",
     "@axe-core/playwright": "4.13.0",
     "@playwright/test": "1.62.1",
     "@types/hast": "^3.0.5",

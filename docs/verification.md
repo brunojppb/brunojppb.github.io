@@ -119,6 +119,10 @@ and never moves focus out of the dialog; `Backspace` on an empty query closes; `
 comes into view. Then check the states: `N MATCHES`, `30 INDEXED` empty, `EXIT 1` on a miss;
 selection is a wash plus a 2px left bar, never an inverted fill; 660px wide and 96px from the top
 above 640px, full screen below it with every row ≥44px; the footer is not clipped at 900px height.
+Then the `/play` row: above 900px, `play` and `/play` both offer it, the chrome reads `1 MATCH`
+rather than `EXIT 1`, `Enter` closes the palette and opens the game with the scroll lock handed over
+rather than dropped, and `Tab` off `all` takes it away. At 390px it does not exist and the query is
+an ordinary miss.
 `tests/e2e/palette.spec.ts` encodes all of this, including axe and the glyph audit over the open
 palette. `tests/unit/search.test.ts` covers ranking and caps, and `tests/unit/search-index.test.ts`
 guards the index shape and its size.

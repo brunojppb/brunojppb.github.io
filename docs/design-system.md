@@ -355,6 +355,15 @@ measures 4.45:1 against that wash.
 Empty offers RECENT posts and a JUMP TO chip row of the six pages. A miss is a real error line,
 `grep: kubernetes: no matches in 30 files`, then one muted line, then the three highest-count tags
 as chips. Every chip is an option, so the arrow keys reach it.
+`play` or `/play` puts one COMMANDS row at the top of the pane, above POSTS: the label `/play` in
+`--text-accent`, then `space invaders, in a terminal window`. It is the only row that runs something
+rather than going somewhere, so it is a button and not a link, and the footer reads `ENTER PLAY`
+while it is selected. It counts as a match, so a query no post answers reads `1 MATCH` and not
+`EXIT 1`. It exists only where the game does, above 900px on a fine pointer, and only under the
+`all` filter, because it is not a post, a tag or a page. The leading slash is optional because `/`
+opens the palette and the open clears the query, so that route into it types the word without one.
+The matcher is `matchCommand` in `src/lib/palette-commands.ts`; the row calls `launch` from
+`src/lib/invaders/index.ts`, the same starter the chrome dot uses.
 Keyboard: `⌘K`/`Ctrl+K` toggles, `/` opens when focus is outside a field, `↑` `↓` walk one flat
 list across the group rules and wrap, `Enter` opens, `Tab` cycles all → posts → tags → pages,
 `Backspace` on an empty query closes, `Esc` closes and returns focus to the trigger. Focus stays in

@@ -36,7 +36,8 @@ function modalOpen(): boolean {
   return document.querySelector('[role="dialog"][aria-modal="true"]') !== null;
 }
 
-async function launch(): Promise<void> {
+/** Starts the game. The palette's `/play` row calls this too. */
+export async function launch(): Promise<void> {
   try {
     const { openGame } = await import('./game');
     await openGame();

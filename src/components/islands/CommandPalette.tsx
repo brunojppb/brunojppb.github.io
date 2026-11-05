@@ -11,6 +11,9 @@ import {
   type Result,
 } from '../../lib/search';
 import { TABS } from '../../lib/nav';
+import { matchCommand, type Command } from '../../lib/palette-commands';
+import { launch } from '../../lib/invaders';
+import { DESKTOP_QUERY } from '../../lib/invaders/rules';
 
 /**
  * The ⌘K palette: a search window over the dimmed page, keyboard first.
@@ -26,6 +29,12 @@ import { TABS } from '../../lib/nav';
 const INDEX_URL = '/search-index.json';
 const FILTERS: Filter[] = ['all', 'posts', 'tags', 'pages'];
 const OPTION_ID = 'palette-option';
+
+/**
+ * One flat list of everything the arrow keys walk. A result goes somewhere; a
+ * command runs something, so Enter has to tell them apart.
+ */
+type PaletteRow = { kind: 'result'; result: Result } | { kind: 'command'; command: Command };
 
 // Fetched on first open and kept for the life of the page: the index is
 // static, so a second fetch could only return the same bytes.
@@ -117,10 +126,12 @@ export default function CommandPalette() {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<Filter>('all');
   const [selected, setSelected] = useState(0);
+  const [supported, setSupported] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
+  const launchPending = useRef(false);
 
   const close = useCallback(() => {
     setOpen(false);
@@ -134,7 +145,16 @@ export default function CommandPalette() {
     () => (entries ? search(entries, query, filter) : []),
     [entries, query, filter]
   );
-  const matches = groups.reduce((sum, g) => sum + g.total, 0);
+  // Under `all` only: the command is not a post, a tag or a page, so it has no
+  // business surviving a filter that names one of those.
+  const command = useMemo(
+    () => (supported && filter === 'all' ? matchCommand(query) : null),
+    [supported, filter, query]
+  );
+
+  // The command counts, which is what keeps `grep: play: no matches` away from a
+  // screen that is offering the reader something.
+  const matches = groups.reduce((sum, g) => sum + g.total, 0) + (command ? 1 : 0);
   const noMatch = !isEmptyQuery && entries !== null && matches === 0;
 
   const recent = useMemo(() => (entries ? recentPosts(entries) : []), [entries]);
@@ -147,9 +167,11 @@ export default function CommandPalette() {
   // One flat list of destinations, in the order they are drawn. Arrow keys
   // cross group boundaries and reach the chips too, so every offer in the
   // palette is reachable without a mouse.
-  const rows: Result[] = useMemo(() => {
+  const rows: PaletteRow[] = useMemo(() => {
+    const asRows = (results: Result[]): PaletteRow[] =>
+      results.map((result) => ({ kind: 'result' as const, result }));
     if (isEmptyQuery) {
-      return [
+      return asRows([
         ...recent.map((entry) => ({ entry, matchedIn: 'title' as const, term: '' })),
         ...TABS.map((tab) => ({
           entry: {
@@ -162,13 +184,24 @@ export default function CommandPalette() {
           matchedIn: 'title' as const,
           term: '',
         })),
-      ];
+      ]);
     }
     if (noMatch) {
-      return tags.map((entry) => ({ entry, matchedIn: 'title' as const, term }));
+      return asRows(tags.map((entry) => ({ entry, matchedIn: 'title' as const, term })));
     }
-    return groups.flatMap((g) => g.results);
-  }, [isEmptyQuery, noMatch, recent, tags, groups, term]);
+    return [
+      ...(command ? [{ kind: 'command' as const, command }] : []),
+      ...asRows(groups.flatMap((g) => g.results)),
+    ];
+  }, [isEmptyQuery, noMatch, recent, tags, groups, term, command]);
+
+  // Closing first, launching second. Both windows lock the body scroll, and the
+  // effect below clears that lock on its way out: launching before it ran would
+  // leave the page scrolling behind the game.
+  const runCommand = useCallback(() => {
+    launchPending.current = true;
+    setOpen(false);
+  }, []);
 
   const move = useCallback(
     (step: number) => {
@@ -256,6 +289,26 @@ export default function CommandPalette() {
     };
   }, [open]);
 
+  // The game is gated at 900px on a fine pointer, so the command that opens it
+  // is gated with it. Read live rather than once, so a reader who resizes past
+  // the breakpoint gets the answer their device gives now.
+  useEffect(() => {
+    if (!open) return;
+    const media = window.matchMedia(DESKTOP_QUERY);
+    setSupported(media.matches);
+    const onChange = (event: MediaQueryListEvent) => setSupported(event.matches);
+    media.addEventListener('change', onChange);
+    return () => media.removeEventListener('change', onChange);
+  }, [open]);
+
+  // Runs after the effect above has cleaned up, which is the whole point: the
+  // scroll lock is released before the game takes it.
+  useEffect(() => {
+    if (open || !launchPending.current) return;
+    launchPending.current = false;
+    void launch();
+  }, [open]);
+
   useEffect(() => {
     if (!open || entries) return;
     loadIndex().then(setEntries, () => setFailed(true));
@@ -295,7 +348,8 @@ export default function CommandPalette() {
         const row = rows[selected];
         if (!row) break;
         event.preventDefault();
-        window.location.href = row.entry.url;
+        if (row.kind === 'command') runCommand();
+        else window.location.href = row.result.entry.url;
         break;
       }
       case 'Backspace':
@@ -457,12 +511,28 @@ export default function CommandPalette() {
             </div>
           )}
 
+          {!failed && command && (
+            <div role="group" aria-label="COMMANDS">
+              <Rule label="COMMANDS" meta={pad(1)} tight />
+              <CommandRow
+                command={command}
+                id={nextId()}
+                selected={index === selected}
+                onRun={runCommand}
+              />
+            </div>
+          )}
+
           {!failed &&
             !isEmptyQuery &&
             !noMatch &&
             groups.map((group, groupIndex) => (
               <div key={group.label} role="group" aria-label={group.label}>
-                <Rule label={group.label} meta={pad(group.total)} tight={groupIndex === 0} />
+                <Rule
+                  label={group.label}
+                  meta={pad(group.total)}
+                  tight={groupIndex === 0 && !command}
+                />
                 {group.results.map((result) => {
                   const id = nextId();
                   const isSelected = index === selected;
@@ -489,7 +559,8 @@ export default function CommandPalette() {
                 <span className="text-accent-lift">↑↓</span> MOVE
               </span>
               <span>
-                <span className="text-accent-lift">ENTER</span> OPEN
+                <span className="text-accent-lift">ENTER</span>{' '}
+                {rows[selected]?.kind === 'command' ? 'PLAY' : 'OPEN'}
               </span>
               <span>
                 <span className="text-accent-lift">TAB</span> FILTER
@@ -526,31 +597,42 @@ function Rule({ label, meta, tight }: { label: string; meta?: string; tight?: bo
  * The shared row frame. Selection is a wash plus a 2px left accent bar, never
  * the inverted fill the active tab uses: selection moves on every keypress and
  * a fill would strobe.
+ *
+ * A row with an `href` goes somewhere and is a link. A row with an `onClick`
+ * runs something and is a button. One class string covers both, so the two
+ * cannot drift apart.
  */
 function Row({
   href,
+  onClick,
   id,
   selected,
   children,
 }: {
-  href: string;
+  href?: string;
+  onClick?: () => void;
   id: string;
   selected: boolean;
   children: React.ReactNode;
 }) {
-  return (
-    <a
-      href={href}
-      id={id}
-      role="option"
-      aria-selected={selected}
-      data-palette-row
-      className={`block min-h-11 border-l-2 px-4 py-3 sm:px-4.5 sm:py-2.75 ${
-        selected ? 'border-accent bg-wash-code' : 'border-transparent'
-      }`}
-    >
+  const shared = {
+    id,
+    role: 'option',
+    'aria-selected': selected,
+    'data-palette-row': true,
+    className: `block w-full border-l-2 px-4 py-3 text-left min-h-11 sm:px-4.5 sm:py-2.75 ${
+      selected ? 'border-accent bg-wash-code' : 'border-transparent'
+    }`,
+  } as const;
+
+  return href ? (
+    <a href={href} {...shared}>
       {children}
     </a>
+  ) : (
+    <button type="button" onClick={onClick} {...shared}>
+      {children}
+    </button>
   );
 }
 
@@ -647,6 +729,35 @@ function PageRow({ result, id, selected }: { result: Result; id: string; selecte
         <span className={`mt-1.25 block text-xs sm:mt-0 sm:flex-1 ${metaInk(selected)}`}>
           <Highlight text={page.description} term={result.term} />
         </span>
+      </div>
+    </Row>
+  );
+}
+
+/** The one row that runs something instead of going somewhere. */
+function CommandRow({
+  command,
+  id,
+  selected,
+  onRun,
+}: {
+  command: Command;
+  id: string;
+  selected: boolean;
+  onRun: () => void;
+}) {
+  return (
+    <Row id={id} selected={selected} onClick={onRun}>
+      <div className="sm:flex sm:items-baseline sm:gap-3">
+        <span className="text-accent-lift">{command.label}</span>
+        <span className={`mt-1.25 block text-xs sm:mt-0 sm:flex-1 ${metaInk(selected)}`}>
+          {command.description}
+        </span>
+        {selected && (
+          <span className="hidden text-2xs tracking-chrome text-accent-lift sm:block sm:whitespace-nowrap">
+            PLAY
+          </span>
+        )}
       </div>
     </Row>
   );

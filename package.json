@@ -15,9 +15,9 @@
     "urls:check": "node scripts/check-urls.mjs"
   },
   "dependencies": {
-    "@astrojs/markdown-remark": "7.3.4",
+    "@astrojs/markdown-remark": "7.3.9",
     "@astrojs/react": "6.0.6",
-    "@astrojs/sitemap": "3.7.4",
+    "@astrojs/sitemap": "3.7.5",
     "@tailwindcss/vite": "4.3.3",
     "astro": "7.4.2",
     "html2canvas": "^1.4.1",

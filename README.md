@@ -48,7 +48,7 @@ The full spec is in `docs/design-system.md`; the rules for working on it are in
 | `mise.toml` | Node, pnpm | mise locally, and `jdx/mise-action` in CI |
 | `.node-version` | Node | Cloudflare Pages, which does not read `mise.toml` |
 | `package.json` `packageManager` | pnpm | pnpm itself, which refuses to run as another version |
-| `PNPM_VERSION` in the Pages project settings | pnpm | Cloudflare Pages, which does not read `packageManager` |
+| `PNPM_VERSION` in the Pages project settings | pnpm | Cloudflare Pages, whose docs name only this variable |
 
 Astro 7 needs Node 22.12 or newer, and the Pages build image will not read the
 version from `package.json` engines, so the second file is what keeps
@@ -138,10 +138,13 @@ to be set there by hand. Nothing else in `wrangler.toml` is needed, because
 the site is static and ships no Pages Functions.
 
 The Pages project also needs the environment variable `PNPM_VERSION` set to
-the pnpm version in `mise.toml`, for production and preview builds. Without
-it the build image uses its own default pnpm 10. That pnpm reads
-`packageManager`, tries to switch itself to pnpm 12, fails, and the install
-step stops the build. Update the variable whenever `mise.toml` changes pnpm.
+the exact pnpm version in `mise.toml`, for production and preview builds. The
+[Pages build image docs](https://developers.cloudflare.com/pages/configuration/build-image/)
+name only this variable for choosing pnpm, and the default is pnpm 10. They
+do not say whether Pages reads `packageManager`. Plain pnpm 10 cannot switch
+itself to pnpm 12, so relying on the default can stop the install. An exact
+match with `packageManager` works whichever way Pages picks pnpm. Update the
+variable whenever `mise.toml` changes pnpm.
 
 ### Preview deployments
 

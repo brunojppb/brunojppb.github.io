@@ -17,9 +17,9 @@
 
 - **Counts.** Open `/posts/` and `/tags/leadership/` at 1440 and 390. Compare the tag count shown with the number of rows on the tag page.
 - **Tap targets.** At 390 every link in a listing row must be at least 44px tall.
-- **Proof.** `npx playwright test listing` passes, and screenshots at both widths show year headings in order.
+- **Proof.** `pnpm exec playwright test listing` passes, and screenshots at both widths show year headings in order.
 
 ## Gotchas
 
 - `/tags/<tag>/` must exist for every tag in the index. A missing page is a 404 and a console error.
-- Run `npx playwright test` only after `cleanup.sh`. The config starts its own server on 4321.
+- Run `pnpm exec playwright test` only after `cleanup.sh`. The config starts its own server on 4321.

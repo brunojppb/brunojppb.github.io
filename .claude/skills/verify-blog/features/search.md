@@ -23,7 +23,7 @@ Preconditions: `launch.sh` printed `ready`, and `doctor.sh` exits 0.
 
 - **Open and match.** Run `node .claude/skills/verify-blog/scripts/drive-palette.mjs`. At 1440 and 390 the report lists rows under POSTS and TAGS. `chromeCount` reads `N MATCHES` and `announced` reads `N results`.
 - **Miss.** Run the same script with `--miss`. `chromeCount` reads `EXIT 1`, and the rows are the top tag chips.
-- **Keyboard walk.** Run `npx playwright test palette` (after `cleanup.sh`). It covers arrows, Tab, Enter, Backspace, Escape and focus return.
+- **Keyboard walk.** Run `pnpm exec playwright test palette` (after `cleanup.sh`). It covers arrows, Tab, Enter, Backspace, Escape and focus return.
 - **Proof.** Read `runs/<stamp>/1440-2-query.png` and `390-2-query.png`. The query appears after `$ grep`, groups show highlighted matches, and one row has a left bar.
 
 ## Gotchas

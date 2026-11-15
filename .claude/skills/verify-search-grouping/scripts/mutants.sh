@@ -11,7 +11,7 @@ cd "$ROOT"
 mutate() { # name, sed expression
   sed -E "$2" "$SRC" | sed "s#from './nav'#from '$ROOT/src/lib/nav.ts'#" >"$DIR/$1.ts"
   if cmp -s "$SRC" "$DIR/$1.ts"; then echo "BAD  $1: the edit did not change the file"; bad=1; return; fi
-  if SEARCH_MODULE="$DIR/$1.ts" npx vitest run --config "$SKILL/vitest.config.ts" >"$DIR/$1.log" 2>&1; then
+  if SEARCH_MODULE="$DIR/$1.ts" pnpm exec vitest run --config "$SKILL/vitest.config.ts" >"$DIR/$1.log" 2>&1; then
     echo "MISS $1: checks still pass"; bad=1
   else
     echo "caught $1"

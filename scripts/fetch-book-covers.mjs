@@ -3,8 +3,8 @@ import { join } from 'node:path';
 import { parse } from 'yaml';
 import sharp from 'sharp';
 
-// This script only ever runs on demand (`npm run books:covers`), never as
-// part of `npm run build` — the build must succeed with zero network
+// This script only ever runs on demand (`pnpm books:covers`), never as
+// part of `pnpm build` — the build must succeed with zero network
 // access, so it reads whatever is already committed in src/assets/books/.
 
 const OUT = 'src/assets/books';

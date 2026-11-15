@@ -1,0 +1,7 @@
+packageExtensions:
+  # astro2tsx pins @emnapi/core 1.11.3 but lists @emnapi/runtime only as a dev
+  # dependency. Without this, pnpm fills the peer with rolldown's 2.0 beta, and
+  # astro check crashes on the mismatched pair.
+  '@astrojs/astro2tsx@0.1.3':
+    dependencies:
+      '@emnapi/runtime': 1.11.3

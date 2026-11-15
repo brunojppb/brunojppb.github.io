@@ -71,8 +71,8 @@ for it before you commit.
 ## Working
 
 ```bash
-npm run dev
-npm run build && npx serve dist -p 4321   # verify against the build, not the dev server
+pnpm dev
+pnpm build && pnpm exec serve dist -p 4321   # verify against the build, not the dev server
 astro check
 ```
 

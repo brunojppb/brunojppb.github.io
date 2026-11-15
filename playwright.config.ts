@@ -24,7 +24,7 @@ export default defineConfig({
     { name: 'laptop',  testMatch: ['layout.spec.ts', 'console.spec.ts'], use: { ...devices['Desktop Chrome'], viewport: { width: 1024, height: 800 } } },
   ],
   webServer: {
-    command: 'npm run build && npx serve dist -p 4321',
+    command: 'pnpm build && pnpm exec serve dist -p 4321',
     url: 'http://localhost:4321',
     // Never adopt a server already on 4321. Reusing one skips the build in
     // the command above, so the suite silently tests whatever `dist` that

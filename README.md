@@ -41,13 +41,14 @@ The full spec is in `docs/design-system.md`; the rules for working on it are in
 ## Development
 
 [mise](https://mise.jdx.dev) installs Node and pnpm, locally and in CI through
-`jdx/mise-action`. The versions are pinned in three places, and they must agree:
+`jdx/mise-action`. The versions are pinned in four places, and they must agree:
 
-| File | Pins | Read by |
+| Place | Pins | Read by |
 |---|---|---|
 | `mise.toml` | Node, pnpm | mise locally, and `jdx/mise-action` in CI |
 | `.node-version` | Node | Cloudflare Pages, which does not read `mise.toml` |
-| `package.json` `packageManager` | pnpm | Cloudflare Pages and pnpm itself |
+| `package.json` `packageManager` | pnpm | pnpm itself, which refuses to run as another version |
+| `PNPM_VERSION` in the Pages project settings | pnpm | Cloudflare Pages, which does not read `packageManager` |
 
 Astro 7 needs Node 22.12 or newer, and the Pages build image will not read the
 version from `package.json` engines, so the second file is what keeps
@@ -135,6 +136,12 @@ The output directory comes from `pages_build_output_dir` in `wrangler.toml`.
 The build command does not: it lives in the Pages project settings, so it has
 to be set there by hand. Nothing else in `wrangler.toml` is needed, because
 the site is static and ships no Pages Functions.
+
+The Pages project also needs the environment variable `PNPM_VERSION` set to
+the pnpm version in `mise.toml`, for production and preview builds. Without
+it the build image uses its own default pnpm 10. That pnpm reads
+`packageManager`, tries to switch itself to pnpm 12, fails, and the install
+step stops the build. Update the variable whenever `mise.toml` changes pnpm.
 
 ### Preview deployments
 

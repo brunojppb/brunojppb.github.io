@@ -15,9 +15,9 @@ Every page must fit its width and load clean.
 ## Driving it with Playwright
 
 - **Sweep.** Open each route at 390, 768, 1024 and 1440. Check overflow and read console messages.
-- **Proof.** `npx playwright test layout console` passes in the `desktop`, `mobile`, `tablet` and `laptop` projects.
+- **Proof.** `pnpm exec playwright test layout console` passes in the `desktop`, `mobile`, `tablet` and `laptop` projects.
 
 ## Gotchas
 
-- `/404` must return 404, not 200. `npx serve` may differ from Cloudflare here. Say so in the proof.
+- `/404` must return 404, not 200. `pnpm exec serve` may differ from Cloudflare here. Say so in the proof.
 - An ASCII banner may run wide inside its own box only.

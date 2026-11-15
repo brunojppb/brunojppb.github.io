@@ -31,7 +31,7 @@ Tags use a small vocabulary on purpose (`alpha`, `beta`, `ALPHA`, `alphabet`, `g
 ## Run
 
 ```bash
-npx vitest run --config .claude/skills/verify-search-grouping/vitest.config.ts
+pnpm exec vitest run --config .claude/skills/verify-search-grouping/vitest.config.ts
 .claude/skills/verify-search-grouping/scripts/mutants.sh
 ```
 

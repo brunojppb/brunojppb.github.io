@@ -6,7 +6,7 @@ page is done until you have looked at it at 1440 and at 390.**
 ## The loop
 
 ```bash
-npm run build && npx serve dist -p 4321   # test the built output, not the dev server
+pnpm build && pnpm exec serve dist -p 4321   # test the built output, not the dev server
 ```
 
 Then, per route, at each width in the sweep: navigate, wait for the font, screenshot, read the
@@ -118,7 +118,7 @@ and never moves focus out of the dialog; `Backspace` on an empty query closes; `
 `document.activeElement` is the trigger again. The document must not scroll while the selected row
 comes into view. Then check the states: `N MATCHES`, `30 INDEXED` empty, `EXIT 1` on a miss (try `haskell`, which Pagefind alone would
 answer with every post that has `has`); a word found only in a post body shows
-`matched <word> in body`; run this against `npm run build`, because `astro dev` has no index;
+`matched <word> in body`; run this against `pnpm build`, because `astro dev` has no index;
 selection is a wash plus a 2px left bar, never an inverted fill; 660px wide and 96px from the top
 above 640px, full screen below it with every row ≥44px; the footer is not clipped at 900px height.
 `tests/e2e/palette.spec.ts` encodes all of this, including axe and the glyph audit over the open

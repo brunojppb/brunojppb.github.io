@@ -1,5 +1,5 @@
 # Books I am reading and books I have finished.
-# Add an isbn and run `npm run books:covers` to pull the cover.
+# Add an isbn and run `pnpm books:covers` to pull the cover.
 # If Open Library has no cover for your edition, set cover_url to the publisher's.
 
 reading:

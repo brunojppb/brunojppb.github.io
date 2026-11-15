@@ -18,7 +18,7 @@ A post page shows the title, the body, code blocks, an outline rail, and previou
 - **Pick a post.** Read the first `a[href^="/entries/"]` on `/posts/`.
 - **Code lines.** In page context, for each `pre`, count `children` and distinct `getBoundingClientRect().top` values. They must be equal.
 - **Heading order.** `h1` is the post title, not the `$ cat` prompt line.
-- **Proof.** Screenshots at 1440 and 390 plus `npx playwright test codeblocks`.
+- **Proof.** Screenshots at 1440 and 390 plus `pnpm exec playwright test codeblocks`.
 
 ## Gotchas
 

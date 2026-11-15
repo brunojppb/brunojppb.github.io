@@ -362,7 +362,7 @@ Keyboard: `⌘K`/`Ctrl+K` toggles, `/` opens when focus is outside a field, `↑
 list across the group rules and wrap, `Enter` opens, `Tab` cycles all → posts → tags → pages,
 `Backspace` on an empty query closes, `Esc` closes and returns focus to the trigger. Focus stays in
 the dialog because `Tab` never moves it.
-Pagefind 1.6.0 indexes the post pages. `npm run build` runs `pagefind --site dist` after Astro and
+Pagefind 1.6.0 indexes the post pages. `pnpm build` runs `pagefind --site dist` after Astro and
 writes `dist/pagefind/`, about 0.9 MB for 30 posts that the browser fetches in chunks. Only the
 `<article>` of a post is marked `data-pagefind-body`, so no other page is indexed. The article
 carries the summary, tags and date as data attributes, and the tag links carry the tag filter. The
@@ -373,7 +373,7 @@ count, the three newest posts and the tag counts come from one catalog read. Tag
 substrings, over the catalog and the six tabs. A query word that Pagefind can only answer with a
 shorter indexed word (`haskell` finds `has`) makes the query a miss. Each search aborts the one
 before it, and the rows on screen stay until the new rows land. Enter and the count wait for them.
-`astro dev` has no index, so the palette shows `EXIT 2` there. Search needs `npm run build`.
+`astro dev` has no index, so the palette shows `EXIT 2` there. Search needs `pnpm build`.
 
 ---
 

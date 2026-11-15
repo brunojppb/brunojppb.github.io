@@ -3,6 +3,7 @@
   "type": "module",
   "version": "0.0.1",
   "private": true,
+  "packageManager": "pnpm@12.17.0",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build && pagefind --site dist --force-language en",
@@ -15,21 +16,21 @@
     "urls:check": "node scripts/check-urls.mjs"
   },
   "dependencies": {
-    "@astrojs/markdown-remark": "7.3.4",
-    "@astrojs/react": "6.0.6",
-    "@astrojs/sitemap": "3.7.4",
-    "@tailwindcss/vite": "4.3.3",
-    "astro": "7.4.7",
+    "@astrojs/markdown-remark": "7.3.9",
+    "@astrojs/react": "7.1.9",
+    "@astrojs/sitemap": "3.7.5",
+    "@tailwindcss/vite": "4.3.5",
+    "astro": "7.4.12",
     "html2canvas": "^1.4.1",
     "react": "19.3.1",
     "react-dom": "19.3.1",
-    "tailwindcss": "4.3.3",
+    "tailwindcss": "4.3.5",
     "unist-util-visit": "^5.1.0"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.12",
-    "@axe-core/playwright": "4.13.0",
-    "@playwright/test": "1.64.1",
+    "@axe-core/playwright": "4.14.0",
+    "@playwright/test": "1.65.1",
     "@types/hast": "^3.0.5",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
@@ -37,7 +38,7 @@
     "serve": "^14.2.6",
     "sharp": "0.35.5",
     "typescript": "6.0.3",
-    "vitest": "5.0.5",
+    "vitest": "5.1.0",
     "yaml": "2.9.1"
   }
 }

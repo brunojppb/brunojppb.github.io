@@ -10,22 +10,23 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      # Node comes from mise.toml, so CI runs the version the repo declares.
+      # Node and pnpm come from mise.toml, so CI runs the versions the repo declares.
       - uses: jdx/mise-action@v5
 
-      # mise-action caches the toolchain, not the package store. setup-node's
-      # `cache: npm` went away with it, so the npm cache is restored here.
+      # mise-action caches the toolchain, not the package store.
+      - id: pnpm-store
+        run: echo "path=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
       - uses: actions/cache@v6
         with:
-          path: ~/.npm
-          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: npm-${{ runner.os }}-
+          path: ${{ steps.pnpm-store.outputs.path }}
+          key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: pnpm-${{ runner.os }}-
 
-      - run: node --version
-      - run: npm ci
-      - run: npm run check
-      - run: npm test
+      - run: node --version && pnpm --version
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
+      - run: pnpm test
       # WebKit is for the `safari` project alone (tests/e2e/aspect.spec.ts),
       # which guards a layout behaviour Chromium does not have.
-      - run: npx playwright install --with-deps chromium webkit
-      - run: npm run test:e2e
+      - run: pnpm exec playwright install --with-deps chromium webkit
+      - run: pnpm test:e2e

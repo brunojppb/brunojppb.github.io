@@ -16,7 +16,7 @@ All commands run from the repo root. All helpers live in `.claude/skills/verify-
 .claude/skills/verify-blog/scripts/launch.sh
 ```
 
-The script builds the site, then runs `npx serve dist -p 4321` in the background. It saves the pid in `.state/serve.pid`.
+The script builds the site, then runs `pnpm exec serve dist -p 4321` in the background. It saves the pid in `.state/serve.pid`.
 It prints `ready: http://localhost:4321` when `/pagefind/pagefind.js` answers. That file is the palette's search code, so ready means the palette can work.
 The build takes about a minute.
 
@@ -50,7 +50,7 @@ The script runs Chromium at 1440 and at 390 wide. At each width it does these st
 Exit code 1 means a console error, a response of 400 or more, a dialog that stayed open, or zero rows on a hit.
 
 For other pages, use the Playwright MCP tools or a short script. The per-route list is in `docs/verification.md`. The width sweep is 390, 768, 1024, 1440.
-Keyboard behavior of the palette (arrows, Tab filter, Backspace, focus return) is covered by `tests/e2e/palette.spec.ts`. Run it with `npx playwright test palette` after a palette change. Note that `playwright.config.ts` builds and serves on 4321 itself and refuses a server already there. Run `cleanup.sh` first.
+Keyboard behavior of the palette (arrows, Tab filter, Backspace, focus return) is covered by `tests/e2e/palette.spec.ts`. Run it with `pnpm exec playwright test palette` after a palette change. Note that `playwright.config.ts` builds and serves on 4321 itself and refuses a server already there. Run `cleanup.sh` first.
 
 ## Evidence
 

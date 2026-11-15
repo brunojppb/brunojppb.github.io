@@ -13,8 +13,8 @@ if lsof -nP -iTCP:"$PORT" -sTCP:LISTEN >/dev/null 2>&1; then
 fi
 
 cd "$ROOT"
-npm run build >"$STATE/build.log" 2>&1 || { tail -30 "$STATE/build.log" >&2; exit 1; }
-nohup npx serve dist -p "$PORT" >"$STATE/serve.log" 2>&1 &
+pnpm build >"$STATE/build.log" 2>&1 || { tail -30 "$STATE/build.log" >&2; exit 1; }
+nohup pnpm exec serve dist -p "$PORT" >"$STATE/serve.log" 2>&1 &
 echo $! >"$STATE/serve.pid"
 
 for _ in $(seq 1 40); do

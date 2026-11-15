@@ -347,22 +347,33 @@ block caret one character wide at `left: <query.length>ch`. The input is real, w
 `caret-color: transparent`, because mobile keyboards and IME need it.
 Results group POSTS / TAGS / PAGES, each with a rule and a true total, capped at 5 / 3 / 3 rows.
 A row shows where it matched: nothing for a title (the match is visible), `matched #devops` for a
-tag, `matched dev in summary` for a description. Post bodies are not indexed.
+tag, `matched dev in summary` for a description, `matched dev in body` when only the post text
+holds the word. Posts rank by the strongest field they matched (title, tag, summary, body), then by
+Pagefind's relevance. Pagefind matches whole words, with stemming and a prefix on each word, so
+`dock` finds `docker` and `ocker` does not.
 Selection is `--wash-accent-code` plus a 2px left `--surface-accent` bar, never the inverted fill
 the active tab uses: selection moves on every keypress and a fill would strobe. A selected row
 lifts its date and provenance from `--text-muted` to `--text-secondary`, because `--text-muted`
 measures 4.45:1 against that wash.
 Empty offers RECENT posts and a JUMP TO chip row of the six pages. A miss is a real error line,
-`grep: kubernetes: no matches in 30 files`, then one muted line, then the three highest-count tags
+`grep: haskell: no matches in 30 files`, then one muted line, then the three highest-count tags
 as chips. Every chip is an option, so the arrow keys reach it.
 Keyboard: `⌘K`/`Ctrl+K` toggles, `/` opens when focus is outside a field, `↑` `↓` walk one flat
 list across the group rules and wrap, `Enter` opens, `Tab` cycles all → posts → tags → pages,
 `Backspace` on an empty query closes, `Esc` closes and returns focus to the trigger. Focus stays in
 the dialog because `Tab` never moves it.
-The index is a static `/search-index.json`, emitted by `src/pages/search-index.json.ts` at build
-time, 9.6 kB for 30 posts, 14 tags and 6 pages. It is fetched on first open, prefetched on hover or
-focus of a trigger, and cached in module scope. There is no search library: substring matching over
-this shape is enough, and a dependency here would be the largest thing on the site.
+Pagefind 1.6.0 indexes the post pages. `npm run build` runs `pagefind --site dist` after Astro and
+writes `dist/pagefind/`, about 0.9 MB for 30 posts that the browser fetches in chunks. Only the
+`<article>` of a post is marked `data-pagefind-body`, so no other page is indexed. The article
+carries the summary, tags and date as data attributes, and the tag links carry the tag filter. The
+code-block header and line numbers are marked `data-pagefind-ignore`.
+`src/lib/pagefind.ts` is the only file that touches the Pagefind module. It loads
+`/pagefind/pagefind.js` on first open, and prefetches on hover or focus of a trigger. The post
+count, the three newest posts and the tag counts come from one catalog read. Tags and pages match as
+substrings, over the catalog and the six tabs. A query word that Pagefind can only answer with a
+shorter indexed word (`haskell` finds `has`) makes the query a miss. Each search aborts the one
+before it, and the rows on screen stay until the new rows land. Enter and the count wait for them.
+`astro dev` has no index, so the palette shows `EXIT 2` there. Search needs `npm run build`.
 
 ---
 
@@ -471,6 +482,6 @@ render showing every state), glyphs (safe vs fallback), still-open. Reference:
 
 ## 14. Open questions
 
-- Search beyond posts, tags and pages. The palette does not index the reading list or the courses,
-  and it does not read post bodies.
+- Search beyond posts, tags and pages. The palette does not index the reading list or the courses.
+  It does search post bodies.
 - No search or pagination beyond "load older" has been designed.

@@ -62,7 +62,7 @@ const rawUrl = `https://github.com/brunojppb/brunojppb.github.io/blob/master/src
         <span class="uppercase">{formatProseDate(post.data.date)}</span>
         <nav aria-label="tags" class="flex flex-wrap gap-4">
           {post.data.tags.map((tag) => (
-            <a href={`/tags/${tag}/`} class="text-accent-lift">
+            <a href={`/tags/${tag}/`} class="text-accent-lift" data-pagefind-filter={`tag:${tag}`}>
               #{tag}
             </a>
           ))}
@@ -77,7 +77,21 @@ const rawUrl = `https://github.com/brunojppb/brunojppb.github.io/blob/master/src
            pt-BR posts — the surrounding chrome (nav, tab bar, prompts) is
            always English, so only the title and the post body itself are
            tagged with the post's own language. -->
-      <article class="mt-7" lang={post.data.lang}>
+      <!-- Pagefind reads this article as the post's only indexed region. The
+           summary, tags and date ride along as data attributes. `image:` is
+           last because an inline empty value closes the meta list, and it
+           keeps the first image's file name out of the searchable text. -->
+      <article
+        class="mt-7"
+        lang={post.data.lang}
+        data-pagefind-body
+        data-post-date={formatListDate(post.data.date)}
+        data-post-summary={post.data.description}
+        data-post-tags={post.data.tags.join(' ')}
+        data-pagefind-meta="description[data-post-summary], tags[data-post-tags], image:"
+        data-pagefind-filter="date[data-post-date]"
+        data-pagefind-sort="date[data-post-date]"
+      >
         <Prose><Content /></Prose>
       </article>
 

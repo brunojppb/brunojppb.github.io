@@ -36,8 +36,14 @@ async function open(page: Page, query?: string) {
   await expect(page.locator('[role=option]').first()).toBeVisible();
   if (query) {
     await page.locator('[role=combobox]').pressSequentially(query);
+    await settled(page);
     await expect(page.locator('[role=option]').first()).toBeVisible();
   }
+}
+
+/** Waits until the results on screen belong to the query in the input. */
+async function settled(page: Page) {
+  await expect(page.locator('[role=listbox]')).not.toHaveAttribute('aria-busy', 'true');
 }
 
 const selectedText = (page: Page) => page.locator('[role=option][aria-selected=true]').innerText();
@@ -94,23 +100,83 @@ test.describe('opening and closing', () => {
 });
 
 test.describe('the index', () => {
-  // Against the built file, because the numbers are about real content: the
-  // unit tests cover the transform, this covers what the build emitted.
-  test('/search-index.json holds every post, tag and page, and stays small', async ({ request }) => {
-    const response = await request.get('/search-index.json');
-    expect(response.headers()['content-type']).toContain('application/json');
+  // Against the built files, because the numbers are about real content.
+  test('the build ships the pagefind bundle with one language and every post', async ({ request }) => {
+    const bundle = await request.get('/pagefind/pagefind.js');
+    expect(bundle.status()).toBe(200);
 
-    const body = await response.body();
-    const entries = JSON.parse(body.toString());
-    const count = (kind: string) => entries.filter((e: { kind: string }) => e.kind === kind).length;
+    const entry = await (await request.get('/pagefind/pagefind-entry.json')).json();
+    expect(Object.keys(entry.languages)).toEqual(['en']);
+    expect(entry.languages.en.page_count).toBe(30);
+  });
 
-    expect(count('post')).toBe(30);
-    expect(count('tag')).toBe(14);
-    expect(count('page')).toBe(6);
-    for (const entry of entries) expect(entry).not.toHaveProperty('body');
-    // The handoff's budget is 60 kB uncompressed. Without post bodies it is
-    // nowhere near, and this fails long before the palette gets slow to open.
-    expect(body.byteLength).toBeLessThan(20_000);
+  test('the old JSON index is gone', async ({ request }) => {
+    expect((await request.get('/search-index.json')).status()).toBe(404);
+  });
+});
+
+test.describe('full-text search', () => {
+  test('a word that only a post body holds finds that post, labelled as a body match', async ({ page }) => {
+    await open(page, 'kubernetes');
+    const row = page.locator('[role=option]').first();
+    await expect(row).toHaveAttribute('href', '/entries/why-internal-platforms-fail/');
+    await expect(row).toContainText('matched kubernetes in body');
+    await expect(page.locator('[role=group]')).toHaveCount(1);
+  });
+
+  test('a word that a tag holds is labelled with the tag', async ({ page }) => {
+    await open(page, 'leadership');
+    await expect(page.locator('[role=option]').first()).toContainText('matched #leadership');
+  });
+
+  test('a word the index lacks is a miss, not a match on a shorter word', async ({ page }) => {
+    for (const word of ['haskell', 'homelabzzz']) {
+      await open(page, word);
+      await expect(page.locator('[role=listbox]')).toContainText(`grep: ${word}: no matches in 30 files`);
+      await page.keyboard.press('Escape');
+    }
+  });
+
+  test('a slow older search never replaces the newer one', async ({ page }) => {
+    await open(page);
+    let first = true;
+    await page.route('**/pagefind/fragment/**', async (route) => {
+      if (first) {
+        first = false;
+        await new Promise((r) => setTimeout(r, 1200));
+      }
+      await route.continue();
+    });
+    const input = page.locator('[role=combobox]');
+    await input.pressSequentially('kubernetes');
+    await input.fill('bbq');
+    await settled(page);
+    await expect(page.locator('[role=option]').first()).toHaveAttribute('href', /ask-like-your-career/);
+    await page.waitForTimeout(1500);
+    await expect(page.locator('[role=option]').first()).toHaveAttribute('href', /ask-like-your-career/);
+    await expect(page.locator('[role=listbox]')).not.toContainText('internal platforms');
+  });
+
+  test('Enter does nothing while the shown rows belong to an older query', async ({ page }) => {
+    await open(page, 'bbq');
+    await page.route('**/pagefind/fragment/**', async (route) => {
+      await new Promise((r) => setTimeout(r, 800));
+      await route.continue();
+    });
+    await page.locator('[role=combobox]').pressSequentially('x');
+    await page.keyboard.press('Enter');
+    await page.waitForTimeout(200);
+    expect(new URL(page.url()).pathname).toBe('/posts/');
+  });
+
+  test('when the bundle cannot load, the palette reports EXIT 2', async ({ page }) => {
+    await page.route('**/pagefind/pagefind.js', (route) => route.abort());
+    await load(page);
+    await page.keyboard.press('Meta+k');
+    await expect(page.locator('[role=listbox]')).toContainText('grep: /pagefind/pagefind.js: cannot open index');
+    if (!isMobile(page)) {
+      await expect(page.locator('[role=dialog] [aria-hidden=true]', { hasText: 'EXIT' })).toHaveText('EXIT 2');
+    }
   });
 });
 
@@ -183,7 +249,7 @@ test.describe('states', () => {
     test.skip(isMobile(page), DESKTOP_ONLY);
     await expect(chrome).toHaveText('30 INDEXED');
     await page.locator('[role=combobox]').pressSequentially('homelab');
-    await expect(chrome).toContainText('MATCHES');
+    await expect(chrome).toContainText('MATCH');
     await page.locator('[role=combobox]').pressSequentially('zzz');
     await expect(chrome).toHaveText('EXIT 1');
   });
@@ -196,10 +262,21 @@ test.describe('states', () => {
   });
 
   test('a miss is a grep error, and every tag it offers is reachable', async ({ page }) => {
-    await open(page, 'kubernetes');
-    await expect(page.locator('[role=listbox]')).toContainText('grep: kubernetes: no matches in 30 files');
+    await open(page, 'haskell');
+    await expect(page.locator('[role=listbox]')).toContainText('grep: haskell: no matches in 30 files');
     await expect(page.locator('[role=option]')).toHaveCount(3);
     await expect(page.locator('[role=option][aria-selected=true]')).toHaveCount(1);
+  });
+
+  test('the tags a miss offers carry the same counts as their tag pages', async ({ page }) => {
+    await open(page, 'haskell');
+    for (const chip of await page.locator('[role=option]').all()) {
+      const [label, count] = (await chip.innerText()).split(' ');
+      const response = await page.request.get(`/tags/${label}/`);
+      const html = await response.text();
+      const posts = new Set(html.match(/href="\/entries\/[^"]+"/g));
+      expect(posts.size, label).toBe(Number(count));
+    }
   });
 
   test('selection is a wash plus a left accent bar, never an inverted fill', async ({ page }) => {

@@ -387,6 +387,7 @@ export default function CommandPalette() {
           id="palette-results"
           role="listbox"
           aria-label="Search results"
+          aria-busy={!isEmptyQuery && !settled}
           // The scrollbar is hidden the same way the tab strip hides its own:
           // the group counts say how much is there, and the arrow keys scroll.
           className="flex-1 overflow-y-auto py-3.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"

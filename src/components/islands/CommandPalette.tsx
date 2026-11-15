@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  PAGES,
   highlightParts,
   postFilename,
-  recentPosts,
-  search,
   topTags,
-  type Entry,
   type Filter,
+  type Group,
   type PageEntry,
   type Result,
 } from '../../lib/search';
+import { openSearch, runSearch, type SearchSession } from '../../lib/pagefind';
 import { TABS } from '../../lib/nav';
 
 /**
@@ -23,32 +23,12 @@ import { TABS } from '../../lib/nav';
  * comes from the same tokens, so the two stay in step.
  */
 
-const INDEX_URL = '/search-index.json';
+const BUNDLE_URL = '/pagefind/pagefind.js';
 const FILTERS: Filter[] = ['all', 'posts', 'tags', 'pages'];
 const OPTION_ID = 'palette-option';
 
-// Fetched on first open and kept for the life of the page: the index is
-// static, so a second fetch could only return the same bytes.
-let cached: Entry[] | null = null;
-let pending: Promise<Entry[]> | null = null;
-
-function loadIndex(): Promise<Entry[]> {
-  if (cached) return Promise.resolve(cached);
-  pending ??= fetch(INDEX_URL)
-    .then((res) => {
-      if (!res.ok) throw new Error(`${res.status}`);
-      return res.json() as Promise<Entry[]>;
-    })
-    .then((entries) => {
-      cached = entries;
-      return entries;
-    })
-    .catch((error) => {
-      pending = null;
-      throw error;
-    });
-  return pending;
-}
+/** The groups for one query and filter, kept until the next search settles. */
+type View = { term: string; filter: Filter; groups: Group[] };
 
 /** True when a keystroke belongs to whatever the reader is typing in. */
 function inField(target: EventTarget | null): boolean {
@@ -112,7 +92,8 @@ function Highlight({ text, term }: { text: string; term: string }) {
 
 export default function CommandPalette() {
   const [open, setOpen] = useState(false);
-  const [entries, setEntries] = useState<Entry[] | null>(cached);
+  const [session, setSession] = useState<SearchSession | null>(null);
+  const [view, setView] = useState<View | null>(null);
   const [failed, setFailed] = useState(false);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<Filter>('all');
@@ -130,19 +111,16 @@ export default function CommandPalette() {
   const term = query.trim();
   const isEmptyQuery = term === '';
 
-  const groups = useMemo(
-    () => (entries ? search(entries, query, filter) : []),
-    [entries, query, filter]
-  );
+  // The last settled view stays on screen while the next search runs. A stale
+  // view never counts as a result or a miss, and Enter never opens its rows.
+  const settled = view !== null && view.term === term && view.filter === filter;
+  const groups = isEmptyQuery || view === null ? [] : view.groups;
   const matches = groups.reduce((sum, g) => sum + g.total, 0);
-  const noMatch = !isEmptyQuery && entries !== null && matches === 0;
+  const noMatch = !isEmptyQuery && settled && matches === 0;
 
-  const recent = useMemo(() => (entries ? recentPosts(entries) : []), [entries]);
-  const tags = useMemo(() => (entries ? topTags(entries) : []), [entries]);
-  const posts = useMemo(
-    () => (entries ? entries.filter((e) => e.kind === 'post').length : 0),
-    [entries]
-  );
+  const recent = useMemo(() => session?.catalog.recent ?? [], [session]);
+  const tags = useMemo(() => (session ? topTags(session.catalog.tags) : []), [session]);
+  const posts = session?.catalog.postCount ?? 0;
 
   // One flat list of destinations, in the order they are drawn. Arrow keys
   // cross group boundaries and reach the chips too, so every offer in the
@@ -151,17 +129,7 @@ export default function CommandPalette() {
     if (isEmptyQuery) {
       return [
         ...recent.map((entry) => ({ entry, matchedIn: 'title' as const, term: '' })),
-        ...TABS.map((tab) => ({
-          entry: {
-            kind: 'page' as const,
-            label: tab.label,
-            title: tab.title,
-            description: tab.description,
-            url: tab.href,
-          },
-          matchedIn: 'title' as const,
-          term: '',
-        })),
+        ...PAGES.map((entry) => ({ entry, matchedIn: 'title' as const, term: '' })),
       ];
     }
     if (noMatch) {
@@ -221,7 +189,7 @@ export default function CommandPalette() {
 
     function prefetch(event: Event) {
       if (closestElement(event.target, '[data-palette-open]')) {
-        loadIndex().catch(() => undefined);
+        openSearch().catch(() => undefined);
       }
     }
 
@@ -257,9 +225,24 @@ export default function CommandPalette() {
   }, [open]);
 
   useEffect(() => {
-    if (!open || entries) return;
-    loadIndex().then(setEntries, () => setFailed(true));
-  }, [open, entries]);
+    if (!open || session) return;
+    openSearch().then(setSession, () => setFailed(true));
+  }, [open, session]);
+
+  useEffect(() => {
+    if (!open || !session || isEmptyQuery) return;
+    const control = new AbortController();
+    runSearch(session, term, filter, control.signal).then(
+      (found) => {
+        if (found) {
+          setView({ term, filter, groups: found });
+          setSelected(0);
+        }
+      },
+      () => setFailed(true)
+    );
+    return () => control.abort();
+  }, [open, session, term, filter, isEmptyQuery]);
 
   // Keep the selected row in view inside the results pane. The dialog is
   // fixed and the body cannot scroll, so the document never moves.
@@ -292,7 +275,7 @@ export default function CommandPalette() {
         cycleFilter(event.shiftKey ? -1 : 1);
         break;
       case 'Enter': {
-        const row = rows[selected];
+        const row = !isEmptyQuery && !settled ? undefined : rows[selected];
         if (!row) break;
         event.preventDefault();
         window.location.href = row.entry.url;
@@ -312,12 +295,16 @@ export default function CommandPalette() {
     : noMatch
       ? 'EXIT 1'
       : isEmptyQuery
-        ? `${posts} INDEXED`
-        : `${matches} MATCH${matches === 1 ? '' : 'ES'}`;
+        ? session
+          ? `${posts} INDEXED`
+          : ''
+        : settled
+          ? `${matches} MATCH${matches === 1 ? '' : 'ES'}`
+          : '';
 
   const announcement = failed
     ? 'Search index unavailable'
-    : isEmptyQuery
+    : isEmptyQuery || !settled
       ? ''
       : `${matches} result${matches === 1 ? '' : 's'}`;
 
@@ -400,13 +387,14 @@ export default function CommandPalette() {
           id="palette-results"
           role="listbox"
           aria-label="Search results"
+          aria-busy={!isEmptyQuery && !settled}
           // The scrollbar is hidden the same way the tab strip hides its own:
           // the group counts say how much is there, and the arrow keys scroll.
           className="flex-1 overflow-y-auto py-3.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {failed && (
             <div className="px-4 py-6 sm:px-4.5">
-              <p className="text-ink">grep: {INDEX_URL}: cannot open index</p>
+              <p className="text-ink">grep: {BUNDLE_URL}: cannot open index</p>
               <p className="mt-3.5 max-w-[50ch] text-sm text-ink-muted">
                 The search index did not load. Reload the page to try again, or press ESC and keep
                 reading.
@@ -571,7 +559,9 @@ function PostRow({ result, id, selected }: { result: Result; id: string; selecte
       ? 'tag'
       : result.matchedIn === 'description'
         ? 'summary'
-        : null;
+        : result.matchedIn === 'body'
+          ? 'body'
+          : null;
   // The empty state's RECENT rows carry no query, so there is nothing to
   // report about how they matched.
   const quiet = result.term === '';
@@ -601,7 +591,7 @@ function PostRow({ result, id, selected }: { result: Result; id: string; selecte
                   </span>
                 ) : (
                   <>
-                    <span className="text-accent-lift">{result.term}</span> in summary
+                    <span className="text-accent-lift">{result.term}</span> in {provenance}
                   </>
                 )}
               </>

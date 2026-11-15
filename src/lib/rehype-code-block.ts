@@ -45,7 +45,7 @@ export function rehypeCodeBlock() {
           {
             type: 'element',
             tagName: 'span',
-            properties: { className: [...classNameTokens(c.lineNumber)] },
+            properties: { className: [...classNameTokens(c.lineNumber)], dataPagefindIgnore: '' },
             children: [{ type: 'text', value: String(i + 1) }],
           },
           {
@@ -74,7 +74,7 @@ export function rehypeCodeBlock() {
           {
             type: 'element',
             tagName: 'figcaption',
-            properties: { className: [...classNameTokens(c.header)] },
+            properties: { className: [...classNameTokens(c.header)], dataPagefindIgnore: '' },
             children: [
               {
                 type: 'element',

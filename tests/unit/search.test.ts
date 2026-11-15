@@ -1,112 +1,167 @@
 import { describe, it, expect } from 'vitest';
 import {
-  search,
+  CAPS,
+  composeGroups,
   highlightParts,
+  matchedIn,
+  matchPages,
+  matchTags,
+  parseFields,
   postFilename,
-  recentPosts,
+  queryWords,
+  rankByField,
   topTags,
-  type Entry,
+  unresolvedWords,
+  type MetaField,
+  type PostEntry,
+  type PostHits,
+  type TagEntry,
 } from '../../src/lib/search';
 
-const post = (
-  title: string,
-  description: string,
-  date: string,
-  tags: string[] = ['devops']
-): Entry => ({
+const post = (n: number): PostEntry => ({
   kind: 'post',
-  title,
-  description,
-  url: `/entries/${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}/`,
-  date,
-  tags,
+  title: `post ${n}`,
+  url: `/entries/post-${n}/`,
+  date: '2026-01-01',
+  tags: [],
 });
 
-const INDEX: Entry[] = [
-  post('HTTPS for your homelab', 'Local network speeds', '2026-04-19', ['security', 'homelab']),
-  post('Distributed locks in Node.js', 'Redis and DNS lookups', '2023-07-23', ['typescript']),
-  post('Taming ambiguity', 'How to lead without a spec', '2024-11-02', ['leadership', 'homelab']),
-  post('Dev previews', 'Every branch gets a homelab URL', '2025-03-26', ['devops']),
-  { kind: 'tag', label: 'homelab', url: '/tags/homelab/', count: 2 },
-  { kind: 'tag', label: 'leadership', url: '/tags/leadership/', count: 8 },
-  { kind: 'tag', label: 'devops', url: '/tags/devops/', count: 5 },
-  { kind: 'page', label: 'src/', title: 'Open Source', description: 'Homelab configs and tools', url: '/src/' },
-  { kind: 'page', label: 'about.md', title: 'About', description: 'Who I am', url: '/about/' },
-];
+const hits = (total: number, rows = total): PostHits => ({
+  total,
+  rows: Array.from({ length: rows }, (_, i) => ({ post: post(i), matchedIn: 'body' as const })),
+});
 
-describe('search', () => {
+const tag = (label: string, count: number): TagEntry => ({
+  kind: 'tag',
+  label,
+  url: `/tags/${label}/`,
+  count,
+});
+
+const TAGS = [tag('homelab', 2), tag('leadership', 8), tag('devops', 5)];
+const NO_POSTS: PostHits = { total: 0, rows: [] };
+
+describe('composeGroups', () => {
   it('returns nothing for an empty query', () => {
-    expect(search(INDEX, '')).toEqual([]);
-    expect(search(INDEX, '   ')).toEqual([]);
+    expect(composeGroups({ query: '', filter: 'all', posts: hits(3), tags: TAGS })).toEqual([]);
+    expect(composeGroups({ query: '   ', filter: 'all', posts: hits(3), tags: TAGS })).toEqual([]);
   });
 
   it('groups results as POSTS, TAGS then PAGES', () => {
-    expect(search(INDEX, 'homelab').map((g) => g.label)).toEqual(['POSTS', 'TAGS', 'PAGES']);
+    const groups = composeGroups({ query: 'src', filter: 'all', posts: hits(1), tags: [tag('srcs', 1)] });
+    expect(groups.map((g) => g.label)).toEqual(['POSTS', 'TAGS', 'PAGES']);
   });
 
-  it('omits a group with no matches', () => {
-    expect(search(INDEX, 'ambiguity').map((g) => g.label)).toEqual(['POSTS']);
+  it('drops a group with no matches', () => {
+    const groups = composeGroups({ query: 'homelab', filter: 'all', posts: NO_POSTS, tags: TAGS });
+    expect(groups.map((g) => g.label)).toEqual(['TAGS']);
   });
 
-  it('matches regardless of case', () => {
-    const urls = (q: string) => search(INDEX, q).flatMap((g) => g.results.map((r) => r.entry.url));
-    expect(urls('HOMELAB')).toEqual(urls('homelab'));
+  it('caps posts at five, tags at three and pages at three, with the true totals', () => {
+    const tags = Array.from({ length: 4 }, (_, i) => tag(`s${i}`, i));
+    const groups = composeGroups({ query: 's', filter: 'all', posts: hits(30, 5), tags });
+    const byLabel = Object.fromEntries(groups.map((g) => [g.label, [g.results.length, g.total]]));
+    expect(byLabel.POSTS).toEqual([CAPS.posts, 30]);
+    expect(byLabel.TAGS).toEqual([CAPS.tags, 4]);
+    expect(byLabel.PAGES?.[0]).toBeLessThanOrEqual(CAPS.pages);
   });
 
-  it('ranks a title match above a tag match, and a tag match above a description', () => {
-    const posts = search(INDEX, 'homelab')[0];
-    expect(posts.results.map((r) => [r.entry.url, r.matchedIn])).toEqual([
-      ['/entries/https-for-your-homelab/', 'title'],
-      ['/entries/taming-ambiguity/', 'tag'],
-      ['/entries/dev-previews/', 'description'],
+  it('cuts posts to the cap even when more rows arrive', () => {
+    const groups = composeGroups({ query: 'x', filter: 'posts', posts: hits(9, 9), tags: [] });
+    expect(groups[0].results).toHaveLength(CAPS.posts);
+    expect(groups[0].total).toBe(9);
+  });
+
+  it('keeps one group under a filter', () => {
+    const base = { query: 'homelab', posts: hits(2), tags: TAGS };
+    expect(composeGroups({ ...base, filter: 'tags' }).map((g) => g.label)).toEqual(['TAGS']);
+    expect(composeGroups({ ...base, filter: 'posts' }).map((g) => g.label)).toEqual(['POSTS']);
+    expect(composeGroups({ ...base, filter: 'pages' })).toEqual([]);
+  });
+
+  it('carries the term as typed', () => {
+    const groups = composeGroups({ query: ' DNS ', filter: 'posts', posts: hits(1), tags: [] });
+    expect(groups[0].results[0].term).toBe('DNS');
+  });
+});
+
+describe('matchTags and matchPages', () => {
+  it('matches a tag by label, case-insensitive, most used first', () => {
+    const tags = [tag('devops', 5), tag('dev', 9), tag('leadership', 8)];
+    expect(matchTags(tags, 'DEV').map((t) => t.label)).toEqual(['dev', 'devops']);
+    expect(matchTags(TAGS, 'leader').map((t) => t.url)).toEqual(['/tags/leadership/']);
+  });
+
+  it('matches a page by label, title or description, title first', () => {
+    expect(matchPages('src/').map((m) => m.page.url)).toEqual(['/src/']);
+    expect(matchPages('open sou').map((m) => m.page.url)).toEqual(['/src/']);
+    const found = matchPages('post');
+    expect(found[0]).toMatchObject({ matchedIn: 'title' });
+    const order = found.map((m) => m.matchedIn);
+    expect(order).toEqual([...order].sort((a, b) => (a === b ? 0 : a === 'title' ? -1 : 1)));
+  });
+});
+
+describe('field ranking and provenance', () => {
+  const item = (id: string, fields: MetaField[]) => ({ id, fields });
+
+  it('orders title, tags, description, then body, keeping relevance order inside a field', () => {
+    const ranked = rankByField([
+      item('body1', []),
+      item('desc', ['description']),
+      item('tag1', ['tags']),
+      item('body2', []),
+      item('title', ['title', 'tags']),
+      item('tag2', ['tags', 'description']),
     ]);
+    expect(ranked.map((r) => r.id)).toEqual(['title', 'tag1', 'tag2', 'desc', 'body1', 'body2']);
   });
 
-  it('orders newest first inside one rank', () => {
-    const index = [post('DNS one', 'x', '2020-01-01'), post('DNS two', 'x', '2024-01-01')];
-    expect(search(index, 'dns')[0].results.map((r) => r.entry.url)).toEqual([
-      '/entries/dns-two/',
-      '/entries/dns-one/',
-    ]);
+  it('names the strongest field a hit matched in', () => {
+    expect(matchedIn(['description', 'tags'])).toBe('tag');
+    expect(matchedIn(['title'])).toBe('title');
+    expect(matchedIn(['description'])).toBe('description');
+    expect(matchedIn([])).toBe('body');
   });
 
-  it('reports the term that matched', () => {
-    expect(search(INDEX, 'DNS')[0].results[0].term).toBe('DNS');
+  it('keeps known fields and drops the rest', () => {
+    expect(parseFields(['image', 'tags', 'nope', 'title'])).toEqual(['tags', 'title']);
+    expect(parseFields(undefined)).toEqual([]);
+  });
+});
+
+describe('word guard', () => {
+  const text = (content: string, extra: Partial<{ title: string; tags: string[]; summary: string }> = {}) => ({
+    title: '',
+    tags: [],
+    summary: '',
+    content,
+    ...extra,
   });
 
-  it('matches a tag by its label only', () => {
-    const tags = search(INDEX, 'leader').find((g) => g.label === 'TAGS');
-    expect(tags?.results.map((r) => r.entry.url)).toEqual(['/tags/leadership/']);
+  it('folds the query into words', () => {
+    expect(queryWords('  Café "Node.js!"  ')).toEqual(['cafe', 'node.js']);
   });
 
-  it('matches a page by label, title or description', () => {
-    expect(search(INDEX, 'src/').find((g) => g.label === 'PAGES')?.results).toHaveLength(1);
-    expect(search(INDEX, 'open sou').find((g) => g.label === 'PAGES')?.results).toHaveLength(1);
-    expect(search(INDEX, 'configs').find((g) => g.label === 'PAGES')?.results).toHaveLength(1);
+  it('passes a word that a hit contains as a prefix', () => {
+    expect(unresolvedWords(['deplo'], [text('We love deployment pipelines')])).toEqual([]);
   });
 
-  it('caps posts at five, tags and pages at three, and still reports the true total', () => {
-    const many: Entry[] = [
-      ...Array.from({ length: 7 }, (_, i) => post(`dns post ${i}`, 'x', `202${i}-01-01`)),
-      ...Array.from({ length: 4 }, (_, i) => ({
-        kind: 'tag' as const, label: `dns${i}`, url: `/tags/dns${i}/`, count: i,
-      })),
-      ...Array.from({ length: 4 }, (_, i) => ({
-        kind: 'page' as const, label: `dns${i}/`, title: 'x', description: 'y', url: `/dns${i}/`,
-      })),
-    ];
-    const groups = search(many, 'dns');
-    expect(groups.map((g) => [g.label, g.results.length, g.total])).toEqual([
-      ['POSTS', 5, 7],
-      ['TAGS', 3, 4],
-      ['PAGES', 3, 4],
-    ]);
+  it('flags a word that only a shorter word supports', () => {
+    expect(unresolvedWords(['haskell'], [text('It has a cost. She has time.')])).toEqual(['haskell']);
   });
 
-  it('narrows to one group under a filter', () => {
-    expect(search(INDEX, 'homelab', 'tags').map((g) => g.label)).toEqual(['TAGS']);
-    expect(search(INDEX, 'homelab', 'posts').map((g) => g.label)).toEqual(['POSTS']);
-    expect(search(INDEX, 'homelab', 'pages').map((g) => g.label)).toEqual(['PAGES']);
+  it('flags an inflection so the caller can run an exact search', () => {
+    expect(unresolvedWords(['deploys'], [text('We keep deploying things')])).toEqual(['deploys']);
+  });
+
+  it('reads the title, tags and summary as well as the body', () => {
+    const hit = text('nothing', { title: 'Kubernetes basics', tags: ['devops'], summary: 'Ingress' });
+    expect(unresolvedWords(['kube', 'devop', 'ingre'], [hit])).toEqual([]);
+  });
+
+  it('flags only the unsupported word of a multi-word query', () => {
+    expect(unresolvedWords(['every', 'branchz'], [text('every branch gets a url')])).toEqual(['branchz']);
   });
 });
 
@@ -138,14 +193,8 @@ describe('postFilename', () => {
   });
 });
 
-describe('recentPosts', () => {
-  it('gives the three newest posts, newest first', () => {
-    expect(recentPosts(INDEX).map((p) => p.date)).toEqual(['2026-04-19', '2025-03-26', '2024-11-02']);
-  });
-});
-
 describe('topTags', () => {
   it('gives the three highest-count tags', () => {
-    expect(topTags(INDEX).map((t) => t.label)).toEqual(['leadership', 'devops', 'homelab']);
+    expect(topTags([...TAGS, tag('git', 1)]).map((t) => t.label)).toEqual(['leadership', 'devops', 'homelab']);
   });
 });

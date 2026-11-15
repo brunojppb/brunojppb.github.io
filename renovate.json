@@ -7,25 +7,38 @@
     "security:minimumReleaseAgeNpm",
     "helpers:pinGitHubActionDigestsToSemver"
   ],
-  "dependencyDashboard": true,
-  "dependencyDashboardTitle": "Dependency Dashboard",
-  "labels": ["dependencies"],
+  "dependencyDashboard": {
+    "enabled": true,
+    "title": "Dependency Dashboard"
+  },
+  "labels": [
+    "dependencies"
+  ],
   "timezone": "UTC",
-  "schedule": ["before 6am on monday"],
+  "schedule": [
+    "before 6am on monday"
+  ],
   "prHourlyLimit": 10,
   "prConcurrentLimit": 10,
   "vulnerabilityAlerts": {
-    "labels": ["dependencies", "security"]
+    "labels": [
+      "dependencies",
+      "security"
+    ]
   },
   "osvVulnerabilityAlerts": true,
   "lockFileMaintenance": {
     "enabled": true,
-    "schedule": ["before 6am on monday"]
+    "schedule": [
+      "before 6am on monday"
+    ]
   },
   "packageRules": [
     {
       "description": "pnpm lives in mise.toml and packageManager, and Cloudflare Pages reads it from a variable.",
-      "matchDepNames": ["pnpm"],
+      "matchDepNames": [
+        "pnpm"
+      ],
       "groupName": "pnpm",
       "prBodyNotes": [
         "Cloudflare Pages takes pnpm from its `PNPM_VERSION` variable. Set that variable to the new version before you merge."

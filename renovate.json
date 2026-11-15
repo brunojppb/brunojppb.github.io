@@ -1,6 +1,34 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "config:recommended",
+    ":semanticCommits",
+    "group:allNonMajor",
+    "security:minimumReleaseAgeNpm"
+  ],
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "Dependency Dashboard",
+  "labels": ["dependencies"],
+  "timezone": "UTC",
+  "schedule": ["before 6am on monday"],
+  "prHourlyLimit": 10,
+  "prConcurrentLimit": 10,
+  "vulnerabilityAlerts": {
+    "labels": ["dependencies", "security"]
+  },
+  "osvVulnerabilityAlerts": true,
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on monday"]
+  },
+  "packageRules": [
+    {
+      "description": "pnpm lives in mise.toml and packageManager, and Cloudflare Pages reads it from a variable.",
+      "matchDepNames": ["pnpm"],
+      "groupName": "pnpm",
+      "prBodyNotes": [
+        "Cloudflare Pages takes pnpm from its `PNPM_VERSION` variable. Set that variable to the new version before you merge."
+      ]
+    }
   ]
 }

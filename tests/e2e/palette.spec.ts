@@ -159,14 +159,19 @@ test.describe('full-text search', () => {
 
   test('Enter does nothing while the shown rows belong to an older query', async ({ page }) => {
     await open(page, 'bbq');
-    await page.route('**/pagefind/fragment/**', async (route) => {
-      await new Promise((r) => setTimeout(r, 800));
+    // Pagefind caches what it fetched, so only a new word is sure to need the network.
+    let release!: () => void;
+    const held = new Promise<void>((r) => (release = r));
+    await page.route('**/pagefind/**', async (route) => {
+      await held;
       await route.continue();
     });
-    await page.locator('[role=combobox]').pressSequentially('x');
+    await page.locator('[role=combobox]').pressSequentially(' kubernetes');
+    await expect(page.locator('[role=listbox]')).toHaveAttribute('aria-busy', 'true');
     await page.keyboard.press('Enter');
     await page.waitForTimeout(200);
     expect(new URL(page.url()).pathname).toBe('/posts/');
+    release();
   });
 
   test('when the bundle cannot load, the palette reports EXIT 2', async ({ page }) => {
